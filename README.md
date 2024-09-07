@@ -49,13 +49,13 @@ A set of components for handling media uploads in different contexts.
 **Components:**
 
 -   `ToolbarMediaUpload`: For use in block toolbars
--   `CustomMediaUpload`: A customizable media upload button
+-   `EditorMediaUpload`: A customizable media upload button
 -   `InspectorMediaUpload`: For use in inspector controls
 
 **Usage:**
 
 ```jsx
-import { ToolbarMediaUpload, CustomMediaUpload, InspectorMediaUpload } from "@builtnorth/wp-component-library";
+import { ToolbarMediaUpload, EditorMediaUpload, InspectorMediaUpload } from "@builtnorth/wp-component-library";
 
 // Basic usage
 <ToolbarMediaUpload
@@ -63,7 +63,7 @@ import { ToolbarMediaUpload, CustomMediaUpload, InspectorMediaUpload } from "@bu
     onSelect={handleImageSelect}
 />
 
-<CustomMediaUpload
+<EditorMediaUpload
     buttonTitle="Upload Image"
     onSelect={handleImageSelect}
 />

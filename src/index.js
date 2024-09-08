@@ -1,6 +1,10 @@
 /* Components */
 export { AttachmentImage } from "./components/attachment-image";
 export {
+	CustomBlockAppender,
+	CustomInspectorAppender,
+} from "./components/block-appender";
+export {
 	EditorMediaUpload,
 	InspectorMediaUpload,
 	ToolbarMediaUpload,

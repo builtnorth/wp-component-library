@@ -26,6 +26,8 @@ function AttachmentImage({ imageId, size = "full", ...overrideProps }) {
     }));
 
     const imageAttributes = () => {
+        if (!image) return {};
+
         let attributes = {
             src: image.source_url,
             alt: image.alt_text,
@@ -42,6 +44,9 @@ function AttachmentImage({ imageId, size = "full", ...overrideProps }) {
             attributes.width = image.media_details.sizes[size].width;
             attributes.height = image.media_details.sizes[size].height;
         }
+
+        // Add URL attribute
+        attributes.url = attributes.src;
 
         // Override with any manually set props
         return { ...attributes, ...overrideProps };

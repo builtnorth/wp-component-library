@@ -3,7 +3,14 @@
  */
 
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
-import { Button, PanelBody, PanelRow } from "@wordpress/components";
+import {
+    Button,
+    FocalPointPicker,
+    PanelBody,
+    PanelRow,
+    RangeControl,
+} from "@wordpress/components";
+import { useSelect } from "@wordpress/data";
 import { Fragment } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
@@ -11,19 +18,39 @@ import { AttachmentImage } from "../attachment-image";
 import { InspectorMediaUpload } from "../media-upload";
 
 const SectionSettings = (props) => {
-    const { backgroundImage, handleImageSelect, handleImageRemove } = props;
+    const {
+        backgroundImage,
+        handleImageSelect,
+        handleImageRemove,
+        focalPoint,
+        handleFocalPointChange,
+        opacity,
+        handleOpacityChange,
+    } = props;
+
+    const imageUrl = useSelect(
+        (select) => {
+            if (!backgroundImage) return null;
+            const image = select("core").getMedia(backgroundImage);
+            return image?.source_url;
+        },
+        [backgroundImage],
+    );
 
     return (
         <Fragment>
             <InspectorControls group="styles">
                 <PanelBody
-                    title="Background Image"
+                    title="Background Settings"
                     className="built-inspector-image-upload"
                 >
                     {!backgroundImage && (
                         <PanelRow>
                             <InspectorMediaUpload
-                                buttonTitle={__("Select or Upload Image")}
+                                buttonTitle={__(
+                                    "Select or Upload Media",
+                                    "polaris-blocks",
+                                )}
                                 gallery={false}
                                 multiple={false}
                                 mediaIDs={backgroundImage}
@@ -34,20 +61,50 @@ const SectionSettings = (props) => {
                     {backgroundImage && (
                         <Fragment>
                             <PanelRow>
-                                <div className="image__wrap--cover">
-                                    <AttachmentImage
-                                        imageId={backgroundImage}
-                                        alt={backgroundImage.alt}
-                                        size="square_small"
-                                    />
-                                </div>
+                                <FocalPointPicker
+                                    __nextHasNoMarginBottom
+                                    // help={__(
+                                    //     "This is the point that will be used for the background image.",
+                                    //     "polaris-blocks",
+                                    // )}
+                                    label={__(
+                                        "Image Focal Point",
+                                        "polaris-blocks",
+                                    )}
+                                    url={imageUrl}
+                                    value={focalPoint}
+                                    onDragStart={handleFocalPointChange}
+                                    onDrag={handleFocalPointChange}
+                                    onChange={handleFocalPointChange}
+                                />
                             </PanelRow>
+
+                            <RangeControl
+                                label={__("Image Opacity", "polaris-blocks")}
+                                value={opacity}
+                                onChange={handleOpacityChange}
+                                min={0}
+                                max={100}
+                                initialPosition={15}
+                            />
+
                             <PanelRow>
+                                <InspectorMediaUpload
+                                    variant="primary"
+                                    buttonTitle={__(
+                                        "Replace Media",
+                                        "polaris-blocks",
+                                    )}
+                                    gallery={false}
+                                    multiple={false}
+                                    mediaIDs={backgroundImage}
+                                    onSelect={handleImageSelect}
+                                />
                                 <Button
                                     variant="secondary"
                                     size="compact"
                                     isDestructive
-                                    text={__("Remove Image")}
+                                    text={__("Remove Media")}
                                     onClick={handleImageRemove}
                                 />
                             </PanelRow>
@@ -59,8 +116,13 @@ const SectionSettings = (props) => {
     );
 };
 
-const SectionBackground = (props) => {
-    const { backgroundImage } = props;
+const SectionBackground = ({ backgroundImage, focalPoint, opacity }) => {
+    const backgroundStyle = {
+        ...(focalPoint && {
+            objectPosition: `${focalPoint.x * 100}% ${focalPoint.y * 100}%`,
+        }),
+        opacity: opacity / 100, // Convert percentage to decimal
+    };
 
     return (
         <div className="section__background">
@@ -69,20 +131,35 @@ const SectionBackground = (props) => {
                 imageId={backgroundImage}
                 alt=""
                 size="wide_large"
+                style={backgroundStyle}
             />
         </div>
     );
 };
 
 const SectionWrapper = ({ attributes, setAttributes, className, children }) => {
-    const { backgroundImage } = attributes;
+    const { backgroundImage, focalPoint, opacity } = attributes; // Use default if not set
 
     const handleImageSelect = (image) => {
-        setAttributes({ backgroundImage: image.id });
+        setAttributes({
+            backgroundImage: image.id,
+            focalPoint: focalPoint || { x: 0.5, y: 0.5 },
+        });
     };
 
     const handleImageRemove = () => {
-        setAttributes({ backgroundImage: null });
+        setAttributes({
+            backgroundImage: null,
+            focalPoint: null, // Reset focal point when removing image
+        });
+    };
+
+    const handleFocalPointChange = (newFocalPoint) => {
+        setAttributes({ focalPoint: newFocalPoint });
+    };
+
+    const handleOpacityChange = (newOpacity) => {
+        setAttributes({ opacity: newOpacity });
     };
 
     const customClass =
@@ -98,10 +175,19 @@ const SectionWrapper = ({ attributes, setAttributes, className, children }) => {
                 backgroundImage={backgroundImage}
                 handleImageSelect={handleImageSelect}
                 handleImageRemove={handleImageRemove}
+                handleFocalPointChange={handleFocalPointChange}
+                focalPoint={focalPoint}
+                opacity={opacity}
+                handleOpacityChange={handleOpacityChange}
+                setAttributes={setAttributes}
             />
             <section {...blockProps}>
                 {children}
-                <SectionBackground backgroundImage={backgroundImage} />
+                <SectionBackground
+                    backgroundImage={backgroundImage}
+                    focalPoint={focalPoint}
+                    opacity={opacity}
+                />
             </section>
         </>
     );

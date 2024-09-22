@@ -69,80 +69,6 @@ const SectionSettings = (props) => {
 					{backgroundImage && (
 						<Fragment>
 							<PanelRow>
-								<FocalPointPicker
-									__nextHasNoMarginBottom
-									// help={__(
-									//     "This is the point that will be used for the background image.",
-									//     "polaris-blocks",
-									// )}
-									label={__(
-										"Image Focal Point",
-										"polaris-blocks",
-									)}
-									url={imageUrl}
-									value={focalPoint}
-									onDragStart={handleFocalPointChange}
-									onDrag={handleFocalPointChange}
-									onChange={handleFocalPointChange}
-								/>
-							</PanelRow>
-							{!limitEditorSettings && (
-								<Fragment>
-									<RangeControl
-										label={__(
-											"Image Opacity",
-											"polaris-blocks",
-										)}
-										value={opacity}
-										onChange={handleOpacityChange}
-										min={0}
-										max={100}
-										initialPosition={15}
-									/>
-
-									<PanelRow>
-										<SelectControl
-											label={__(
-												"Image Style",
-												"polaris-blocks",
-											)}
-											value={imageStyle}
-											options={[
-												{
-													label: __(
-														"None",
-														"polaris-blocks",
-													),
-													value: "none",
-												},
-												{
-													label: __(
-														"Blur",
-														"polaris-blocks",
-													),
-													value: "blur",
-												},
-												{
-													label: __(
-														"Grayscale",
-														"polaris-blocks",
-													),
-													value: "grayscale",
-												},
-												{
-													label: __(
-														"Blur + Grayscale",
-														"polaris-blocks",
-													),
-													value: "blur-grayscale",
-												},
-											]}
-											onChange={handleImageStyleChange}
-										/>
-									</PanelRow>
-								</Fragment>
-							)}
-							<PanelRow>
 								<InspectorMediaUpload
 									variant="primary"
 									buttonTitle={__(
@@ -162,6 +88,76 @@ const SectionSettings = (props) => {
 									onClick={handleImageRemove}
 								/>
 							</PanelRow>
+							<PanelRow>
+								<FocalPointPicker
+									__nextHasNoMarginBottom
+									hideLabelFromVision={true}
+									label={__(
+										"Media Focal Point",
+										"polaris-blocks",
+									)}
+									url={imageUrl}
+									value={focalPoint}
+									onDragStart={handleFocalPointChange}
+									onDrag={handleFocalPointChange}
+									onChange={handleFocalPointChange}
+								/>
+							</PanelRow>
+							{!limitEditorSettings && (
+								<Fragment>
+									<RangeControl
+										__nextHasNoMarginBottom
+										label={__(
+											"Media Opacity",
+											"polaris-blocks",
+										)}
+										value={opacity}
+										onChange={handleOpacityChange}
+										min={0}
+										max={100}
+										initialPosition={15}
+									/>
+
+									<SelectControl
+										label={__(
+											"Media Style",
+											"polaris-blocks",
+										)}
+										value={imageStyle}
+										options={[
+											{
+												label: __(
+													"None",
+													"polaris-blocks",
+												),
+												value: "none",
+											},
+											{
+												label: __(
+													"Blur",
+													"polaris-blocks",
+												),
+												value: "blur",
+											},
+											{
+												label: __(
+													"Grayscale",
+													"polaris-blocks",
+												),
+												value: "grayscale",
+											},
+											{
+												label: __(
+													"Blur + Grayscale",
+													"polaris-blocks",
+												),
+												value: "blur-grayscale",
+											},
+										]}
+										onChange={handleImageStyleChange}
+									/>
+								</Fragment>
+							)}
 						</Fragment>
 					)}
 				</PanelBody>

@@ -1,17 +1,21 @@
 /* Components */
 export { AttachmentImage } from "./components/attachment-image";
 export {
-    CustomBlockAppender,
-    CustomInspectorAppender,
+	CustomBlockAppender,
+	CustomInspectorAppender,
 } from "./components/block-appender";
 export {
-    EditorMediaUpload,
-    InspectorMediaUpload,
-    ToolbarMediaUpload,
+	EditorMediaUpload,
+	InspectorMediaUpload,
+	ToolbarMediaUpload,
 } from "./components/media-upload";
-export { Pagination } from "./components/pagination";
+export { QueryDisplay } from "./components/query/display";
+export { QueryOrder } from "./components/query/order";
+export { QueryPagination } from "./components/query/pagination";
+export { QuerySelectPostType } from "./components/query/selectPostType";
+export { QueryTaxonomy } from "./components/query/taxonomy";
 export {
-    SectionBackground,
-    SectionSettings,
-    SectionWrapper,
+	SectionBackground,
+	SectionSettings,
+	SectionWrapper,
 } from "./components/section-settings";

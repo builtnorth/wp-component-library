@@ -5,7 +5,7 @@
  *
  * @returns {WPElement} Element to render.
  */
-function Pagination() {
+function QueryPagination() {
 	return (
 		<div className="pagination" aria-label="Navigate Between Archive Pages">
 			<ul className="page-numbers">
@@ -27,4 +27,4 @@ function Pagination() {
 	);
 }
 
-export { Pagination };
+export { QueryPagination };

@@ -3,9 +3,10 @@ import { useSelect } from "@wordpress/data";
 import { Fragment } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
+import { Pagination } from "../pagination/index.js";
 import Grid from "./display/grid.js";
+import List from "./display/list.js";
 import Slider from "./display/slider.js";
-import { QueryPagination } from "./pagination";
 
 const QueryPostFeed = (props) => {
 	const {
@@ -71,6 +72,13 @@ const QueryPostFeed = (props) => {
 					postType={postType}
 					CardComponent={CardComponent}
 				/>
+			) : displayAs === "list" ? (
+				<List
+					{...props}
+					posts={posts}
+					postType={postType}
+					CardComponent={CardComponent}
+				/>
 			) : (
 				<Grid
 					{...props}
@@ -81,9 +89,7 @@ const QueryPostFeed = (props) => {
 				/>
 			)}
 
-			{!displayAs && posts.length > (postsPerPage || 9) && (
-				<QueryPagination />
-			)}
+			{!displayAs && posts.length > (postsPerPage || 9) && <Pagination />}
 		</Fragment>
 	);
 };

@@ -1,6 +1,6 @@
 /**
  * ------------------------------------------------------------------
- * Block: Image Gallery Slider / Components / Slider
+ * Block: Query List / Components / List
  * ------------------------------------------------------------------
  *
  *
@@ -11,11 +11,10 @@
 
 import { useBlockProps } from "@wordpress/block-editor";
 import { Fragment } from "@wordpress/element";
-
 /**
- * Slider Function
+ * List Function
  */
-function Grid(props) {
+function List(props) {
 	const {
 		attributes: { columnCount },
 		posts,
@@ -23,7 +22,7 @@ function Grid(props) {
 		postType,
 	} = props;
 
-	const wrapClass = `${postType}-query ${postType}-query--grid grid grid-has-${columnCount}`;
+	const wrapClass = `${postType}-query ${postType}-query--list list list-has-${columnCount}`;
 
 	const blockProps = useBlockProps({
 		className: wrapClass,
@@ -46,4 +45,4 @@ function Grid(props) {
 /**
  * Export Grid
  */
-export default Grid;
+export default List;

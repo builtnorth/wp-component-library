@@ -25,6 +25,7 @@ function QueryDisplay(props) {
 				options={[
 					{ label: "Grid", value: "grid" },
 					{ label: "Slider", value: "slider" },
+					{ label: "List", value: "list" },
 				]}
 				onChange={(value) => setAttributes({ displayAs: value })}
 			/>
@@ -38,18 +39,21 @@ function QueryDisplay(props) {
 				min={1}
 				max={12}
 			/>
-
-			<RangeControl
-				label={
-					displayAs == "grid" ? __("Columns") : __("Slides to Show")
-				}
-				value={columnCount}
-				onChange={(columnCountNew) =>
-					setAttributes({ columnCount: columnCountNew })
-				}
-				min={1}
-				max={4}
-			/>
+			{displayAs !== "list" && (
+				<RangeControl
+					label={
+						displayAs == "grid"
+							? __("Columns")
+							: __("Slides to Show")
+					}
+					value={columnCount}
+					onChange={(columnCountNew) =>
+						setAttributes({ columnCount: columnCountNew })
+					}
+					min={1}
+					max={4}
+				/>
+			)}
 		</PanelBody>
 	);
 }

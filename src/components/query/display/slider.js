@@ -9,8 +9,8 @@
  *
  */
 
+import { useBlockProps } from "@wordpress/block-editor";
 import { Fragment } from "@wordpress/element";
-
 /**
  * Slider Function
  */
@@ -22,31 +22,39 @@ function Slider(props) {
 		postType,
 	} = props;
 
+	const wrapClass = `${postType}-query ${postType}-query--slider slider slider-has-${postsPerPage}`;
+
+	const blockProps = useBlockProps({
+		className: wrapClass,
+	});
+
 	// Return
 	return (
-		<swiper-container
-			simulate-touch="false"
-			slides-per-view={columnCount}
-			wrapperClass={`posts-${postsPerPage}`} // Tricks slider to refresh
-			loop="true"
-			pagination="true"
-			navigation="true"
-			space-between="32px"
-		>
-			{posts &&
-				posts.map((post) => {
-					return (
-						<Fragment key={post.id}>
-							<swiper-slide>
-								<CardComponent
-									post={post}
-									postType={postType}
-								/>
-							</swiper-slide>
-						</Fragment>
-					);
-				})}
-		</swiper-container>
+		<div {...blockProps}>
+			<swiper-container
+				simulate-touch="false"
+				slides-per-view={columnCount}
+				wrapperClass={`posts-${postsPerPage}`} // Tricks slider to refresh
+				loop="true"
+				pagination="true"
+				navigation="true"
+				space-between="32px"
+			>
+				{posts &&
+					posts.map((post) => {
+						return (
+							<Fragment key={post.id}>
+								<swiper-slide>
+									<CardComponent
+										post={post}
+										postType={postType}
+									/>
+								</swiper-slide>
+							</Fragment>
+						);
+					})}
+			</swiper-container>
+		</div>
 	);
 }
 /**

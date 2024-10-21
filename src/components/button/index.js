@@ -33,8 +33,8 @@ function ButtonFrontend({
 		? `${className}__button wp-block-button is-style-${style}`
 		: `wp-block-button is-style-${style}`;
 	const linkClass = className
-		? `${className}__button-link wp-element-button`
-		: "wp-element-button";
+		? `${className}__button-link wp-block-button__link wp-element-button`
+		: "wp-block-button__link wp-element-button";
 
 	return (
 		<div className={wrapperClass}>

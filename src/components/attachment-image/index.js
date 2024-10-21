@@ -31,9 +31,17 @@ function AttachmentImage({
 
 	if (!image) return null;
 
+	const appendToFirstClass = (classString, appendix) => {
+		const classes = classString.split(" ");
+		if (classes.length > 0) {
+			classes[0] = `${classes[0]}${appendix}`;
+		}
+		return classes.join(" ");
+	};
+
 	const imageAttributes = () => {
 		let attributes = {
-			className: `${className}__img`,
+			className: appendToFirstClass(className, "__img"),
 			src: image.source_url,
 			alt: customAlt || image.alt_text,
 			width: image.media_details.width,
@@ -58,15 +66,14 @@ function AttachmentImage({
 	const imgElement = <img {...imageAttributes()} />;
 	const captionElement =
 		showCaption && image.caption.rendered ? (
-			<figcaption
-				className={`${className}__caption`}
-				dangerouslySetInnerHTML={{ __html: image.caption.rendered }}
-			/>
+			<figcaption className={appendToFirstClass(className, "__caption")}>
+				{image.caption.rendered}
+			</figcaption>
 		) : null;
 
 	if (includeFigure) {
 		return (
-			<figure className={`${className}__figure`}>
+			<figure className={appendToFirstClass(className, "__figure")}>
 				{imgElement}
 				{captionElement}
 			</figure>

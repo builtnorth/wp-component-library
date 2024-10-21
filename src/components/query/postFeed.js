@@ -17,6 +17,7 @@ const QueryPostFeed = (props) => {
 			displayAs,
 			selectedTaxonomy,
 			selectedTerms,
+			showPagination,
 		},
 		postType,
 		CardComponent,
@@ -25,7 +26,7 @@ const QueryPostFeed = (props) => {
 	// Fetch posts
 	const posts = useSelect((select) => {
 		const query = {
-			per_page: postsPerPage || "9",
+			per_page: postsPerPage || 9,
 			orderby: orderPostsBy,
 			order: orderPostsDirection,
 			status: "publish",
@@ -63,6 +64,12 @@ const QueryPostFeed = (props) => {
 		);
 	}
 
+	console.log("Debug:", {
+		showPagination,
+		posts: posts.length,
+		postsPerPage,
+	});
+
 	return (
 		<Fragment>
 			{displayAs === "slider" ? (
@@ -88,8 +95,7 @@ const QueryPostFeed = (props) => {
 					CardComponent={CardComponent}
 				/>
 			)}
-
-			{!displayAs && posts.length > (postsPerPage || 9) && <Pagination />}
+			{showPagination && posts.length >= postsPerPage && <Pagination />}
 		</Fragment>
 	);
 };

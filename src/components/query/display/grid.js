@@ -23,7 +23,7 @@ function Grid(props) {
 		postType,
 	} = props;
 
-	const wrapClass = `${postType}-query ${postType}-query--grid grid grid-has-${columnCount}`;
+	const wrapClass = `query-${postType} query-${postType}--grid grid grid-has-${columnCount}`;
 
 	const blockProps = useBlockProps({
 		className: wrapClass,

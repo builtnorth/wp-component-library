@@ -2,7 +2,6 @@ import {
 	Icon,
 	PanelBody,
 	PanelRow,
-	ToggleControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
 	ToolbarDropdownMenu,
@@ -15,6 +14,7 @@ import {
 	justifyLeft,
 	justifyRight,
 	justifySpaceBetween,
+	justifyStretch,
 } from "@wordpress/icons";
 
 import "./index.scss";
@@ -61,6 +61,19 @@ const AlignmentToolbar = ({ value, onChange }) => {
 						<path d="M15 4H9v11h6V4zM4 18.5V20h16v-1.5H4z"></path>
 					</svg>
 				);
+			case "stretch":
+				return (
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						width="24"
+						height="24"
+						aria-hidden="true"
+						focusable="false"
+					>
+						<path d="M4 4v1.5h16V4H4zM7 7v10h10V7H7zM4 18.5V20h16v-1.5H4z"></path>
+					</svg>
+				);
 			default:
 				return getIcon("top"); // Default to "top" icon
 		}
@@ -88,6 +101,12 @@ const AlignmentToolbar = ({ value, onChange }) => {
 					title: __("Bottom", "wp-component-library"),
 					isActive: value === "flex-end",
 					onClick: () => onChange("flex-end"),
+				},
+				{
+					icon: <Icon icon={getIcon("stretch")} />,
+					title: __("Stretch", "wp-component-library"),
+					isActive: value === "stretch",
+					onClick: () => onChange("stretch"),
 				},
 			]}
 		/>
@@ -149,15 +168,20 @@ const LayoutPanel = ({
 	justification,
 	orientation,
 	allowWrap,
-	onAlignmentChange,
-	onJustificationChange,
-	onOrientationChange,
-	onAllowWrapChange,
+	setAttributes,
 }) => {
+	const onAlignmentChange = (value) => setAttributes({ alignment: value });
+	const onJustificationChange = (value) =>
+		setAttributes({ justification: value });
+	const onOrientationChange = (value) =>
+		setAttributes({ orientation: value });
+
+	const onAllowWrapChange = (value) => setAttributes({ allowWrap: value });
+
 	return (
 		<PanelBody
 			title={__("Layout", "wp-component-library")}
-			initialOpen={true}
+			initialOpen={false}
 		>
 			<div className="custom-layout-controls">
 				<PanelRow>
@@ -245,10 +269,15 @@ const LayoutPanel = ({
 								label={__("Bottom", "wp-component-library")}
 								value="flex-end"
 							/>
+							<ToggleGroupControlOptionIcon
+								icon={justifyStretch}
+								label={__("Stretch", "wp-component-library")}
+								value="stretch"
+							/>
 						</ToggleGroupControl>
 					</div>
 				</PanelRow>
-				<PanelRow>
+				{/* <PanelRow>
 					<ToggleControl
 						label={__(
 							"Allow to wrap to multiple lines",
@@ -258,7 +287,7 @@ const LayoutPanel = ({
 						onChange={onAllowWrapChange}
 						className="builtnorth-wp-component-library-toggle-control"
 					/>
-				</PanelRow>
+				</PanelRow> */}
 			</div>
 		</PanelBody>
 	);

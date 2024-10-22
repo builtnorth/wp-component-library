@@ -9,7 +9,7 @@ export {
 	AlignmentToolbar,
 	JustificationToolbar,
 	LayoutPanel,
-} from "./components/layout-panel";
+} from "./components/layout";
 export {
 	EditorMediaUpload,
 	InspectorMediaUpload,

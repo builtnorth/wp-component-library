@@ -1,4 +1,9 @@
-import { PanelBody, RangeControl, SelectControl } from "@wordpress/components";
+import {
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	ToggleControl,
+} from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
 /**
@@ -10,9 +15,17 @@ import { __ } from "@wordpress/i18n";
  */
 function QueryDisplay(props) {
 	const {
-		attributes: { postsPerPage, columnCount, displayAs },
+		attributes: { postsPerPage, columnCount, displayAs, showPagination },
 		setAttributes,
+		allowedDisplayOptions = ["grid", "slider", "list"],
+		displayAmountLabel = "Amount to Display",
 	} = props;
+
+	const displayOptions = [
+		{ label: "Grid", value: "grid" },
+		{ label: "Slider", value: "slider" },
+		{ label: "List", value: "list" },
+	].filter((option) => allowedDisplayOptions.includes(option.value));
 
 	return (
 		<PanelBody
@@ -22,34 +35,44 @@ function QueryDisplay(props) {
 			<SelectControl
 				label="Display As"
 				value={displayAs}
-				options={[
-					{ label: "Grid", value: "grid" },
-					{ label: "Slider", value: "slider" },
-				]}
+				options={displayOptions}
 				onChange={(value) => setAttributes({ displayAs: value })}
 			/>
 
 			<RangeControl
-				label="Amount to Display"
+				label={displayAmountLabel}
 				value={postsPerPage}
 				onChange={(postsPerPageNew) =>
 					setAttributes({ postsPerPage: postsPerPageNew })
 				}
 				min={1}
-				max={12}
+				max={50}
 			/>
-
-			<RangeControl
-				label={
-					displayAs == "grid" ? __("Columns") : __("Slides to Show")
-				}
-				value={columnCount}
-				onChange={(columnCountNew) =>
-					setAttributes({ columnCount: columnCountNew })
-				}
-				min={1}
-				max={4}
-			/>
+			{displayAs !== "list" && (
+				<RangeControl
+					label={
+						displayAs == "grid"
+							? __("Columns")
+							: __("Slides to Show")
+					}
+					value={columnCount}
+					onChange={(columnCountNew) =>
+						setAttributes({ columnCount: columnCountNew })
+					}
+					min={1}
+					max={4}
+				/>
+			)}
+			{displayAs !== "slider" && (
+				<ToggleControl
+					label="Show Pagination"
+					help="Show pagination if there are more posts than the amount to display."
+					checked={showPagination}
+					onChange={(showPaginationNew) =>
+						setAttributes({ showPagination: showPaginationNew })
+					}
+				/>
+			)}
 		</PanelBody>
 	);
 }

@@ -180,18 +180,19 @@ const SectionBackground = ({
 		opacity: opacity / 100,
 	};
 
-	const imageClasses = classnames("section__background--image", {
+	const imageClasses = classnames("section-background", {
 		[`has-${imageStyle}`]: imageStyle && imageStyle !== "none",
 	});
 
 	return (
-		<div className="section__background">
+		<div className="section-background">
 			<AttachmentImage
 				className={imageClasses}
 				imageId={backgroundImage}
 				alt=""
 				size="wide_large"
 				style={backgroundStyle}
+				includeFigure={false}
 			/>
 		</div>
 	);

@@ -7,6 +7,7 @@ export {
 export { ButtonFrontend } from "./components/button";
 export {
 	AlignmentToolbar,
+	ContentAlignmentToolbar,
 	JustificationToolbar,
 	LayoutPanel,
 } from "./components/layout";

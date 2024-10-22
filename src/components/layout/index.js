@@ -8,6 +8,9 @@ import {
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import {
+	alignCenter,
+	alignLeft,
+	alignRight,
 	arrowDown,
 	arrowRight,
 	justifyCenter,
@@ -163,10 +166,50 @@ const JustificationToolbar = ({ value, onChange }) => {
 	);
 };
 
+const ContentAlignmentToolbar = ({ value, onChange }) => {
+	return (
+		<ToolbarDropdownMenu
+			icon={
+				<Icon
+					icon={
+						value === "left"
+							? alignLeft
+							: value === "center"
+								? alignCenter
+								: alignRight
+					}
+				/>
+			}
+			label={__("Content Alignment", "wp-component-library")}
+			controls={[
+				{
+					icon: <Icon icon={alignLeft} />,
+					title: __("Align Left", "wp-component-library"),
+					isActive: value === "left",
+					onClick: () => onChange("left"),
+				},
+				{
+					icon: <Icon icon={alignCenter} />,
+					title: __("Align Center", "wp-component-library"),
+					isActive: value === "center",
+					onClick: () => onChange("center"),
+				},
+				{
+					icon: <Icon icon={alignRight} />,
+					title: __("Align Right", "wp-component-library"),
+					isActive: value === "right",
+					onClick: () => onChange("right"),
+				},
+			]}
+		/>
+	);
+};
+
 const LayoutPanel = ({
 	alignment,
 	justification,
 	orientation,
+	contentAlignment,
 	allowWrap,
 	setAttributes,
 }) => {
@@ -175,6 +218,8 @@ const LayoutPanel = ({
 		setAttributes({ justification: value });
 	const onOrientationChange = (value) =>
 		setAttributes({ orientation: value });
+	const onContentAlignmentChange = (value) =>
+		setAttributes({ contentAlignment: value });
 
 	const onAllowWrapChange = (value) => setAttributes({ allowWrap: value });
 
@@ -276,21 +321,53 @@ const LayoutPanel = ({
 							/>
 						</ToggleGroupControl>
 					</div>
+					<div className="content-alignment-control">
+						<span className="components-base-control__label">
+							{__("Content", "wp-component-library")}
+						</span>
+						<ToggleGroupControl
+							value={contentAlignment || "left"}
+							onChange={onContentAlignmentChange}
+							isBlock
+						>
+							<ToggleGroupControlOptionIcon
+								icon={alignLeft}
+								label={__("Left", "wp-component-library")}
+								value="left"
+							/>
+							<ToggleGroupControlOptionIcon
+								icon={alignCenter}
+								label={__("Center", "wp-component-library")}
+								value="center"
+							/>
+							<ToggleGroupControlOptionIcon
+								icon={alignRight}
+								label={__("Right", "wp-component-library")}
+								value="right"
+							/>
+						</ToggleGroupControl>
+					</div>
 				</PanelRow>
+
 				{/* <PanelRow>
-					<ToggleControl
-						label={__(
-							"Allow to wrap to multiple lines",
-							"wp-component-library",
-						)}
-						checked={allowWrap}
-						onChange={onAllowWrapChange}
-						className="builtnorth-wp-component-library-toggle-control"
-					/>
-				</PanelRow> */}
+						<ToggleControl
+							label={__(
+								"Allow to wrap to multiple lines",
+								"wp-component-library",
+							)}
+							checked={allowWrap}
+							onChange={onAllowWrapChange}
+							className="builtnorth-wp-component-library-toggle-control"
+						/>
+					</PanelRow> */}
 			</div>
 		</PanelBody>
 	);
 };
 
-export { AlignmentToolbar, JustificationToolbar, LayoutPanel };
+export {
+	AlignmentToolbar,
+	ContentAlignmentToolbar,
+	JustificationToolbar,
+	LayoutPanel,
+};

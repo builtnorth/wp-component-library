@@ -19,7 +19,7 @@ import {
 
 import "./index.scss";
 
-const VerticalAlignmentToolbar = ({ value, onChange }) => {
+const AlignmentToolbar = ({ value, onChange }) => {
 	const getIcon = (alignment) => {
 		switch (alignment) {
 			case "top":
@@ -69,25 +69,25 @@ const VerticalAlignmentToolbar = ({ value, onChange }) => {
 	return (
 		<ToolbarDropdownMenu
 			icon={<Icon icon={getIcon(value)} />}
-			label={__("Vertical Alignment", "wp-component-library")}
+			label={__("Vertical", "wp-component-library")}
 			controls={[
 				{
 					icon: <Icon icon={getIcon("top")} />,
-					title: __("Align top", "wp-component-library"),
-					isActive: value === "top",
-					onClick: () => onChange("top"),
+					title: __("Top", "wp-component-library"),
+					isActive: value === "flex-start",
+					onClick: () => onChange("flex-start"),
 				},
 				{
 					icon: <Icon icon={getIcon("middle")} />,
-					title: __("Align middle", "wp-component-library"),
+					title: __("Center", "wp-component-library"),
 					isActive: value === "center",
 					onClick: () => onChange("center"),
 				},
 				{
 					icon: <Icon icon={getIcon("bottom")} />,
-					title: __("Align bottom", "wp-component-library"),
-					isActive: value === "bottom",
-					onClick: () => onChange("bottom"),
+					title: __("Bottom", "wp-component-library"),
+					isActive: value === "flex-end",
+					onClick: () => onChange("flex-end"),
 				},
 			]}
 		/>
@@ -113,13 +113,13 @@ const JustificationToolbar = ({ value, onChange }) => {
 	return (
 		<ToolbarDropdownMenu
 			icon={<Icon icon={getIcon(value)} />}
-			label={__("Justification", "wp-component-library")}
+			label={__("Horizontal", "wp-component-library")}
 			controls={[
 				{
 					icon: <Icon icon={justifyLeft} />,
 					title: __("Left", "wp-component-library"),
-					isActive: value === "left",
-					onClick: () => onChange("left"),
+					isActive: value === "flex-start",
+					onClick: () => onChange("flex-start"),
 				},
 				{
 					icon: <Icon icon={justifyCenter} />,
@@ -130,12 +130,12 @@ const JustificationToolbar = ({ value, onChange }) => {
 				{
 					icon: <Icon icon={justifyRight} />,
 					title: __("Right", "wp-component-library"),
-					isActive: value === "right",
-					onClick: () => onChange("right"),
+					isActive: value === "flex-end",
+					onClick: () => onChange("flex-end"),
 				},
 				{
 					icon: <Icon icon={justifySpaceBetween} />,
-					title: __("Space between", "wp-component-library"),
+					title: __("Space Between", "wp-component-library"),
 					isActive: value === "space-between",
 					onClick: () => onChange("space-between"),
 				},
@@ -145,11 +145,11 @@ const JustificationToolbar = ({ value, onChange }) => {
 };
 
 const LayoutPanel = ({
-	verticalAlignment,
+	alignment,
 	justification,
 	orientation,
 	allowWrap,
-	onVerticalAlignmentChange,
+	onAlignmentChange,
 	onJustificationChange,
 	onOrientationChange,
 	onAllowWrapChange,
@@ -157,13 +157,13 @@ const LayoutPanel = ({
 	return (
 		<PanelBody
 			title={__("Layout", "wp-component-library")}
-			initialOpen={false}
+			initialOpen={true}
 		>
 			<div className="custom-layout-controls">
 				<PanelRow>
 					<div className="justification-control">
 						<span className="components-base-control__label">
-							{__("Justification", "wp-component-library")}
+							{__("Horizontal", "wp-component-library")}
 						</span>
 						<ToggleGroupControl
 							value={justification}
@@ -173,7 +173,7 @@ const LayoutPanel = ({
 							<ToggleGroupControlOptionIcon
 								icon={justifyLeft}
 								label={__("Left", "wp-component-library")}
-								value="left"
+								value="flex-start"
 							/>
 							<ToggleGroupControlOptionIcon
 								icon={justifyCenter}
@@ -183,16 +183,18 @@ const LayoutPanel = ({
 							<ToggleGroupControlOptionIcon
 								icon={justifyRight}
 								label={__("Right", "wp-component-library")}
-								value="right"
+								value="flex-end"
 							/>
-							<ToggleGroupControlOptionIcon
-								icon={justifySpaceBetween}
-								label={__(
-									"Space between",
-									"wp-component-library",
-								)}
-								value="space-between"
-							/>
+							{orientation === "horizontal" && (
+								<ToggleGroupControlOptionIcon
+									icon={justifySpaceBetween}
+									label={__(
+										"Space Between",
+										"wp-component-library",
+									)}
+									value="space-between"
+								/>
+							)}
 						</ToggleGroupControl>
 					</div>
 					<div className="orientation-control">
@@ -220,34 +222,28 @@ const LayoutPanel = ({
 				<PanelRow>
 					<div className="vertical-align-control">
 						<span className="components-base-control__label">
-							{__("Vertical Alignment", "wp-component-library")}
+							{__("Vertical", "wp-component-library")}
 						</span>
 						<ToggleGroupControl
-							value={verticalAlignment}
-							onChange={onVerticalAlignmentChange}
+							value={alignment}
+							onChange={onAlignmentChange}
 							isBlock
 							className="builtnorth-vertical-align-control"
 						>
 							<ToggleGroupControlOptionIcon
 								icon={justifyLeft}
-								label={__("Align top", "wp-component-library")}
-								value="top"
+								label={__("Top", "wp-component-library")}
+								value="flex-start"
 							/>
 							<ToggleGroupControlOptionIcon
 								icon={justifyCenter}
-								label={__(
-									"Align middle",
-									"wp-component-library",
-								)}
+								label={__("Center", "wp-component-library")}
 								value="center"
 							/>
 							<ToggleGroupControlOptionIcon
 								icon={justifyRight}
-								label={__(
-									"Align bottom",
-									"wp-component-library",
-								)}
-								value="bottom"
+								label={__("Bottom", "wp-component-library")}
+								value="flex-end"
 							/>
 						</ToggleGroupControl>
 					</div>
@@ -268,4 +264,4 @@ const LayoutPanel = ({
 	);
 };
 
-export { JustificationToolbar, LayoutPanel, VerticalAlignmentToolbar };
+export { AlignmentToolbar, JustificationToolbar, LayoutPanel };

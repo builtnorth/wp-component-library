@@ -6,9 +6,9 @@ export {
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
 export {
+	AlignmentToolbar,
 	JustificationToolbar,
 	LayoutPanel,
-	VerticalAlignmentToolbar,
 } from "./components/layout-panel";
 export {
 	EditorMediaUpload,

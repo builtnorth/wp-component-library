@@ -82,6 +82,10 @@ const AlignmentToolbar = ({ value, onChange }) => {
 		}
 	};
 
+	const handleChange = (newValue) => {
+		onChange(value === newValue ? null : newValue);
+	};
+
 	return (
 		<ToolbarDropdownMenu
 			icon={<Icon icon={getIcon(value)} />}
@@ -91,25 +95,25 @@ const AlignmentToolbar = ({ value, onChange }) => {
 					icon: <Icon icon={getIcon("top")} />,
 					title: __("Top", "wp-component-library"),
 					isActive: value === "flex-start",
-					onClick: () => onChange("flex-start"),
+					onClick: () => handleChange("flex-start"),
 				},
 				{
 					icon: <Icon icon={getIcon("middle")} />,
 					title: __("Center", "wp-component-library"),
 					isActive: value === "center",
-					onClick: () => onChange("center"),
+					onClick: () => handleChange("center"),
 				},
 				{
 					icon: <Icon icon={getIcon("bottom")} />,
 					title: __("Bottom", "wp-component-library"),
 					isActive: value === "flex-end",
-					onClick: () => onChange("flex-end"),
+					onClick: () => handleChange("flex-end"),
 				},
 				{
 					icon: <Icon icon={getIcon("stretch")} />,
 					title: __("Stretch", "wp-component-library"),
 					isActive: value === "stretch",
-					onClick: () => onChange("stretch"),
+					onClick: () => handleChange("stretch"),
 				},
 			]}
 		/>
@@ -132,6 +136,10 @@ const JustificationToolbar = ({ value, onChange }) => {
 		}
 	};
 
+	const handleChange = (newValue) => {
+		onChange(value === newValue ? null : newValue);
+	};
+
 	return (
 		<ToolbarDropdownMenu
 			icon={<Icon icon={getIcon(value)} />}
@@ -141,25 +149,25 @@ const JustificationToolbar = ({ value, onChange }) => {
 					icon: <Icon icon={justifyLeft} />,
 					title: __("Left", "wp-component-library"),
 					isActive: value === "flex-start",
-					onClick: () => onChange("flex-start"),
+					onClick: () => handleChange("flex-start"),
 				},
 				{
 					icon: <Icon icon={justifyCenter} />,
 					title: __("Center", "wp-component-library"),
 					isActive: value === "center",
-					onClick: () => onChange("center"),
+					onClick: () => handleChange("center"),
 				},
 				{
 					icon: <Icon icon={justifyRight} />,
 					title: __("Right", "wp-component-library"),
 					isActive: value === "flex-end",
-					onClick: () => onChange("flex-end"),
+					onClick: () => handleChange("flex-end"),
 				},
 				{
 					icon: <Icon icon={justifySpaceBetween} />,
 					title: __("Space Between", "wp-component-library"),
 					isActive: value === "space-between",
-					onClick: () => onChange("space-between"),
+					onClick: () => handleChange("space-between"),
 				},
 			]}
 		/>
@@ -167,38 +175,45 @@ const JustificationToolbar = ({ value, onChange }) => {
 };
 
 const ContentAlignmentToolbar = ({ value, onChange }) => {
+	const handleChange = (newValue) => {
+		onChange(value === newValue ? null : newValue);
+	};
+
+	const getIcon = () => {
+		switch (value) {
+			case "left":
+				return alignLeft;
+			case "center":
+				return alignCenter;
+			case "right":
+				return alignRight;
+			default:
+				return alignLeft; // Default icon when no value is selected
+		}
+	};
+
 	return (
 		<ToolbarDropdownMenu
-			icon={
-				<Icon
-					icon={
-						value === "left"
-							? alignLeft
-							: value === "center"
-								? alignCenter
-								: alignRight
-					}
-				/>
-			}
+			icon={<Icon icon={getIcon()} />}
 			label={__("Content Alignment", "wp-component-library")}
 			controls={[
 				{
 					icon: <Icon icon={alignLeft} />,
-					title: __("Align Left", "wp-component-library"),
+					title: __("Content Left", "wp-component-library"),
 					isActive: value === "left",
-					onClick: () => onChange("left"),
+					onClick: () => handleChange("left"),
 				},
 				{
 					icon: <Icon icon={alignCenter} />,
-					title: __("Align Center", "wp-component-library"),
+					title: __("Content Center", "wp-component-library"),
 					isActive: value === "center",
-					onClick: () => onChange("center"),
+					onClick: () => handleChange("center"),
 				},
 				{
 					icon: <Icon icon={alignRight} />,
-					title: __("Align Right", "wp-component-library"),
+					title: __("Content Right", "wp-component-library"),
 					isActive: value === "right",
-					onClick: () => onChange("right"),
+					onClick: () => handleChange("right"),
 				},
 			]}
 		/>
@@ -210,18 +225,11 @@ const LayoutPanel = ({
 	justification,
 	orientation,
 	contentAlignment,
-	allowWrap,
 	setAttributes,
 }) => {
-	const onAlignmentChange = (value) => setAttributes({ alignment: value });
-	const onJustificationChange = (value) =>
-		setAttributes({ justification: value });
-	const onOrientationChange = (value) =>
-		setAttributes({ orientation: value });
-	const onContentAlignmentChange = (value) =>
-		setAttributes({ contentAlignment: value });
-
-	const onAllowWrapChange = (value) => setAttributes({ allowWrap: value });
+	const handleChange = (attribute) => (value) => {
+		setAttributes({ [attribute]: value === undefined ? null : value });
+	};
 
 	return (
 		<PanelBody
@@ -235,9 +243,10 @@ const LayoutPanel = ({
 							{__("Horizontal", "wp-component-library")}
 						</span>
 						<ToggleGroupControl
-							value={justification}
-							onChange={onJustificationChange}
+							value={justification || ""}
+							onChange={handleChange("justification")}
 							isBlock
+							isDeselectable
 						>
 							<ToggleGroupControlOptionIcon
 								icon={justifyLeft}
@@ -271,9 +280,10 @@ const LayoutPanel = ({
 							{__("Orientation", "wp-component-library")}
 						</span>
 						<ToggleGroupControl
-							value={orientation || "vertical"}
-							onChange={onOrientationChange}
+							value={orientation || ""}
+							onChange={handleChange("orientation")}
 							isBlock
+							isDeselectable
 						>
 							<ToggleGroupControlOptionIcon
 								icon={<Icon icon={arrowRight} />}
@@ -295,8 +305,9 @@ const LayoutPanel = ({
 						</span>
 						<ToggleGroupControl
 							value={alignment}
-							onChange={onAlignmentChange}
+							onChange={handleChange("alignment")}
 							isBlock
+							isDeselectable
 							className="builtnorth-vertical-align-control"
 						>
 							<ToggleGroupControlOptionIcon
@@ -326,40 +337,38 @@ const LayoutPanel = ({
 							{__("Content", "wp-component-library")}
 						</span>
 						<ToggleGroupControl
-							value={contentAlignment || "left"}
-							onChange={onContentAlignmentChange}
+							value={contentAlignment}
+							onChange={handleChange("contentAlignment")}
 							isBlock
+							isDeselectable
 						>
 							<ToggleGroupControlOptionIcon
 								icon={alignLeft}
-								label={__("Left", "wp-component-library")}
+								label={__(
+									"Content Left",
+									"wp-component-library",
+								)}
 								value="left"
 							/>
 							<ToggleGroupControlOptionIcon
 								icon={alignCenter}
-								label={__("Center", "wp-component-library")}
+								label={__(
+									"Content Center",
+									"wp-component-library",
+								)}
 								value="center"
 							/>
 							<ToggleGroupControlOptionIcon
 								icon={alignRight}
-								label={__("Right", "wp-component-library")}
+								label={__(
+									"Content Right",
+									"wp-component-library",
+								)}
 								value="right"
 							/>
 						</ToggleGroupControl>
 					</div>
 				</PanelRow>
-
-				{/* <PanelRow>
-						<ToggleControl
-							label={__(
-								"Allow to wrap to multiple lines",
-								"wp-component-library",
-							)}
-							checked={allowWrap}
-							onChange={onAllowWrapChange}
-							className="builtnorth-wp-component-library-toggle-control"
-						/>
-					</PanelRow> */}
 			</div>
 		</PanelBody>
 	);

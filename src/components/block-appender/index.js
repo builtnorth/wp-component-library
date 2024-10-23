@@ -19,12 +19,12 @@ function CustomBlockAppender({
 			renderToggle={({ onToggle, disabled }) => (
 				<Button
 					showTooltip={true}
-					className={`built-block-appender built-block-appender--${appenderClassModifier} `}
+					className={`block-list-appender__toggle built-block-appender--${appenderClassModifier} `}
 					onClick={onToggle}
 					disabled={disabled}
 					label={appenderLabel}
+					icon={plus}
 				>
-					<Icon icon={plus} />
 					{appenderTitle}
 				</Button>
 			)}

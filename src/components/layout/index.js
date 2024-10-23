@@ -2,6 +2,7 @@ import {
 	Icon,
 	PanelBody,
 	PanelRow,
+	ToggleControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
 	ToolbarDropdownMenu,
@@ -224,9 +225,16 @@ const LayoutPanel = ({
 	alignment,
 	justification,
 	orientation,
+	allowWrap,
 	contentAlignment,
 	setAttributes,
-	controls = ["horizontal", "orientation", "vertical", "content"],
+	controls = [
+		"horizontal",
+		"orientation",
+		"vertical",
+		"content",
+		"allowWrap",
+	],
 }) => {
 	const handleChange = (attribute) => (value) => {
 		setAttributes({ [attribute]: value === undefined ? null : value });
@@ -387,6 +395,19 @@ const LayoutPanel = ({
 						</div>
 					)}
 				</PanelRow>
+				{controls.includes("allowWrap") && (
+					<PanelRow>
+						<ToggleControl
+							label={__(
+								"Allow to wrap to multiple lines",
+								"wp-component-library",
+							)}
+							checked={allowWrap}
+							onChange={handleChange("allowWrap")}
+							className="builtnorth-wp-component-library-toggle-control"
+						/>
+					</PanelRow>
+				)}
 			</div>
 		</PanelBody>
 	);

@@ -226,6 +226,7 @@ const LayoutPanel = ({
 	orientation,
 	contentAlignment,
 	setAttributes,
+	controls = ["horizontal", "orientation", "vertical", "content"],
 }) => {
 	const handleChange = (attribute) => (value) => {
 		setAttributes({ [attribute]: value === undefined ? null : value });
@@ -238,136 +239,153 @@ const LayoutPanel = ({
 		>
 			<div className="custom-layout-controls">
 				<PanelRow>
-					<div className="justification-control">
-						<span className="components-base-control__label">
-							{__("Horizontal", "wp-component-library")}
-						</span>
-						<ToggleGroupControl
-							value={justification || ""}
-							onChange={handleChange("justification")}
-							isBlock
-							isDeselectable
-						>
-							<ToggleGroupControlOptionIcon
-								icon={justifyLeft}
-								label={__("Left", "wp-component-library")}
-								value="flex-start"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={justifyCenter}
-								label={__("Center", "wp-component-library")}
-								value="center"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={justifyRight}
-								label={__("Right", "wp-component-library")}
-								value="flex-end"
-							/>
-							{orientation === "horizontal" && (
+					{controls.includes("horizontal") && (
+						<div className="justification-control">
+							<span className="components-base-control__label">
+								{__("Horizontal", "wp-component-library")}
+							</span>
+							<ToggleGroupControl
+								value={justification || ""}
+								onChange={handleChange("justification")}
+								isBlock
+								isDeselectable
+							>
 								<ToggleGroupControlOptionIcon
-									icon={justifySpaceBetween}
+									icon={justifyLeft}
+									label={__("Left", "wp-component-library")}
+									value="flex-start"
+								/>
+								<ToggleGroupControlOptionIcon
+									icon={justifyCenter}
+									label={__("Center", "wp-component-library")}
+									value="center"
+								/>
+								<ToggleGroupControlOptionIcon
+									icon={justifyRight}
+									label={__("Right", "wp-component-library")}
+									value="flex-end"
+								/>
+								{orientation === "horizontal" && (
+									<ToggleGroupControlOptionIcon
+										icon={justifySpaceBetween}
+										label={__(
+											"Space Between",
+											"wp-component-library",
+										)}
+										value="space-between"
+									/>
+								)}
+							</ToggleGroupControl>
+						</div>
+					)}
+					{controls.includes("orientation") && (
+						<div className="orientation-control">
+							<span className="components-base-control__label">
+								{__("Orientation", "wp-component-library")}
+							</span>
+							<ToggleGroupControl
+								value={orientation || ""}
+								onChange={handleChange("orientation")}
+								isBlock
+								isDeselectable
+							>
+								<ToggleGroupControlOptionIcon
+									icon={<Icon icon={arrowRight} />}
 									label={__(
-										"Space Between",
+										"Horizontal",
 										"wp-component-library",
 									)}
-									value="space-between"
+									value="horizontal"
 								/>
-							)}
-						</ToggleGroupControl>
-					</div>
-					<div className="orientation-control">
-						<span className="components-base-control__label">
-							{__("Orientation", "wp-component-library")}
-						</span>
-						<ToggleGroupControl
-							value={orientation || ""}
-							onChange={handleChange("orientation")}
-							isBlock
-							isDeselectable
-						>
-							<ToggleGroupControlOptionIcon
-								icon={<Icon icon={arrowRight} />}
-								label={__("Horizontal", "wp-component-library")}
-								value="horizontal"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={<Icon icon={arrowDown} />}
-								label={__("Vertical", "wp-component-library")}
-								value="vertical"
-							/>
-						</ToggleGroupControl>
-					</div>
+								<ToggleGroupControlOptionIcon
+									icon={<Icon icon={arrowDown} />}
+									label={__(
+										"Vertical",
+										"wp-component-library",
+									)}
+									value="vertical"
+								/>
+							</ToggleGroupControl>
+						</div>
+					)}
 				</PanelRow>
 				<PanelRow>
-					<div className="vertical-align-control">
-						<span className="components-base-control__label">
-							{__("Vertical", "wp-component-library")}
-						</span>
-						<ToggleGroupControl
-							value={alignment}
-							onChange={handleChange("alignment")}
-							isBlock
-							isDeselectable
-							className="builtnorth-vertical-align-control"
-						>
-							<ToggleGroupControlOptionIcon
-								icon={justifyLeft}
-								label={__("Top", "wp-component-library")}
-								value="flex-start"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={justifyCenter}
-								label={__("Center", "wp-component-library")}
-								value="center"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={justifyRight}
-								label={__("Bottom", "wp-component-library")}
-								value="flex-end"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={justifyStretch}
-								label={__("Stretch", "wp-component-library")}
-								value="stretch"
-							/>
-						</ToggleGroupControl>
-					</div>
-					<div className="content-alignment-control">
-						<span className="components-base-control__label">
-							{__("Content", "wp-component-library")}
-						</span>
-						<ToggleGroupControl
-							value={contentAlignment}
-							onChange={handleChange("contentAlignment")}
-							isBlock
-							isDeselectable
-						>
-							<ToggleGroupControlOptionIcon
-								icon={alignLeft}
-								label={__(
-									"Content Left",
-									"wp-component-library",
-								)}
-								value="left"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={alignCenter}
-								label={__(
-									"Content Center",
-									"wp-component-library",
-								)}
-								value="center"
-							/>
-							<ToggleGroupControlOptionIcon
-								icon={alignRight}
-								label={__(
-									"Content Right",
-									"wp-component-library",
-								)}
-								value="right"
-							/>
-						</ToggleGroupControl>
-					</div>
+					{controls.includes("vertical") && (
+						<div className="vertical-align-control">
+							<span className="components-base-control__label">
+								{__("Vertical", "wp-component-library")}
+							</span>
+							<ToggleGroupControl
+								value={alignment}
+								onChange={handleChange("alignment")}
+								isBlock
+								isDeselectable
+								className="builtnorth-vertical-align-control"
+							>
+								<ToggleGroupControlOptionIcon
+									icon={justifyLeft}
+									label={__("Top", "wp-component-library")}
+									value="flex-start"
+								/>
+								<ToggleGroupControlOptionIcon
+									icon={justifyCenter}
+									label={__("Center", "wp-component-library")}
+									value="center"
+								/>
+								<ToggleGroupControlOptionIcon
+									icon={justifyRight}
+									label={__("Bottom", "wp-component-library")}
+									value="flex-end"
+								/>
+								<ToggleGroupControlOptionIcon
+									icon={justifyStretch}
+									label={__(
+										"Stretch",
+										"wp-component-library",
+									)}
+									value="stretch"
+								/>
+							</ToggleGroupControl>
+						</div>
+					)}
+					{controls.includes("content") && (
+						<div className="content-alignment-control">
+							<span className="components-base-control__label">
+								{__("Content", "wp-component-library")}
+							</span>
+							<ToggleGroupControl
+								value={contentAlignment}
+								onChange={handleChange("contentAlignment")}
+								isBlock
+								isDeselectable
+							>
+								<ToggleGroupControlOptionIcon
+									icon={alignLeft}
+									label={__(
+										"Content Left",
+										"wp-component-library",
+									)}
+									value="left"
+								/>
+								<ToggleGroupControlOptionIcon
+									icon={alignCenter}
+									label={__(
+										"Content Center",
+										"wp-component-library",
+									)}
+									value="center"
+								/>
+								<ToggleGroupControlOptionIcon
+									icon={alignRight}
+									label={__(
+										"Content Right",
+										"wp-component-library",
+									)}
+									value="right"
+								/>
+							</ToggleGroupControl>
+						</div>
+					)}
 				</PanelRow>
 			</div>
 		</PanelBody>

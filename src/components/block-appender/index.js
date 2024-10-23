@@ -1,6 +1,7 @@
 // WordPress dependencies.
-import { Inserter } from "@wordpress/block-editor";
+import { store as blockEditorStore, Inserter } from "@wordpress/block-editor";
 import { Button } from "@wordpress/components";
+import { useSelect } from "@wordpress/data";
 import { Icon, plus } from "@wordpress/icons";
 
 import { __ } from "@wordpress/i18n";
@@ -63,18 +64,36 @@ const CustomInlineAppender = ({
 	clientId,
 	label = __("Add Block", "polaris-blocks"),
 	blockName = "core/paragraph",
-}) => (
-	<Button
-		className="block-list-appender__toggle"
-		icon={plus}
-		label={label}
-		onClick={() => {
-			const block = wp.blocks.createBlock(blockName);
-			wp.data
-				.dispatch("core/block-editor")
-				.insertBlock(block, undefined, clientId);
-		}}
-	/>
-);
+}) => {
+	const isActive = useSelect(
+		(select) => {
+			const { isBlockSelected, hasSelectedInnerBlock } =
+				select(blockEditorStore);
+			return (
+				isBlockSelected(clientId) ||
+				hasSelectedInnerBlock(clientId, true)
+			);
+		},
+		[clientId],
+	);
+
+	if (!isActive) {
+		return null;
+	}
+
+	return (
+		<Button
+			className="block-list-appender__toggle"
+			icon={plus}
+			label={label}
+			onClick={() => {
+				const block = wp.blocks.createBlock(blockName);
+				wp.data
+					.dispatch("core/block-editor")
+					.insertBlock(block, undefined, clientId);
+			}}
+		/>
+	);
+};
 
 export { CustomBlockAppender, CustomInlineAppender, CustomInspectorAppender };

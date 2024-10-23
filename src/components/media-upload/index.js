@@ -5,8 +5,8 @@
  */
 import { MediaUpload, MediaUploadCheck } from "@wordpress/block-editor";
 import { Button, Placeholder, ToolbarButton } from "@wordpress/components";
+import { __ } from "@wordpress/i18n";
 import { edit, upload } from "@wordpress/icons";
-
 const ALLOWED_MEDIA_TYPES = ["image"];
 
 /**
@@ -16,31 +16,30 @@ const ALLOWED_MEDIA_TYPES = ["image"];
  * @returns {JSX.Element}
  */
 function ToolbarMediaUpload({
-    mediaIDs,
-    onSelect,
-    gallery,
-    multiple,
-    buttonTitle,
+	mediaIDs,
+	onSelect,
+	gallery,
+	multiple,
+	buttonTitle,
 }) {
-    return (
-        <MediaUploadCheck>
-            <MediaUpload
-                onSelect={onSelect}
-                allowedTypes={ALLOWED_MEDIA_TYPES}
-                value={mediaIDs}
-                render={({ open }) => (
-                    <ToolbarButton
-                        icon={edit}
-                        text="Edit/Replace Image"
-                        label="Edit/Replace Image"
-                        onClick={open}
-                    />
-                )}
-                gallery={gallery}
-                multiple={multiple}
-            />
-        </MediaUploadCheck>
-    );
+	return (
+		<MediaUploadCheck>
+			<MediaUpload
+				onSelect={onSelect}
+				allowedTypes={ALLOWED_MEDIA_TYPES}
+				value={mediaIDs}
+				render={({ open }) => (
+					<ToolbarButton
+						icon={edit}
+						label={__("Edit/Replace Image", "polaris-blocks")}
+						onClick={open}
+					/>
+				)}
+				gallery={gallery}
+				multiple={multiple}
+			/>
+		</MediaUploadCheck>
+	);
 }
 
 /**
@@ -50,33 +49,33 @@ function ToolbarMediaUpload({
  * @returns {JSX.Element}
  */
 function InspectorMediaUpload({
-    mediaIDs,
-    onSelect,
-    gallery,
-    multiple,
-    buttonTitle,
-    variant,
+	mediaIDs,
+	onSelect,
+	gallery,
+	multiple,
+	buttonTitle,
+	variant,
 }) {
-    return (
-        <MediaUploadCheck>
-            <MediaUpload
-                onSelect={onSelect}
-                allowedTypes={ALLOWED_MEDIA_TYPES}
-                value={mediaIDs}
-                render={({ open }) => (
-                    <Button
-                        size="compact"
-                        variant={variant || "secondary"}
-                        onClick={open}
-                    >
-                        {buttonTitle}
-                    </Button>
-                )}
-                gallery={gallery}
-                multiple={multiple}
-            />
-        </MediaUploadCheck>
-    );
+	return (
+		<MediaUploadCheck>
+			<MediaUpload
+				onSelect={onSelect}
+				allowedTypes={ALLOWED_MEDIA_TYPES}
+				value={mediaIDs}
+				render={({ open }) => (
+					<Button
+						size="compact"
+						variant={variant || "secondary"}
+						onClick={open}
+					>
+						{buttonTitle}
+					</Button>
+				)}
+				gallery={gallery}
+				multiple={multiple}
+			/>
+		</MediaUploadCheck>
+	);
 }
 
 /**
@@ -86,40 +85,40 @@ function InspectorMediaUpload({
  * @returns {JSX.Element}
  */
 function EditorMediaUpload({
-    mediaIDs,
-    onSelect,
-    gallery,
-    multiple,
-    buttonTitle,
+	mediaIDs,
+	onSelect,
+	gallery,
+	multiple,
+	buttonTitle,
 }) {
-    return (
-        <Placeholder
-            withIllustration={true}
-            className="placeholder-image placeholder-image--built"
-        >
-            <MediaUploadCheck>
-                <MediaUpload
-                    onSelect={onSelect}
-                    allowedTypes={ALLOWED_MEDIA_TYPES}
-                    value={mediaIDs}
-                    render={({ open }) => (
-                        <Button
-                            icon={upload}
-                            variant="primary"
-                            label="Upload or Select Image(s)"
-                            showTooltip
-                            tooltipPosition="top center"
-                            onClick={open}
-                        >
-                            {buttonTitle}
-                        </Button>
-                    )}
-                    gallery={gallery}
-                    multiple={multiple}
-                />
-            </MediaUploadCheck>
-        </Placeholder>
-    );
+	return (
+		<Placeholder
+			withIllustration={true}
+			className="placeholder-image placeholder-image--built"
+		>
+			<MediaUploadCheck>
+				<MediaUpload
+					onSelect={onSelect}
+					allowedTypes={ALLOWED_MEDIA_TYPES}
+					value={mediaIDs}
+					render={({ open }) => (
+						<Button
+							icon={upload}
+							variant="primary"
+							label="Upload or Select Image(s)"
+							showTooltip
+							tooltipPosition="top center"
+							onClick={open}
+						>
+							{buttonTitle}
+						</Button>
+					)}
+					gallery={gallery}
+					multiple={multiple}
+				/>
+			</MediaUploadCheck>
+		</Placeholder>
+	);
 }
 
 // Export all components

@@ -6,6 +6,8 @@ import { Icon, plus } from "@wordpress/icons";
 
 import { __ } from "@wordpress/i18n";
 
+import "./index.scss";
+
 function CustomBlockAppender({
 	rootClientId,
 	appenderTitle,
@@ -60,6 +62,35 @@ function CustomInspectorAppender({
 	);
 }
 
+function CustomColumnAppender({
+	rootClientId,
+	appenderTitle,
+	appenderLabel,
+	appenderClassModifier,
+}) {
+	return (
+		<Inserter
+			__experimentalIsQuick
+			rootClientId={rootClientId}
+			renderToggle={({ onToggle, disabled }) => (
+				<div className=" built-block-appender-column__wrapper">
+					<Button
+						showTooltip={true}
+						className={`block-list-appender__toggle built-block-appender-column__appender built-block-appender--${appenderClassModifier} `}
+						onClick={onToggle}
+						disabled={disabled}
+						label={appenderLabel}
+						icon={plus}
+					>
+						{appenderTitle}
+					</Button>
+				</div>
+			)}
+			isAppender
+		/>
+	);
+}
+
 const CustomInlineAppender = ({
 	clientId,
 	label = __("Add Block", "polaris-blocks"),
@@ -96,4 +127,9 @@ const CustomInlineAppender = ({
 	);
 };
 
-export { CustomBlockAppender, CustomInlineAppender, CustomInspectorAppender };
+export {
+	CustomBlockAppender,
+	CustomColumnAppender,
+	CustomInlineAppender,
+	CustomInspectorAppender,
+};

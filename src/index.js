@@ -2,6 +2,7 @@
 export { AttachmentImage } from "./components/attachment-image";
 export {
 	CustomBlockAppender,
+	CustomColumnAppender,
 	CustomInlineAppender,
 	CustomInspectorAppender,
 } from "./components/block-appender";

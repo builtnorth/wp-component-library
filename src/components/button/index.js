@@ -30,19 +30,19 @@ function ButtonFrontend({
 
 	// Add classes
 	const wrapperClass = className
-		? `${className}__button wp-block-button is-style-${style}`
-		: `wp-block-button is-style-${style}`;
+		? `${className}__button polaris-button is-style-${style}`
+		: `polaris-button is-style-${style}`;
 	const linkClass = className
-		? `${className}__button-link wp-block-button__link wp-element-button`
-		: "wp-block-button__link wp-element-button";
+		? `${className}__button-link polaris-button__text`
+		: "polaris-button__text";
 
 	return (
-		<div className={wrapperClass}>
-			<a className={linkClass} href={link} {...targetAttr}>
+		<span className={wrapperClass}>
+			<span className={linkClass}>
 				{text}
 				{screenReaderElement}
-			</a>
-		</div>
+			</span>
+		</span>
 	);
 }
 

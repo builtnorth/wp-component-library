@@ -2,14 +2,16 @@
 export { AttachmentImage } from "./components/attachment-image";
 export {
 	CustomBlockAppender,
+	CustomInlineAppender,
 	CustomInspectorAppender,
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
 export {
+	AlignmentToolbar,
+	ContentAlignmentToolbar,
 	JustificationToolbar,
 	LayoutPanel,
-	VerticalAlignmentToolbar,
-} from "./components/layout-panel";
+} from "./components/layout";
 export {
 	EditorMediaUpload,
 	InspectorMediaUpload,

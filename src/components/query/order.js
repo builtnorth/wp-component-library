@@ -15,7 +15,7 @@ function QueryOrder(props) {
 	} = props;
 
 	return (
-		<PanelBody title={__("Order", "built_starter")} initialOpen={true}>
+		<PanelBody title={__("Feed Order", "built_starter")} initialOpen={true}>
 			<SelectControl
 				label="Order By"
 				value={orderPostsBy}
@@ -25,7 +25,6 @@ function QueryOrder(props) {
 					{ label: "Title", value: "title" },
 				]}
 				onChange={(value) => setAttributes({ orderPostsBy: value })}
-				__nextHasNoMarginBottom
 			/>
 
 			<SelectControl
@@ -38,7 +37,6 @@ function QueryOrder(props) {
 				onChange={(value) =>
 					setAttributes({ orderPostsDirection: value })
 				}
-				__nextHasNoMarginBottom
 			/>
 		</PanelBody>
 	);

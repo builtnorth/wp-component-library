@@ -31,7 +31,7 @@ function ToolbarMediaUpload({
 				render={({ open }) => (
 					<ToolbarButton
 						icon={edit}
-						label={__("Edit/Replace Image", "polaris-blocks")}
+						label={__("Edit/Replace Media", "polaris-blocks")}
 						onClick={open}
 					/>
 				)}
@@ -51,29 +51,44 @@ function ToolbarMediaUpload({
 function InspectorMediaUpload({
 	mediaIDs,
 	onSelect,
+	onRemove,
 	gallery,
 	multiple,
 	buttonTitle,
 	variant,
 }) {
+	const hasImage = Array.isArray(mediaIDs) ? mediaIDs.length > 0 : !!mediaIDs;
+
 	return (
 		<MediaUploadCheck>
-			<MediaUpload
-				onSelect={onSelect}
-				allowedTypes={ALLOWED_MEDIA_TYPES}
-				value={mediaIDs}
-				render={({ open }) => (
-					<Button
-						size="compact"
-						variant={variant || "secondary"}
-						onClick={open}
-					>
-						{buttonTitle}
-					</Button>
-				)}
-				gallery={gallery}
-				multiple={multiple}
-			/>
+			{!hasImage ? (
+				<MediaUpload
+					onSelect={onSelect}
+					allowedTypes={ALLOWED_MEDIA_TYPES}
+					value={mediaIDs}
+					render={({ open }) => (
+						<Button
+							size="small"
+							variant={variant || "secondary"}
+							onClick={open}
+						>
+							{buttonTitle ||
+								__("Select or Upload Media", "polaris-blocks")}
+						</Button>
+					)}
+					gallery={gallery}
+					multiple={multiple}
+				/>
+			) : (
+				<Button
+					size="small"
+					variant="secondary"
+					onClick={onRemove}
+					isDestructive
+				>
+					{__("Remove Media", "polaris-blocks")}
+				</Button>
+			)}
 		</MediaUploadCheck>
 	);
 }

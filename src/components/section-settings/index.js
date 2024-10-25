@@ -4,7 +4,6 @@
 
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
 import {
-	Button,
 	FocalPointPicker,
 	PanelBody,
 	PanelRow,
@@ -70,22 +69,11 @@ const SectionSettings = (props) => {
 						<Fragment>
 							<PanelRow>
 								<InspectorMediaUpload
-									variant="primary"
-									buttonTitle={__(
-										"Replace Media",
-										"polaris-blocks",
-									)}
 									gallery={false}
 									multiple={false}
 									mediaIDs={backgroundImage}
 									onSelect={handleImageSelect}
-								/>
-								<Button
-									variant="secondary"
-									size="compact"
-									isDestructive
-									text={__("Remove Media")}
-									onClick={handleImageRemove}
+									onRemove={handleImageRemove}
 								/>
 							</PanelRow>
 							<PanelRow>

@@ -29,7 +29,7 @@ function QueryDisplay(props) {
 
 	return (
 		<PanelBody
-			title={__("Display Options", "built_starter")}
+			title={__("Feed Display", "built_starter")}
 			initialOpen={true}
 		>
 			<SelectControl

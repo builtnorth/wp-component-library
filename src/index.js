@@ -19,6 +19,7 @@ export {
 	ToolbarMediaUpload,
 } from "./components/media-upload";
 export { Pagination } from "./components/pagination";
+export { QueryCardDisplay } from "./components/query/card-display";
 export { QueryDisplay } from "./components/query/display";
 export { QueryOrder } from "./components/query/order";
 export { QueryPostFeed } from "./components/query/postFeed";

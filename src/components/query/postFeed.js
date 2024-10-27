@@ -64,12 +64,6 @@ const QueryPostFeed = (props) => {
 		);
 	}
 
-	console.log("Debug:", {
-		showPagination,
-		posts: posts.length,
-		postsPerPage,
-	});
-
 	return (
 		<Fragment>
 			{displayAs === "slider" ? (

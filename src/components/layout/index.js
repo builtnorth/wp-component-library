@@ -90,7 +90,7 @@ const AlignmentToolbar = ({ value, onChange }) => {
 	return (
 		<ToolbarDropdownMenu
 			icon={<Icon icon={getIcon(value)} />}
-			label={__("Vertical", "wp-component-library")}
+			label={__("Alignment", "wp-component-library")}
 			controls={[
 				{
 					icon: <Icon icon={getIcon("top")} />,
@@ -144,7 +144,7 @@ const JustificationToolbar = ({ value, onChange }) => {
 	return (
 		<ToolbarDropdownMenu
 			icon={<Icon icon={getIcon(value)} />}
-			label={__("Horizontal", "wp-component-library")}
+			label={__("Justification", "wp-component-library")}
 			controls={[
 				{
 					icon: <Icon icon={justifyLeft} />,
@@ -222,6 +222,8 @@ const ContentAlignmentToolbar = ({ value, onChange }) => {
 };
 
 const LayoutPanel = ({
+	panelTitle,
+	initialOpen = true,
 	alignment,
 	justification,
 	orientation,
@@ -242,15 +244,15 @@ const LayoutPanel = ({
 
 	return (
 		<PanelBody
-			title={__("Layout", "wp-component-library")}
-			initialOpen={false}
+			title={panelTitle || __("Layout", "wp-component-library")}
+			initialOpen={initialOpen}
 		>
-			<div className="custom-layout-controls">
+			<div className="builtnorth-layout-controls">
 				<PanelRow>
 					{controls.includes("horizontal") && (
 						<div className="justification-control">
 							<span className="components-base-control__label">
-								{__("Horizontal", "wp-component-library")}
+								{__("Justification", "wp-component-library")}
 							</span>
 							<ToggleGroupControl
 								value={justification || ""}
@@ -321,7 +323,7 @@ const LayoutPanel = ({
 					{controls.includes("vertical") && (
 						<div className="vertical-align-control">
 							<span className="components-base-control__label">
-								{__("Vertical", "wp-component-library")}
+								{__("Alignment", "wp-component-library")}
 							</span>
 							<ToggleGroupControl
 								value={alignment}

@@ -10,3 +10,9 @@
 		transform: rotate(90deg);
 	}
 }
+
+.builtnorth-layout-controls {
+	.components-panel__row {
+		min-height: 0;
+	}
+}

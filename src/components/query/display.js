@@ -1,9 +1,4 @@
-import {
-	PanelBody,
-	RangeControl,
-	SelectControl,
-	ToggleControl,
-} from "@wordpress/components";
+import { PanelBody, RangeControl, SelectControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
 /**
@@ -63,7 +58,7 @@ function QueryDisplay(props) {
 					max={4}
 				/>
 			)}
-			{displayAs !== "slider" && (
+			{/* {displayAs !== "slider" && (
 				<ToggleControl
 					label="Show Pagination"
 					help="Show pagination if there are more posts than the amount to display."
@@ -72,7 +67,7 @@ function QueryDisplay(props) {
 						setAttributes({ showPagination: showPaginationNew })
 					}
 				/>
-			)}
+			)} */}
 		</PanelBody>
 	);
 }

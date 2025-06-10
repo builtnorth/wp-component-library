@@ -1,4 +1,5 @@
 /* Components */
+export { AccessibleCard } from "./components/accessible-card";
 export { AttachmentImage } from "./components/attachment-image";
 export {
 	CustomBlockAppender,
@@ -19,10 +20,8 @@ export {
 	ToolbarMediaUpload,
 } from "./components/media-upload";
 export { Pagination } from "./components/pagination";
-export { QueryCardDisplay } from "./components/query/card-display";
 export { QueryDisplay } from "./components/query/display";
 export { QueryOrder } from "./components/query/order";
-export { QueryPostFeed } from "./components/query/postFeed";
 export { QuerySelectPostType } from "./components/query/selectPostType";
 export { QueryTaxonomy } from "./components/query/taxonomy";
 export {

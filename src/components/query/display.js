@@ -1,5 +1,6 @@
 import { PanelBody, RangeControl, SelectControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
+import { OrientationSettings } from "../layout";
 
 /**
  * Render the settings block used to select the post types.
@@ -10,10 +11,17 @@ import { __ } from "@wordpress/i18n";
  */
 function QueryDisplay(props) {
     const {
-        attributes: { postsPerPage, columnCount, displayAs, showPagination },
+        attributes: {
+            postsPerPage,
+            columnCount,
+            displayAs,
+            showPagination,
+            orientation,
+        },
         setAttributes,
         allowedDisplayOptions = ["grid", "slider", "list", "pills"],
         displayAmountLabel = "Amount to Display",
+        showOrientation = false,
     } = props;
 
     const displayOptions = [
@@ -57,6 +65,12 @@ function QueryDisplay(props) {
                     }
                     min={1}
                     max={4}
+                />
+            )}
+            {showOrientation && displayAs !== "grid" && (
+                <OrientationSettings
+                    value={orientation}
+                    onChange={(value) => setAttributes({ orientation: value })}
                 />
             )}
             {/* {displayAs !== "slider" && (

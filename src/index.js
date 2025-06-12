@@ -2,22 +2,28 @@
 export { AccessibleCard } from "./components/accessible-card";
 export { AttachmentImage } from "./components/attachment-image";
 export {
-	CustomBlockAppender,
-	CustomColumnAppender,
-	CustomInlineAppender,
-	CustomInspectorAppender,
+    CustomBlockAppender,
+    CustomColumnAppender,
+    CustomInlineAppender,
+    CustomInspectorAppender,
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
 export {
-	AlignmentToolbar,
-	ContentAlignmentToolbar,
-	JustificationToolbar,
-	LayoutPanel,
+    AlignmentSettings,
+    AlignmentToolbar,
+    AllowWrapSettings,
+    ContentAlignmentSettings,
+    ContentAlignmentToolbar,
+    JustificationSettings,
+    JustificationToolbar,
+    LayoutPanel,
+    OrientationSettings,
+    OrientationToolbar,
 } from "./components/layout";
 export {
-	EditorMediaUpload,
-	InspectorMediaUpload,
-	ToolbarMediaUpload,
+    EditorMediaUpload,
+    InspectorMediaUpload,
+    ToolbarMediaUpload,
 } from "./components/media-upload";
 export { Pagination } from "./components/pagination";
 export { QueryDisplay } from "./components/query/display";
@@ -25,8 +31,8 @@ export { QueryOrder } from "./components/query/order";
 export { QuerySelectPostType } from "./components/query/selectPostType";
 export { QueryTaxonomy } from "./components/query/taxonomy";
 export {
-	SectionBackground,
-	SectionSettings,
-	SectionWrapper,
+    SectionBackground,
+    SectionSettings,
+    SectionWrapper,
 } from "./components/section-settings";
 export { GetTerms } from "./components/terms";

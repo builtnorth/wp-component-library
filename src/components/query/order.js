@@ -13,10 +13,12 @@ function QueryOrder(props) {
         attributes: { orderPostsBy, orderPostsDirection },
         setAttributes,
         additionalOrderOptions = [],
+        renderPanel = true, // Whether to render the PanelBody wrapper
     } = props;
 
-    return (
-        <PanelBody title={__("Feed Order", "built_starter")} initialOpen={true}>
+    // Render the content
+    const renderContent = () => (
+        <>
             <SelectControl
                 label="Order By"
                 value={orderPostsBy}
@@ -40,8 +42,22 @@ function QueryOrder(props) {
                     setAttributes({ orderPostsDirection: value })
                 }
             />
-        </PanelBody>
+        </>
     );
+
+    // Return with or without PanelBody wrapper
+    if (renderPanel) {
+        return (
+            <PanelBody
+                title={__("Feed Order", "built_starter")}
+                initialOpen={true}
+            >
+                {renderContent()}
+            </PanelBody>
+        );
+    }
+
+    return renderContent();
 }
 
 export { QueryOrder };

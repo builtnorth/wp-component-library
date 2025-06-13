@@ -22,6 +22,7 @@ function QueryDisplay(props) {
         allowedDisplayOptions = ["grid", "slider", "list", "pills"],
         displayAmountLabel = "Amount to Display",
         showOrientation = false,
+        showDisplayAmount = true,
     } = props;
 
     const displayOptions = [
@@ -43,15 +44,18 @@ function QueryDisplay(props) {
                 onChange={(value) => setAttributes({ displayAs: value })}
             />
 
-            <RangeControl
-                label={displayAmountLabel}
-                value={postsPerPage}
-                onChange={(postsPerPageNew) =>
-                    setAttributes({ postsPerPage: postsPerPageNew })
-                }
-                min={1}
-                max={50}
-            />
+            {showDisplayAmount && (
+                <RangeControl
+                    label={displayAmountLabel}
+                    value={postsPerPage}
+                    onChange={(postsPerPageNew) =>
+                        setAttributes({ postsPerPage: postsPerPageNew })
+                    }
+                    min={1}
+                    max={50}
+                />
+            )}
+
             {displayAs !== "list" && displayAs !== "pills" && (
                 <RangeControl
                     label={

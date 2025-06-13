@@ -29,6 +29,7 @@ function QueryManualSelect(props) {
         setAttributes,
         label = "Selection Mode",
         searchType = "posts", // "posts" or "taxonomy"
+        renderPanel = true, // Whether to render the PanelBody wrapper
     } = props;
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -240,8 +241,9 @@ function QueryManualSelect(props) {
     // Check if taxonomy is required but not selected
     const showTaxonomyWarning = isSelectingTaxonomy && !selectedTaxonomy;
 
-    return (
-        <PanelBody title={__(label, "built_starter")} initialOpen={true}>
+    // Render the content
+    const renderContent = () => (
+        <>
             <ToggleGroupControl
                 label={__("Selection Mode", "built_starter")}
                 value={selectionMode}
@@ -300,48 +302,23 @@ function QueryManualSelect(props) {
                                     </span>
                                 </div>
                             )}
-
-                            {currentSelections.length > 0 && (
-                                <Notice status="info" isDismissible={false}>
-                                    {__(
-                                        `${currentSelections.length} ${currentSelections.length === 1 ? itemType : itemTypePlural} selected`,
-                                        "built_starter",
-                                    )}
-                                </Notice>
-                            )}
-
-                            {currentSelections.length === 0 && (
-                                <Notice status="warning" isDismissible={false}>
-                                    {__(
-                                        `No ${itemTypePlural} selected. Please select ${itemTypePlural} to display.`,
-                                        "built_starter",
-                                    )}
-                                </Notice>
-                            )}
                         </>
                     )}
                 </>
             )}
-
-            {selectionMode === "auto" && currentSelections.length > 0 && (
-                <Notice status="info" isDismissible={false}>
-                    {__(
-                        `${itemTypePlural.charAt(0).toUpperCase() + itemTypePlural.slice(1)} will be queried automatically. ${currentSelections.length} manually selected ${currentSelections.length === 1 ? itemType : itemTypePlural} are saved and will be used when switching back to manual mode.`,
-                        "built_starter",
-                    )}
-                </Notice>
-            )}
-
-            {selectionMode === "auto" && currentSelections.length === 0 && (
-                <Notice status="info" isDismissible={false}>
-                    {__(
-                        `${itemTypePlural.charAt(0).toUpperCase() + itemTypePlural.slice(1)} will be queried automatically based on your settings below.`,
-                        "built_starter",
-                    )}
-                </Notice>
-            )}
-        </PanelBody>
+        </>
     );
+
+    // Return with or without PanelBody wrapper
+    if (renderPanel) {
+        return (
+            <PanelBody title={__(label, "built_starter")} initialOpen={true}>
+                {renderContent()}
+            </PanelBody>
+        );
+    }
+
+    return renderContent();
 }
 
 export { QueryManualSelect };

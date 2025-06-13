@@ -27,6 +27,7 @@ export {
 } from "./components/media-upload";
 export { Pagination } from "./components/pagination";
 export { QueryDisplay } from "./components/query/display";
+export { QueryManualSelect } from "./components/query/manualSelect";
 export { QueryOrder } from "./components/query/order";
 export { QuerySelectPostType } from "./components/query/selectPostType";
 export { QueryTaxonomy } from "./components/query/taxonomy";

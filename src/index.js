@@ -1,3 +1,9 @@
+/**
+ * WordPress Component Library
+ *
+ * A collection of reusable components for WordPress projects.
+ */
+
 /* Components */
 export { AccessibleCard } from "./components/accessible-card";
 export { AttachmentImage } from "./components/attachment-image";
@@ -25,6 +31,7 @@ export {
     InspectorMediaUpload,
     ToolbarMediaUpload,
 } from "./components/media-upload";
+export { default as MetaPanel } from "./components/meta-panel";
 export { Pagination } from "./components/pagination";
 export { QueryDisplay } from "./components/query/display";
 export { QueryManualSelect } from "./components/query/manualSelect";

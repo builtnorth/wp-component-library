@@ -21,26 +21,23 @@ function QueryOrder(props) {
         <>
             <SelectControl
                 label="Order By"
-                value={orderPostsBy}
+                value={`${orderPostsBy}_${orderPostsDirection}`}
                 options={[
-                    { label: "Custom Order", value: "menu_order" },
-                    { label: "Date", value: "date" },
-                    { label: "Title", value: "title" },
+                    { label: "Custom Order", value: "menu_order_asc" },
+                    { label: "Date (Newest → Oldest)", value: "date_desc" },
+                    { label: "Date (Oldest → Newest)", value: "date_asc" },
+                    { label: "Title (A → Z)", value: "title_asc" },
+                    { label: "Title (Z → A)", value: "title_desc" },
+                    { label: "Random", value: "rand_asc" },
                     ...additionalOrderOptions,
                 ]}
-                onChange={(value) => setAttributes({ orderPostsBy: value })}
-            />
-
-            <SelectControl
-                label="Order Direction"
-                value={orderPostsDirection}
-                options={[
-                    { label: "Ascending", value: "asc" },
-                    { label: "Descending", value: "desc" },
-                ]}
-                onChange={(value) =>
-                    setAttributes({ orderPostsDirection: value })
-                }
+                onChange={(value) => {
+                    const [orderby, order] = value.split("_");
+                    setAttributes({
+                        orderPostsBy: orderby,
+                        orderPostsDirection: order,
+                    });
+                }}
             />
         </>
     );

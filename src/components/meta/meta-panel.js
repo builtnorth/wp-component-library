@@ -19,7 +19,7 @@ import { withSelect } from "@wordpress/data";
 import { PluginPostStatusInfo } from "@wordpress/editor";
 import { useState } from "@wordpress/element";
 
-const MetaPanel = ({
+const MetaPanelBase = ({
     title,
     postType,
     children,
@@ -59,11 +59,13 @@ const MetaPanel = ({
     );
 };
 
-export default compose([
+const MetaPanel = compose([
     withSelect((select) => ({
         postMeta: {
             ...select("core/editor").getEditedPostAttribute("meta"),
             postType: select("core/editor").getCurrentPostType(),
         },
     })),
-])(MetaPanel);
+])(MetaPanelBase);
+
+export { MetaPanel };

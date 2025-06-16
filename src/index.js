@@ -31,7 +31,8 @@ export {
     InspectorMediaUpload,
     ToolbarMediaUpload,
 } from "./components/media-upload";
-export { default as MetaPanel } from "./components/meta-panel";
+export { MetaAdvanced } from "./components/meta/meta-advanced";
+export { MetaPanel } from "./components/meta/meta-panel";
 export { Pagination } from "./components/pagination";
 export { QueryDisplay } from "./components/query/display";
 export { QueryManualSelect } from "./components/query/manualSelect";

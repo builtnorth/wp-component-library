@@ -14,6 +14,7 @@ export {
     CustomInspectorAppender,
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
+export { ReorderableList } from "./components/drag-and-drop";
 export {
     AlignmentSettings,
     AlignmentToolbar,

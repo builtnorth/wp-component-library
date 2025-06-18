@@ -31,7 +31,7 @@ export {
     EditorMediaUpload,
     InspectorMediaUpload,
     ToolbarMediaUpload,
-} from "./components/media-upload";
+} from "./components/media";
 export { MetaAdvanced } from "./components/meta/meta-advanced";
 export { MetaPanel } from "./components/meta/meta-panel";
 export { Pagination } from "./components/pagination";

@@ -18,7 +18,7 @@ import { __ } from "@wordpress/i18n";
 import classnames from "classnames";
 
 import { AttachmentImage } from "../attachment-image";
-import { InspectorMediaUpload } from "../media-upload";
+import { InspectorMediaUpload } from "../media";
 
 const SectionSettings = (props) => {
     const {

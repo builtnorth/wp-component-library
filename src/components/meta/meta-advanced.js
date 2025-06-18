@@ -11,7 +11,9 @@ const BaseMetaAdvanced = ({ metaField, onMetaFieldChange }) => {
             <TextControl
                 label={__("Meta Field Key", "wp-component-library")}
                 value={metaField || ""}
-                onChange={onMetaFieldChange}
+                onChange={(value) => {
+                    onMetaFieldChange(value);
+                }}
                 placeholder={__("Enter meta field key", "wp-component-library")}
                 help={__(
                     "Advanced use only. Link this block to a post meta field. Depending on intended functionality, this may overide the block's content.",

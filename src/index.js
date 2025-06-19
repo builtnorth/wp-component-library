@@ -32,6 +32,7 @@ export {
     InspectorMediaUpload,
     ToolbarMediaUpload,
 } from "./components/media";
+export { ImageControls } from "./components/media/image-controls";
 export { MetaAdvanced } from "./components/meta/meta-advanced";
 export { MetaPanel } from "./components/meta/meta-panel";
 export { Pagination } from "./components/pagination";

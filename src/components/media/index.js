@@ -132,9 +132,11 @@ function EditorMediaUpload({
     gallery,
     multiple,
     buttonTitle,
+    style,
 }) {
     return (
         <Placeholder
+            style={style}
             withIllustration={true}
             className="placeholder-image placeholder-image--built"
         >

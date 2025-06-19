@@ -29,7 +29,7 @@ const ImageControls = ({
     height = "auto",
     setAttributes,
 }) => (
-    <PanelBody title={__("Settings", "polaris-blocks")}>
+    <PanelBody title={__("Image Settings", "polaris-blocks")}>
         <SelectControl
             label={__("Aspect Ratio", "polaris-blocks")}
             value={aspectRatio}

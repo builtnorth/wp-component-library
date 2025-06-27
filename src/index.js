@@ -4,6 +4,9 @@
  * A collection of reusable components for WordPress projects.
  */
 
+/* Styles */
+import "./styles/_misc.scss";
+
 /* Components */
 export { AccessibleCard } from "./components/accessible-card";
 export { AttachmentImage } from "./components/attachment-image";

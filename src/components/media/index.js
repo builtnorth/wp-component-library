@@ -91,7 +91,9 @@ function InspectorMediaUpload({
                         value={mediaIDs}
                         render={({ open }) => (
                             <Button
-                                size="small"
+                                __next40pxDefaultSize
+                                className="is-full-width"
+                                size="default"
                                 variant={variant || "secondary"}
                                 onClick={open}
                             >
@@ -107,7 +109,9 @@ function InspectorMediaUpload({
                     />
                 ) : (
                     <Button
-                        size="small"
+                        __next40pxDefaultSize
+                        className="is-full-width"
+                        size="default"
                         variant="secondary"
                         onClick={onRemove}
                         isDestructive

@@ -1,8 +1,9 @@
 import {
     FormTokenField,
-    PanelBody,
     SelectControl,
     Spinner,
+    __experimentalToolsPanel as ToolsPanel,
+    __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { useEffect, useMemo, useState } from "@wordpress/element";
@@ -17,6 +18,18 @@ function QueryTaxonomy(props) {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [isSearching, setIsSearching] = useState(false);
+
+    // Default values for reset functionality
+    const defaultSelectedTaxonomy = "";
+    const defaultSelectedTerms = [];
+
+    // Reset function for ToolsPanel
+    const resetAll = () => {
+        setAttributes({
+            selectedTaxonomy: defaultSelectedTaxonomy,
+            selectedTerms: defaultSelectedTerms,
+        });
+    };
 
     // Get available taxonomies for the post type
     const taxonomies = useSelect((select) =>
@@ -137,23 +150,43 @@ function QueryTaxonomy(props) {
     };
 
     return (
-        <PanelBody title={__("Taxonomy Filter", "built")}>
-            <SelectControl
+        <ToolsPanel label={__("Taxonomy Filter", "built")} resetAll={resetAll}>
+            <ToolsPanelItem
+                hasValue={() => selectedTaxonomy !== defaultSelectedTaxonomy}
                 label={__("Select Taxonomy", "built")}
-                value={selectedTaxonomy}
-                options={[
-                    { label: __("None", "built"), value: "" },
-                    ...taxonomyOptions,
-                ]}
-                onChange={(value) =>
+                onDeselect={() =>
                     setAttributes({
-                        selectedTaxonomy: value,
-                        selectedTerms: [],
+                        selectedTaxonomy: defaultSelectedTaxonomy,
+                        selectedTerms: defaultSelectedTerms,
                     })
                 }
-            />
+                isShownByDefault={false}
+            >
+                <SelectControl
+                    label={__("Select Taxonomy", "built")}
+                    value={selectedTaxonomy}
+                    options={[
+                        { label: __("None", "built"), value: "" },
+                        ...taxonomyOptions,
+                    ]}
+                    onChange={(value) =>
+                        setAttributes({
+                            selectedTaxonomy: value,
+                            selectedTerms: [],
+                        })
+                    }
+                />
+            </ToolsPanelItem>
+
             {selectedTaxonomy && (
-                <>
+                <ToolsPanelItem
+                    hasValue={() => selectedTerms && selectedTerms.length > 0}
+                    label={__("Select Terms", "built")}
+                    onDeselect={() =>
+                        setAttributes({ selectedTerms: defaultSelectedTerms })
+                    }
+                    isShownByDefault={true}
+                >
                     <FormTokenField
                         label={__("Select Terms", "built")}
                         value={selectedValues}
@@ -179,9 +212,9 @@ function QueryTaxonomy(props) {
                             <span>{__("Searching terms...", "built")}</span>
                         </div>
                     )}
-                </>
+                </ToolsPanelItem>
             )}
-        </PanelBody>
+        </ToolsPanel>
     );
 }
 

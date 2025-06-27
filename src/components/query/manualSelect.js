@@ -1,10 +1,11 @@
 import {
     FormTokenField,
     Notice,
-    PanelBody,
     Spinner,
     __experimentalToggleGroupControl as ToggleGroupControl,
     __experimentalToggleGroupControlOption as ToggleGroupControlOption,
+    __experimentalToolsPanel as ToolsPanel,
+    __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { useEffect, useMemo, useState } from "@wordpress/element";
@@ -29,11 +30,25 @@ function QueryManualSelect(props) {
         setAttributes,
         label = "Selection Mode",
         searchType = "posts", // "posts" or "taxonomy"
-        renderPanel = true, // Whether to render the PanelBody wrapper
+        renderPanel = true, // Whether to render the ToolsPanel wrapper
     } = props;
 
     const [searchTerm, setSearchTerm] = useState("");
     const [isSearching, setIsSearching] = useState(false);
+
+    // Default values for reset functionality
+    const defaultSelectionMode = "auto";
+    const defaultSelectedPosts = [];
+    const defaultSelectedTerms = [];
+
+    // Reset function for ToolsPanel
+    const resetAll = () => {
+        setAttributes({
+            selectionMode: defaultSelectionMode,
+            selectedPosts: defaultSelectedPosts,
+            selectedTerms: defaultSelectedTerms,
+        });
+    };
 
     // Determine what we're selecting and the current selections
     const isSelectingTaxonomy = searchType === "taxonomy";
@@ -43,6 +58,9 @@ function QueryManualSelect(props) {
     const selectionAttribute = isSelectingTaxonomy
         ? "selectedTerms"
         : "selectedPosts";
+    const defaultCurrentSelections = isSelectingTaxonomy
+        ? defaultSelectedTerms
+        : defaultSelectedPosts;
 
     // Fetch items for search functionality
     const { items, selectedItemsData, isLoading } = useSelect(
@@ -243,25 +261,46 @@ function QueryManualSelect(props) {
 
     // Render the content
     const renderContent = () => (
-        <>
-            <ToggleGroupControl
+        <ToolsPanel label={__(label, "built_starter")} resetAll={resetAll}>
+            <ToolsPanelItem
+                hasValue={() => selectionMode !== defaultSelectionMode}
                 label={__("Selection Mode", "built_starter")}
-                value={selectionMode}
-                onChange={handleSelectionModeChange}
-                isBlock
+                onDeselect={() =>
+                    setAttributes({ selectionMode: defaultSelectionMode })
+                }
+                isShownByDefault={true}
             >
-                <ToggleGroupControlOption
-                    label={__("Auto", "built_starter")}
-                    value="auto"
-                />
-                <ToggleGroupControlOption
-                    label={__("Manual", "built_starter")}
-                    value="manual"
-                />
-            </ToggleGroupControl>
+                <ToggleGroupControl
+                    label={__("Selection Mode", "built_starter")}
+                    value={selectionMode}
+                    onChange={handleSelectionModeChange}
+                    isBlock
+                >
+                    <ToggleGroupControlOption
+                        label={__("Auto", "built_starter")}
+                        value="auto"
+                    />
+                    <ToggleGroupControlOption
+                        label={__("Manual", "built_starter")}
+                        value="manual"
+                    />
+                </ToggleGroupControl>
+            </ToolsPanelItem>
 
             {selectionMode === "manual" && (
-                <>
+                <ToolsPanelItem
+                    hasValue={() => currentSelections.length > 0}
+                    label={__(
+                        `Select ${itemTypePlural.charAt(0).toUpperCase() + itemTypePlural.slice(1)}`,
+                        "built_starter",
+                    )}
+                    onDeselect={() =>
+                        setAttributes({
+                            [selectionAttribute]: defaultCurrentSelections,
+                        })
+                    }
+                    isShownByDefault={true}
+                >
                     {showTaxonomyWarning ? (
                         <Notice status="warning" isDismissible={false}>
                             {__(
@@ -304,21 +343,104 @@ function QueryManualSelect(props) {
                             )}
                         </>
                     )}
-                </>
+                </ToolsPanelItem>
+            )}
+        </ToolsPanel>
+    );
+
+    // Return with or without ToolsPanel wrapper
+    if (renderPanel) {
+        return renderContent();
+    }
+
+    // If not rendering panel, just return the individual controls
+    return (
+        <>
+            <ToolsPanelItem
+                hasValue={() => selectionMode !== defaultSelectionMode}
+                label={__("Selection Mode", "built_starter")}
+                onDeselect={() =>
+                    setAttributes({ selectionMode: defaultSelectionMode })
+                }
+                isShownByDefault={true}
+            >
+                <ToggleGroupControl
+                    label={__("Selection Mode", "built_starter")}
+                    value={selectionMode}
+                    onChange={handleSelectionModeChange}
+                    isBlock
+                >
+                    <ToggleGroupControlOption
+                        label={__("Auto", "built_starter")}
+                        value="auto"
+                    />
+                    <ToggleGroupControlOption
+                        label={__("Manual", "built_starter")}
+                        value="manual"
+                    />
+                </ToggleGroupControl>
+            </ToolsPanelItem>
+
+            {selectionMode === "manual" && (
+                <ToolsPanelItem
+                    hasValue={() => currentSelections.length > 0}
+                    label={__(
+                        `Select ${itemTypePlural.charAt(0).toUpperCase() + itemTypePlural.slice(1)}`,
+                        "built_starter",
+                    )}
+                    onDeselect={() =>
+                        setAttributes({
+                            [selectionAttribute]: defaultCurrentSelections,
+                        })
+                    }
+                    isShownByDefault={true}
+                >
+                    {showTaxonomyWarning ? (
+                        <Notice status="warning" isDismissible={false}>
+                            {__(
+                                "Please select a taxonomy first to enable manual term selection.",
+                                "built_starter",
+                            )}
+                        </Notice>
+                    ) : (
+                        <>
+                            <FormTokenField
+                                label={__(
+                                    `Select ${itemTypePlural.charAt(0).toUpperCase() + itemTypePlural.slice(1)}`,
+                                    "built_starter",
+                                )}
+                                value={selectedValues}
+                                suggestions={suggestions.map((s) => s.value)}
+                                onChange={handleTokenChange}
+                                onInputChange={handleSearch}
+                                placeholder={searchPlaceholder}
+                                help={helpText}
+                            />
+
+                            {(isLoading || isSearching) && (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "8px",
+                                        marginTop: "8px",
+                                    }}
+                                >
+                                    <Spinner />
+                                    <span>
+                                        {__(
+                                            `Searching ${itemTypePlural}...`,
+                                            "built_starter",
+                                        )}
+                                    </span>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </ToolsPanelItem>
             )}
         </>
     );
-
-    // Return with or without PanelBody wrapper
-    if (renderPanel) {
-        return (
-            <PanelBody title={__(label, "built_starter")} initialOpen={true}>
-                {renderContent()}
-            </PanelBody>
-        );
-    }
-
-    return renderContent();
 }
 
 export { QueryManualSelect };

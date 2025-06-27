@@ -1,4 +1,8 @@
-import { PanelBody, SelectControl } from "@wordpress/components";
+import {
+    SelectControl,
+    __experimentalToolsPanel as ToolsPanel,
+    __experimentalToolsPanelItem as ToolsPanelItem,
+} from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
 /**
@@ -13,12 +17,81 @@ function QueryOrder(props) {
         attributes: { orderPostsBy, orderPostsDirection },
         setAttributes,
         additionalOrderOptions = [],
-        renderPanel = true, // Whether to render the PanelBody wrapper
+        renderPanel = true, // Whether to render the ToolsPanel wrapper
     } = props;
+
+    // Default values for reset functionality
+    const defaultOrderPostsBy = "date";
+    const defaultOrderPostsDirection = "desc";
+
+    // Reset function for ToolsPanel
+    const resetAll = () => {
+        setAttributes({
+            orderPostsBy: defaultOrderPostsBy,
+            orderPostsDirection: defaultOrderPostsDirection,
+        });
+    };
 
     // Render the content
     const renderContent = () => (
-        <>
+        <ToolsPanel
+            label={__("Feed Order", "built_starter")}
+            resetAll={resetAll}
+        >
+            <ToolsPanelItem
+                hasValue={() =>
+                    orderPostsBy !== defaultOrderPostsBy ||
+                    orderPostsDirection !== defaultOrderPostsDirection
+                }
+                label={__("Order By", "built_starter")}
+                onDeselect={() =>
+                    setAttributes({
+                        orderPostsBy: defaultOrderPostsBy,
+                        orderPostsDirection: defaultOrderPostsDirection,
+                    })
+                }
+                isShownByDefault={true}
+            >
+                <SelectControl
+                    label="Order By"
+                    value={`${orderPostsBy}_${orderPostsDirection}`}
+                    options={[
+                        { label: "Custom Order", value: "menu_order_asc" },
+                        { label: "Date (Newest → Oldest)", value: "date_desc" },
+                        { label: "Date (Oldest → Newest)", value: "date_asc" },
+                        { label: "Title (A → Z)", value: "title_asc" },
+                        { label: "Title (Z → A)", value: "title_desc" },
+                        { label: "Random", value: "rand_asc" },
+                        ...additionalOrderOptions,
+                    ]}
+                    onChange={(value) => {
+                        const [orderby, order] = value.split("_");
+                        setAttributes({
+                            orderPostsBy: orderby,
+                            orderPostsDirection: order,
+                        });
+                    }}
+                />
+            </ToolsPanelItem>
+        </ToolsPanel>
+    );
+
+    // If not rendering panel, just return the ToolsPanelItem
+    const renderContentWithoutPanel = () => (
+        <ToolsPanelItem
+            hasValue={() =>
+                orderPostsBy !== defaultOrderPostsBy ||
+                orderPostsDirection !== defaultOrderPostsDirection
+            }
+            label={__("Order By", "built_starter")}
+            onDeselect={() =>
+                setAttributes({
+                    orderPostsBy: defaultOrderPostsBy,
+                    orderPostsDirection: defaultOrderPostsDirection,
+                })
+            }
+            isShownByDefault={true}
+        >
             <SelectControl
                 label="Order By"
                 value={`${orderPostsBy}_${orderPostsDirection}`}
@@ -39,22 +112,15 @@ function QueryOrder(props) {
                     });
                 }}
             />
-        </>
+        </ToolsPanelItem>
     );
 
-    // Return with or without PanelBody wrapper
+    // Return with or without ToolsPanel wrapper
     if (renderPanel) {
-        return (
-            <PanelBody
-                title={__("Feed Order", "built_starter")}
-                initialOpen={true}
-            >
-                {renderContent()}
-            </PanelBody>
-        );
+        return renderContent();
     }
 
-    return renderContent();
+    return renderContentWithoutPanel();
 }
 
 export { QueryOrder };

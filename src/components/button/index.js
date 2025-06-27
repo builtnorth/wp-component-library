@@ -13,37 +13,39 @@
  * @returns {WPElement} Button element to render.
  */
 function ButtonFrontend({
-	className = null,
-	style = "default",
-	text = "Button Text",
-	link = "#",
-	target = null,
-	screenReader = null,
+    className = null,
+    size = "default",
+    style = "default",
+    text = "Button Text",
+    link = "#",
+    target = null,
+    screenReader = null,
+    wrapperAttributes = null,
 }) {
-	// Add screen reader text
-	const screenReaderElement = screenReader ? (
-		<span className="screen-reader-text">{screenReader}</span>
-	) : null;
+    // Add screen reader text
+    const screenReaderElement = screenReader ? (
+        <span className="screen-reader-text">{screenReader}</span>
+    ) : null;
 
-	// Add target attribute
-	const targetAttr = target ? { target: target } : {};
+    // Add target attribute
+    const targetAttr = target ? { target: target } : {};
 
-	// Add classes
-	const wrapperClass = className
-		? `${className}__button polaris-button is-style-${style}`
-		: `polaris-button is-style-${style}`;
-	const linkClass = className
-		? `${className}__button-link polaris-button__text`
-		: "polaris-button__text";
+    // Add classes
+    const wrapperClass = className
+        ? `${className}__button is-size-${size}`
+        : `polaris-button is-style-${style} is-size-${size}`;
+    const linkClass = className
+        ? `polaris-button__link polaris-button__text`
+        : "polaris-button__text";
 
-	return (
-		<span className={wrapperClass}>
-			<span className={linkClass}>
-				{text}
-				{screenReaderElement}
-			</span>
-		</span>
-	);
+    return (
+        <span className={wrapperClass}>
+            <span className={linkClass}>
+                {text}
+                {screenReaderElement}
+            </span>
+        </span>
+    );
 }
 
 export { ButtonFrontend };

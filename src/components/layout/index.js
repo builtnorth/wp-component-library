@@ -344,7 +344,7 @@ const AlignmentSettings = ({ value, onChange }) => {
                 {__("Alignment", "wp-component-library")}
             </span>
             <ToggleGroupControl
-                value={value}
+                value={value || ""}
                 onChange={handleChange}
                 isBlock
                 isDeselectable
@@ -386,7 +386,7 @@ const ContentAlignmentSettings = ({ value, onChange }) => {
                 {__("Content", "wp-component-library")}
             </span>
             <ToggleGroupControl
-                value={value}
+                value={value || ""}
                 onChange={handleChange}
                 isBlock
                 isDeselectable

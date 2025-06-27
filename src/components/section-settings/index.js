@@ -5,11 +5,12 @@
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
 import {
     FocalPointPicker,
-    PanelBody,
     PanelRow,
     RangeControl,
     SelectControl,
     ToggleControl,
+    __experimentalToolsPanel as ToolsPanel,
+    __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { Fragment } from "@wordpress/element";
@@ -67,15 +68,45 @@ const SectionSettings = (props) => {
         blockName === "polaris/hero" || blockName === "polaris-blocks/hero";
     const displayImageUrl = useFeaturedImage ? featuredImageUrl : imageUrl;
 
+    // Default values for reset functionality
+    const defaultUseFeaturedImage = false;
+    const defaultFocalPoint = { x: 0.5, y: 0.5 };
+    const defaultOpacity = 15;
+    const defaultImageStyle = "none";
+    const defaultBackgroundImage = null;
+
+    // Reset function for ToolsPanel
+    const resetAll = () => {
+        if (isHeroBlock) {
+            handleFeaturedImageToggle(defaultUseFeaturedImage);
+        }
+        handleFocalPointChange(defaultFocalPoint);
+        handleOpacityChange(defaultOpacity);
+        handleImageStyleChange(defaultImageStyle);
+        handleImageRemove(); // Reset background image
+    };
+
     return (
         <Fragment>
             <InspectorControls group="styles">
-                <PanelBody
-                    title="Background Media"
+                <ToolsPanel
+                    label={__("Background Media", "polaris-blocks")}
+                    resetAll={resetAll}
                     className="built-inspector-image-upload"
                 >
                     {isHeroBlock && (
-                        <PanelRow>
+                        <ToolsPanelItem
+                            hasValue={() =>
+                                useFeaturedImage !== defaultUseFeaturedImage
+                            }
+                            label={__("Use Featured Image", "polaris-blocks")}
+                            onDeselect={() =>
+                                handleFeaturedImageToggle(
+                                    defaultUseFeaturedImage,
+                                )
+                            }
+                            isShownByDefault={true}
+                        >
                             <ToggleControl
                                 label={__(
                                     "Use Featured Image",
@@ -84,10 +115,18 @@ const SectionSettings = (props) => {
                                 checked={useFeaturedImage}
                                 onChange={handleFeaturedImageToggle}
                             />
-                        </PanelRow>
+                        </ToolsPanelItem>
                     )}
+
                     {!useFeaturedImage && (
-                        <>
+                        <ToolsPanelItem
+                            hasValue={() =>
+                                backgroundImage !== defaultBackgroundImage
+                            }
+                            label={__("Background Media", "polaris-blocks")}
+                            onDeselect={() => handleImageRemove()}
+                            isShownByDefault={true}
+                        >
                             {!backgroundImage && (
                                 <PanelRow>
                                     <InspectorMediaUpload
@@ -99,86 +138,155 @@ const SectionSettings = (props) => {
                                         multiple={false}
                                         mediaIDs={backgroundImage}
                                         onSelect={handleImageSelect}
+                                        onRemove={handleImageRemove}
                                     />
                                 </PanelRow>
                             )}
-                        </>
+                            {backgroundImage && (
+                                <PanelRow>
+                                    <InspectorMediaUpload
+                                        buttonTitle={__(
+                                            "Replace Media",
+                                            "polaris-blocks",
+                                        )}
+                                        gallery={false}
+                                        multiple={false}
+                                        mediaIDs={backgroundImage}
+                                        onSelect={handleImageSelect}
+                                        onRemove={handleImageRemove}
+                                    />
+                                </PanelRow>
+                            )}
+                        </ToolsPanelItem>
                     )}
+
                     {(useFeaturedImage || backgroundImage) && (
                         <Fragment>
-                            <PanelRow>
-                                <FocalPointPicker
-                                    __nextHasNoMarginBottom
-                                    hideLabelFromVision={true}
+                            {displayImageUrl && (
+                                <ToolsPanelItem
+                                    hasValue={() => {
+                                        if (!focalPoint) return false;
+                                        return (
+                                            focalPoint.x !==
+                                                defaultFocalPoint.x ||
+                                            focalPoint.y !== defaultFocalPoint.y
+                                        );
+                                    }}
                                     label={__(
                                         "Media Focal Point",
                                         "polaris-blocks",
                                     )}
-                                    url={displayImageUrl}
-                                    value={focalPoint}
-                                    onDragStart={handleFocalPointChange}
-                                    onDrag={handleFocalPointChange}
-                                    onChange={handleFocalPointChange}
-                                />
-                            </PanelRow>
+                                    onDeselect={() =>
+                                        handleFocalPointChange(
+                                            defaultFocalPoint,
+                                        )
+                                    }
+                                    isShownByDefault={true}
+                                >
+                                    <FocalPointPicker
+                                        __nextHasNoMarginBottom
+                                        hideLabelFromVision={true}
+                                        label={__(
+                                            "Media Focal Point",
+                                            "polaris-blocks",
+                                        )}
+                                        url={displayImageUrl}
+                                        value={focalPoint || defaultFocalPoint}
+                                        onDragStart={handleFocalPointChange}
+                                        onDrag={handleFocalPointChange}
+                                        onChange={handleFocalPointChange}
+                                    />
+                                </ToolsPanelItem>
+                            )}
+
                             {!limitEditorSettings && (
                                 <Fragment>
-                                    <RangeControl
-                                        __nextHasNoMarginBottom
+                                    <ToolsPanelItem
+                                        hasValue={() =>
+                                            opacity !== defaultOpacity
+                                        }
                                         label={__(
                                             "Media Opacity",
                                             "polaris-blocks",
                                         )}
-                                        value={opacity}
-                                        onChange={handleOpacityChange}
-                                        min={0}
-                                        max={100}
-                                        initialPosition={15}
-                                    />
+                                        onDeselect={() =>
+                                            handleOpacityChange(defaultOpacity)
+                                        }
+                                        isShownByDefault={false}
+                                    >
+                                        <RangeControl
+                                            __nextHasNoMarginBottom
+                                            label={__(
+                                                "Media Opacity",
+                                                "polaris-blocks",
+                                            )}
+                                            value={opacity}
+                                            onChange={handleOpacityChange}
+                                            min={0}
+                                            max={100}
+                                            initialPosition={15}
+                                        />
+                                    </ToolsPanelItem>
 
-                                    <SelectControl
+                                    <ToolsPanelItem
+                                        hasValue={() =>
+                                            imageStyle !== defaultImageStyle
+                                        }
                                         label={__(
                                             "Media Style",
                                             "polaris-blocks",
                                         )}
-                                        value={imageStyle}
-                                        options={[
-                                            {
-                                                label: __(
-                                                    "None",
-                                                    "polaris-blocks",
-                                                ),
-                                                value: "none",
-                                            },
-                                            {
-                                                label: __(
-                                                    "Blur",
-                                                    "polaris-blocks",
-                                                ),
-                                                value: "blur",
-                                            },
-                                            {
-                                                label: __(
-                                                    "Grayscale",
-                                                    "polaris-blocks",
-                                                ),
-                                                value: "grayscale",
-                                            },
-                                            {
-                                                label: __(
-                                                    "Blur + Grayscale",
-                                                    "polaris-blocks",
-                                                ),
-                                                value: "blur-grayscale",
-                                            },
-                                        ]}
-                                        onChange={handleImageStyleChange}
-                                    />
+                                        onDeselect={() =>
+                                            handleImageStyleChange(
+                                                defaultImageStyle,
+                                            )
+                                        }
+                                        isShownByDefault={false}
+                                    >
+                                        <SelectControl
+                                            label={__(
+                                                "Media Style",
+                                                "polaris-blocks",
+                                            )}
+                                            value={imageStyle}
+                                            options={[
+                                                {
+                                                    label: __(
+                                                        "None",
+                                                        "polaris-blocks",
+                                                    ),
+                                                    value: "none",
+                                                },
+                                                {
+                                                    label: __(
+                                                        "Blur",
+                                                        "polaris-blocks",
+                                                    ),
+                                                    value: "blur",
+                                                },
+                                                {
+                                                    label: __(
+                                                        "Grayscale",
+                                                        "polaris-blocks",
+                                                    ),
+                                                    value: "grayscale",
+                                                },
+                                                {
+                                                    label: __(
+                                                        "Blur + Grayscale",
+                                                        "polaris-blocks",
+                                                    ),
+                                                    value: "blur-grayscale",
+                                                },
+                                            ]}
+                                            onChange={handleImageStyleChange}
+                                        />
+                                    </ToolsPanelItem>
                                 </Fragment>
                             )}
                         </Fragment>
                     )}
-                </PanelBody>
+                </ToolsPanel>
             </InspectorControls>
         </Fragment>
     );

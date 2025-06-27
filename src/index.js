@@ -45,12 +45,12 @@ export {
     defaultOrderOptions,
     DisplayTypeSelect,
     ManualPostSelector,
+    ManualTermSelector,
     OrderBySelect,
     PostsPerPageControl,
     PostTypeSelect,
     SelectionModeControl,
     TaxonomySelect,
-    TermSelector,
 } from "./components/query";
 export {
     SectionBackground,

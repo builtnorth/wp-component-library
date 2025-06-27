@@ -11,11 +11,13 @@ import { __ } from "@wordpress/i18n";
  * @param {Object} props Component props
  * @param {Object} props.attributes Block attributes
  * @param {Function} props.setAttributes Function to set attributes
+ * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
  * @returns {WPElement} Element to render
  */
 function SelectionModeControl({
     attributes: { selectionMode = "auto" },
     setAttributes,
+    isShownByDefault = true,
 }) {
     const defaultSelectionMode = "auto";
 
@@ -33,7 +35,7 @@ function SelectionModeControl({
             onDeselect={() =>
                 setAttributes({ selectionMode: defaultSelectionMode })
             }
-            isShownByDefault={true}
+            isShownByDefault={isShownByDefault}
         >
             <ToggleGroupControl
                 label={__("Selection Mode", "built_starter")}

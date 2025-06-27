@@ -15,6 +15,7 @@ import { __ } from "@wordpress/i18n";
  * @param {Function} props.setAttributes Function to set attributes
  * @param {string} props.selectedTaxonomy The taxonomy to select terms from
  * @param {boolean} props.renderAsToolsPanelItem Whether to render as ToolsPanelItem
+ * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
  * @returns {WPElement} Element to render
  */
 function ManualTermSelector({
@@ -22,6 +23,7 @@ function ManualTermSelector({
     setAttributes,
     selectedTaxonomy,
     renderAsToolsPanelItem = true,
+    isShownByDefault = true,
 }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isSearching, setIsSearching] = useState(false);
@@ -172,7 +174,7 @@ function ManualTermSelector({
             onDeselect={() =>
                 setAttributes({ selectedTerms: defaultSelectedTerms })
             }
-            isShownByDefault={true}
+            isShownByDefault={isShownByDefault}
         >
             {control}
         </ToolsPanelItem>

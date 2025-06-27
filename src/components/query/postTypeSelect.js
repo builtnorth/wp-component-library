@@ -11,9 +11,14 @@ import { __ } from "@wordpress/i18n";
  * @param {Object} props Component props
  * @param {Object} props.attributes Block attributes
  * @param {Function} props.setAttributes Function to set attributes
+ * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
  * @returns {WPElement} Element to render
  */
-function PostTypeSelect({ attributes: { postType }, setAttributes }) {
+function PostTypeSelect({
+    attributes: { postType },
+    setAttributes,
+    isShownByDefault = true,
+}) {
     const defaultPostType = "post";
 
     const getPostTypesOptions = () => {
@@ -44,7 +49,7 @@ function PostTypeSelect({ attributes: { postType }, setAttributes }) {
             hasValue={() => postType !== defaultPostType}
             label={__("Select Post Type", "built_starter")}
             onDeselect={() => setAttributes({ postType: defaultPostType })}
-            isShownByDefault={true}
+            isShownByDefault={isShownByDefault}
         >
             <SelectControl
                 label={__("Select Post Type", "built_starter")}

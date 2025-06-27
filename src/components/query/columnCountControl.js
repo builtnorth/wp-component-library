@@ -13,6 +13,7 @@ import { __ } from "@wordpress/i18n";
  * @param {string} props.displayAs Current display type to determine label
  * @param {number} props.min Minimum value
  * @param {number} props.max Maximum value
+ * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: false)
  * @returns {WPElement} Element to render
  */
 function ColumnCountControl({
@@ -20,6 +21,7 @@ function ColumnCountControl({
     setAttributes,
     min = 1,
     max = 4,
+    isShownByDefault = false,
 }) {
     const defaultColumnCount = 3;
 
@@ -37,7 +39,7 @@ function ColumnCountControl({
             onDeselect={() =>
                 setAttributes({ columnCount: defaultColumnCount })
             }
-            isShownByDefault={false}
+            isShownByDefault={isShownByDefault}
         >
             <RangeControl
                 label={label}

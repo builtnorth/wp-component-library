@@ -11,12 +11,14 @@ import { __ } from "@wordpress/i18n";
  * @param {Object} props.attributes Block attributes
  * @param {Function} props.setAttributes Function to set attributes
  * @param {Array} props.allowedDisplayOptions Allowed display options
+ * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
  * @returns {WPElement} Element to render
  */
 function DisplayTypeSelect({
     attributes: { displayAs },
     setAttributes,
     allowedDisplayOptions = ["grid", "slider", "list", "pills"],
+    isShownByDefault = true,
 }) {
     const defaultDisplayAs = "grid";
 
@@ -32,7 +34,7 @@ function DisplayTypeSelect({
             hasValue={() => displayAs !== defaultDisplayAs}
             label={__("Display Type", "built_starter")}
             onDeselect={() => setAttributes({ displayAs: defaultDisplayAs })}
-            isShownByDefault={true}
+            isShownByDefault={isShownByDefault}
         >
             <SelectControl
                 label="Display As"

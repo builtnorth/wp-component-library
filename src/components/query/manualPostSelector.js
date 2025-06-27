@@ -14,12 +14,14 @@ import { __ } from "@wordpress/i18n";
  * @param {Object} props.attributes Block attributes
  * @param {Function} props.setAttributes Function to set attributes
  * @param {string} props.postType The post type to select from
+ * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
  * @returns {WPElement} Element to render
  */
 function ManualPostSelector({
     attributes: { selectedPosts = [] },
     setAttributes,
     postType = "post",
+    isShownByDefault = true,
 }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isSearching, setIsSearching] = useState(false);
@@ -124,7 +126,7 @@ function ManualPostSelector({
             onDeselect={() =>
                 setAttributes({ selectedPosts: defaultSelectedPosts })
             }
-            isShownByDefault={true}
+            isShownByDefault={isShownByDefault}
         >
             <FormTokenField
                 label={__("Select Posts", "built_starter")}

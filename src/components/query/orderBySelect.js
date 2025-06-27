@@ -24,6 +24,7 @@ export const defaultOrderOptions = [
  * @param {Function} props.setAttributes Function to set attributes
  * @param {Array} props.orderOptions Custom order options (replaces defaults if provided)
  * @param {Array} props.additionalOrderOptions Additional options to add to defaults (deprecated, use orderOptions instead)
+ * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
  * @returns {WPElement} Element to render
  */
 function OrderBySelect({
@@ -31,6 +32,7 @@ function OrderBySelect({
     setAttributes,
     orderOptions,
     additionalOrderOptions = [], // Keep for backward compatibility
+    isShownByDefault = true,
 }) {
     const defaultOrderPostsBy = "date";
     const defaultOrderPostsDirection = "desc";
@@ -61,7 +63,7 @@ function OrderBySelect({
                     orderPostsDirection: defaultOrderPostsDirection,
                 })
             }
-            isShownByDefault={true}
+            isShownByDefault={isShownByDefault}
         >
             <SelectControl
                 label="Order By"

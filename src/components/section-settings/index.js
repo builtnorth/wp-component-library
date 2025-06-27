@@ -5,7 +5,6 @@
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
 import {
     FocalPointPicker,
-    PanelRow,
     RangeControl,
     SelectControl,
     ToggleControl,
@@ -35,6 +34,10 @@ const SectionSettings = (props) => {
         blockName,
         useFeaturedImage,
         handleFeaturedImageToggle,
+        featuredImage = false,
+        mediaStyle = false,
+        mediaOpacity = false,
+        panelTitle = __("Background Media", "polaris-blocks"),
     } = props;
 
     const limitEditorSettings =
@@ -64,8 +67,6 @@ const SectionSettings = (props) => {
     );
 
     // Check for both possible block names
-    const isHeroBlock =
-        blockName === "polaris/hero" || blockName === "polaris-blocks/hero";
     const displayImageUrl = useFeaturedImage ? featuredImageUrl : imageUrl;
 
     // Default values for reset functionality
@@ -77,12 +78,16 @@ const SectionSettings = (props) => {
 
     // Reset function for ToolsPanel
     const resetAll = () => {
-        if (isHeroBlock) {
+        if (featuredImage) {
             handleFeaturedImageToggle(defaultUseFeaturedImage);
         }
         handleFocalPointChange(defaultFocalPoint);
-        handleOpacityChange(defaultOpacity);
-        handleImageStyleChange(defaultImageStyle);
+        if (mediaOpacity) {
+            handleOpacityChange(defaultOpacity);
+        }
+        if (mediaStyle) {
+            handleImageStyleChange(defaultImageStyle);
+        }
         handleImageRemove(); // Reset background image
     };
 
@@ -90,11 +95,11 @@ const SectionSettings = (props) => {
         <Fragment>
             <InspectorControls group="styles">
                 <ToolsPanel
-                    label={__("Background Media", "polaris-blocks")}
+                    label={panelTitle}
                     resetAll={resetAll}
                     className="built-inspector-image-upload"
                 >
-                    {isHeroBlock && (
+                    {featuredImage && (
                         <ToolsPanelItem
                             hasValue={() =>
                                 useFeaturedImage !== defaultUseFeaturedImage
@@ -105,7 +110,7 @@ const SectionSettings = (props) => {
                                     defaultUseFeaturedImage,
                                 )
                             }
-                            isShownByDefault={true}
+                            isShownByDefault={false}
                         >
                             <ToggleControl
                                 label={__(
@@ -121,41 +126,38 @@ const SectionSettings = (props) => {
                     {!useFeaturedImage && (
                         <ToolsPanelItem
                             hasValue={() =>
+                                backgroundImage &&
                                 backgroundImage !== defaultBackgroundImage
                             }
-                            label={__("Background Media", "polaris-blocks")}
+                            label={__("Media Select", "polaris-blocks")}
                             onDeselect={() => handleImageRemove()}
                             isShownByDefault={true}
                         >
                             {!backgroundImage && (
-                                <PanelRow>
-                                    <InspectorMediaUpload
-                                        buttonTitle={__(
-                                            "Select or Upload Media",
-                                            "polaris-blocks",
-                                        )}
-                                        gallery={false}
-                                        multiple={false}
-                                        mediaIDs={backgroundImage}
-                                        onSelect={handleImageSelect}
-                                        onRemove={handleImageRemove}
-                                    />
-                                </PanelRow>
+                                <InspectorMediaUpload
+                                    buttonTitle={__(
+                                        "Select or Upload Media",
+                                        "polaris-blocks",
+                                    )}
+                                    gallery={false}
+                                    multiple={false}
+                                    mediaIDs={backgroundImage}
+                                    onSelect={handleImageSelect}
+                                    onRemove={handleImageRemove}
+                                />
                             )}
                             {backgroundImage && (
-                                <PanelRow>
-                                    <InspectorMediaUpload
-                                        buttonTitle={__(
-                                            "Replace Media",
-                                            "polaris-blocks",
-                                        )}
-                                        gallery={false}
-                                        multiple={false}
-                                        mediaIDs={backgroundImage}
-                                        onSelect={handleImageSelect}
-                                        onRemove={handleImageRemove}
-                                    />
-                                </PanelRow>
+                                <InspectorMediaUpload
+                                    buttonTitle={__(
+                                        "Replace Media",
+                                        "polaris-blocks",
+                                    )}
+                                    gallery={false}
+                                    multiple={false}
+                                    mediaIDs={backgroundImage}
+                                    onSelect={handleImageSelect}
+                                    onRemove={handleImageRemove}
+                                />
                             )}
                         </ToolsPanelItem>
                     )}
@@ -201,87 +203,95 @@ const SectionSettings = (props) => {
 
                             {!limitEditorSettings && (
                                 <Fragment>
-                                    <ToolsPanelItem
-                                        hasValue={() =>
-                                            opacity !== defaultOpacity
-                                        }
-                                        label={__(
-                                            "Media Opacity",
-                                            "polaris-blocks",
-                                        )}
-                                        onDeselect={() =>
-                                            handleOpacityChange(defaultOpacity)
-                                        }
-                                        isShownByDefault={false}
-                                    >
-                                        <RangeControl
-                                            __nextHasNoMarginBottom
+                                    {mediaOpacity && (
+                                        <ToolsPanelItem
+                                            hasValue={() =>
+                                                opacity !== defaultOpacity
+                                            }
                                             label={__(
                                                 "Media Opacity",
                                                 "polaris-blocks",
                                             )}
-                                            value={opacity}
-                                            onChange={handleOpacityChange}
-                                            min={0}
-                                            max={100}
-                                            initialPosition={15}
-                                        />
-                                    </ToolsPanelItem>
+                                            onDeselect={() =>
+                                                handleOpacityChange(
+                                                    defaultOpacity,
+                                                )
+                                            }
+                                            isShownByDefault={false}
+                                        >
+                                            <RangeControl
+                                                __nextHasNoMarginBottom
+                                                label={__(
+                                                    "Media Opacity",
+                                                    "polaris-blocks",
+                                                )}
+                                                value={opacity || 15}
+                                                onChange={handleOpacityChange}
+                                                min={0}
+                                                max={100}
+                                                initialPosition={15}
+                                            />
+                                        </ToolsPanelItem>
+                                    )}
 
-                                    <ToolsPanelItem
-                                        hasValue={() =>
-                                            imageStyle !== defaultImageStyle
-                                        }
-                                        label={__(
-                                            "Media Style",
-                                            "polaris-blocks",
-                                        )}
-                                        onDeselect={() =>
-                                            handleImageStyleChange(
-                                                defaultImageStyle,
-                                            )
-                                        }
-                                        isShownByDefault={false}
-                                    >
-                                        <SelectControl
+                                    {mediaStyle && (
+                                        <ToolsPanelItem
+                                            hasValue={() =>
+                                                imageStyle !== defaultImageStyle
+                                            }
                                             label={__(
                                                 "Media Style",
                                                 "polaris-blocks",
                                             )}
-                                            value={imageStyle}
-                                            options={[
-                                                {
-                                                    label: __(
-                                                        "None",
-                                                        "polaris-blocks",
-                                                    ),
-                                                    value: "none",
-                                                },
-                                                {
-                                                    label: __(
-                                                        "Blur",
-                                                        "polaris-blocks",
-                                                    ),
-                                                    value: "blur",
-                                                },
-                                                {
-                                                    label: __(
-                                                        "Grayscale",
-                                                        "polaris-blocks",
-                                                    ),
-                                                    value: "grayscale",
-                                                },
-                                                {
-                                                    label: __(
-                                                        "Blur + Grayscale",
-                                                        "polaris-blocks",
-                                                    ),
-                                                    value: "blur-grayscale",
-                                                },
-                                            ]}
-                                            onChange={handleImageStyleChange}
-                                        />
-                                    </ToolsPanelItem>
+                                            onDeselect={() =>
+                                                handleImageStyleChange(
+                                                    defaultImageStyle,
+                                                )
+                                            }
+                                            isShownByDefault={false}
+                                        >
+                                            <SelectControl
+                                                label={__(
+                                                    "Media Style",
+                                                    "polaris-blocks",
+                                                )}
+                                                value={imageStyle || "none"}
+                                                options={[
+                                                    {
+                                                        label: __(
+                                                            "None",
+                                                            "polaris-blocks",
+                                                        ),
+                                                        value: "none",
+                                                    },
+                                                    {
+                                                        label: __(
+                                                            "Blur",
+                                                            "polaris-blocks",
+                                                        ),
+                                                        value: "blur",
+                                                    },
+                                                    {
+                                                        label: __(
+                                                            "Grayscale",
+                                                            "polaris-blocks",
+                                                        ),
+                                                        value: "grayscale",
+                                                    },
+                                                    {
+                                                        label: __(
+                                                            "Blur + Grayscale",
+                                                            "polaris-blocks",
+                                                        ),
+                                                        value: "blur-grayscale",
+                                                    },
+                                                ]}
+                                                onChange={
+                                                    handleImageStyleChange
+                                                }
+                                            />
+                                        </ToolsPanelItem>
+                                    )}
                                 </Fragment>
                             )}
                         </Fragment>
@@ -317,7 +327,7 @@ const SectionBackground = ({
             objectPosition: `${focalPoint.x * 100}% ${focalPoint.y * 100}%`,
             transform: `translate(${(0.5 - focalPoint.x) * 25}%, ${(0.5 - focalPoint.y) * 25}%) scale(1.25)`,
         }),
-        opacity: opacity / 100,
+        opacity: (opacity || 15) / 100,
     };
 
     const imageClasses = classnames("section-background", {
@@ -355,6 +365,10 @@ const SectionWrapper = ({
     className,
     children,
     blockName,
+    featuredImage = false,
+    mediaStyle = false,
+    mediaOpacity = false,
+    panelTitle,
 }) => {
     const {
         backgroundImage,
@@ -417,6 +431,10 @@ const SectionWrapper = ({
                 blockName={blockName}
                 useFeaturedImage={useFeaturedImage}
                 handleFeaturedImageToggle={handleFeaturedImageToggle}
+                featuredImage={featuredImage}
+                mediaStyle={mediaStyle}
+                mediaOpacity={mediaOpacity}
+                panelTitle={panelTitle}
             />
             <section {...blockProps}>
                 {children}

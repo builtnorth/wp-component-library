@@ -17,7 +17,7 @@ import { __ } from "@wordpress/i18n";
  * @param {boolean} props.renderAsToolsPanelItem Whether to render as ToolsPanelItem
  * @returns {WPElement} Element to render
  */
-function TermSelector({
+function ManualTermSelector({
     attributes: { selectedTerms = [] },
     setAttributes,
     selectedTaxonomy,
@@ -179,4 +179,4 @@ function TermSelector({
     );
 }
 
-export { TermSelector };
+export { ManualTermSelector };

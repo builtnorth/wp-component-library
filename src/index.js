@@ -39,11 +39,19 @@ export { ImageControls } from "./components/media/image-controls";
 export { MetaAdvanced } from "./components/meta/meta-advanced";
 export { MetaPanel } from "./components/meta/meta-panel";
 export { Pagination } from "./components/pagination";
-export { QueryDisplay } from "./components/query/display";
-export { QueryManualSelect } from "./components/query/manualSelect";
-export { QueryOrder } from "./components/query/order";
-export { QuerySelectPostType } from "./components/query/selectPostType";
-export { QueryTaxonomy } from "./components/query/taxonomy";
+// Query Controls - Individual ToolsPanelItems that can be composed together
+export {
+    ColumnCountControl,
+    defaultOrderOptions,
+    DisplayTypeSelect,
+    ManualPostSelector,
+    OrderBySelect,
+    PostsPerPageControl,
+    PostTypeSelect,
+    SelectionModeControl,
+    TaxonomySelect,
+    TermSelector,
+} from "./components/query";
 export {
     SectionBackground,
     SectionSettings,

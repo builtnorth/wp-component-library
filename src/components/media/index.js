@@ -4,7 +4,12 @@
  * @link https://gist.github.com/5ally/633c4142b77d46068d447cceac3dbc99
  */
 import { MediaUpload, MediaUploadCheck } from "@wordpress/block-editor";
-import { Button, Placeholder, ToolbarButton } from "@wordpress/components";
+import {
+    Button,
+    Flex,
+    Placeholder,
+    ToolbarButton,
+} from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { edit, upload } from "@wordpress/icons";
 import { AttachmentImage } from "../attachment-image";
@@ -108,16 +113,36 @@ function InspectorMediaUpload({
                         multiple={multiple}
                     />
                 ) : (
-                    <Button
-                        __next40pxDefaultSize
-                        className="is-full-width"
-                        size="default"
-                        variant="secondary"
-                        onClick={onRemove}
-                        isDestructive
-                    >
-                        {__("Remove Media", "polaris-blocks")}
-                    </Button>
+                    <Flex>
+                        <MediaUpload
+                            onSelect={onSelect}
+                            allowedTypes={ALLOWED_MEDIA_TYPES}
+                            value={mediaIDs}
+                            render={({ open }) => (
+                                <Button
+                                    __next40pxDefaultSize
+                                    size="default"
+                                    className="is-full-width"
+                                    variant="secondary"
+                                    onClick={open}
+                                >
+                                    {__("Edit/Replace", "polaris-blocks")}
+                                </Button>
+                            )}
+                            gallery={gallery}
+                            multiple={multiple}
+                        />
+                        <Button
+                            __next40pxDefaultSize
+                            size="default"
+                            variant="secondary"
+                            className="is-full-width"
+                            onClick={onRemove}
+                            isDestructive
+                        >
+                            {__("Remove", "polaris-blocks")}
+                        </Button>
+                    </Flex>
                 )}
             </MediaUploadCheck>
         </>

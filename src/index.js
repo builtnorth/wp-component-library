@@ -53,8 +53,13 @@ export {
     TaxonomySelect,
 } from "./components/query";
 export {
+    // Individual control components for custom compositions
+    FocalPointControl,
+    ImageSourceControl,
+    MediaSelectControl,
+    OpacityControl,
     SectionBackground,
     SectionSettings,
-    SectionWrapper,
+    StyleControl,
 } from "./components/section-settings";
 export { GetTerms } from "./components/terms";

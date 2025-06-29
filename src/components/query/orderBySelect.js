@@ -66,6 +66,8 @@ function OrderBySelect({
             isShownByDefault={isShownByDefault}
         >
             <SelectControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label="Order By"
                 value={`${orderPostsBy}_${orderPostsDirection}`}
                 options={finalOptions}

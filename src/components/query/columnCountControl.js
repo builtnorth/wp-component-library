@@ -42,6 +42,8 @@ function ColumnCountControl({
             isShownByDefault={isShownByDefault}
         >
             <RangeControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label={label}
                 value={columnCount}
                 onChange={(columnCountNew) =>

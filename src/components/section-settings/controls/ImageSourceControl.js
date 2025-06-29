@@ -26,6 +26,8 @@ const ImageSourceControl = ({
             isShownByDefault={isShownByDefault}
         >
             <ToggleGroupControl
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize={true}
                 label={__("Image Source", "polaris-blocks")}
                 value={useFeaturedImage ? "featured" : "upload"}
                 onChange={(value) => onToggle(value === "featured")}

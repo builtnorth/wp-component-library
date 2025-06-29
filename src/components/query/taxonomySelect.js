@@ -3,7 +3,7 @@ import {
     __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { useEffect } from "@wordpress/element";
+import { useEffect, useMemo } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
 /**
@@ -28,30 +28,25 @@ function TaxonomySelect({
 }) {
     const defaultSelectedTaxonomy = "";
 
-    // Get available taxonomies for the post type
-    const { taxonomies, filteredTaxonomies } = useSelect(
-        (select) => {
-            if (!postType) {
-                return {
-                    taxonomies: [],
-                    filteredTaxonomies: [],
-                };
-            }
+    // Get all taxonomies (fetch once, cache the result)
+    const allTaxonomies = useSelect((select) => {
+        return select("core").getTaxonomies({
+            per_page: -1,
+        });
+    }, []);
 
-            const allTaxonomies = select("core").getTaxonomies({
-                per_page: -1,
-            });
-            const filtered = allTaxonomies
-                ? allTaxonomies.filter((tax) => tax.types.includes(postType))
-                : [];
+    // Memoize the filtered taxonomies to prevent unnecessary re-renders
+    const filteredTaxonomies = useMemo(() => {
+        if (!postType || !allTaxonomies) {
+            return [];
+        }
+        return allTaxonomies.filter((tax) => tax.types.includes(postType));
+    }, [allTaxonomies, postType]);
 
-            return {
-                taxonomies: allTaxonomies || [],
-                filteredTaxonomies: filtered,
-            };
-        },
-        [postType],
-    );
+    // Memoize taxonomies with fallback to prevent new array creation
+    const taxonomies = useMemo(() => {
+        return allTaxonomies || [];
+    }, [allTaxonomies]);
 
     // Auto-select first taxonomy when post type changes (only if showNoneOption is false)
     useEffect(() => {
@@ -90,16 +85,20 @@ function TaxonomySelect({
         }
     }, [filteredTaxonomies, selectedTaxonomy, setAttributes, showNoneOption]);
 
-    // Build taxonomy options
-    const taxonomyOptions = filteredTaxonomies.map((tax) => ({
-        label: tax.labels.singular_name || tax.name,
-        value: tax.slug,
-    }));
+    // Memoize taxonomy options to prevent recreation
+    const taxonomyOptions = useMemo(() => {
+        return filteredTaxonomies.map((tax) => ({
+            label: tax.labels.singular_name || tax.name,
+            value: tax.slug,
+        }));
+    }, [filteredTaxonomies]);
 
-    // Add "none" option if enabled
-    const allOptions = showNoneOption
-        ? [{ label: noneOptionLabel, value: "" }, ...taxonomyOptions]
-        : taxonomyOptions;
+    // Memoize all options to prevent recreation
+    const allOptions = useMemo(() => {
+        return showNoneOption
+            ? [{ label: noneOptionLabel, value: "" }, ...taxonomyOptions]
+            : taxonomyOptions;
+    }, [showNoneOption, noneOptionLabel, taxonomyOptions]);
 
     return (
         <ToolsPanelItem
@@ -114,6 +113,8 @@ function TaxonomySelect({
             isShownByDefault={isShownByDefault}
         >
             <SelectControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label={__("Select Taxonomy", "built")}
                 value={selectedTaxonomy}
                 options={allOptions}

@@ -27,45 +27,83 @@ function ManualPostSelector({
     const [isSearching, setIsSearching] = useState(false);
     const defaultSelectedPosts = [];
 
-    // Fetch posts for search functionality
-    const { posts, selectedPostsData, isLoading } = useSelect(
-        (select) => {
-            const query = {
-                per_page: 20,
-                status: "publish",
-                search: searchTerm,
-            };
-
-            // Get posts for search
-            const searchPosts = searchTerm
-                ? select("core").getEntityRecords("postType", postType, query)
-                : [];
-
-            // Get data for currently selected posts
-            const selectedData =
-                selectedPosts.length > 0
-                    ? select("core").getEntityRecords("postType", postType, {
-                          include: selectedPosts,
-                          per_page: selectedPosts.length,
-                      })
-                    : [];
-
-            return {
-                posts: searchPosts || [],
-                selectedPostsData: selectedData || [],
-                isLoading: select("core/data").isResolving(
-                    "core",
-                    "getEntityRecords",
-                    ["postType", postType, query],
-                ),
-            };
-        },
-        [searchTerm, postType, selectedPosts],
+    // Memoize the search query to prevent recreation
+    const searchQuery = useMemo(
+        () => ({
+            per_page: 20,
+            status: "publish",
+            search: searchTerm,
+        }),
+        [searchTerm],
     );
+
+    // Memoize the selected posts query to prevent recreation
+    const selectedPostsQuery = useMemo(
+        () => ({
+            include: selectedPosts,
+            per_page: selectedPosts.length,
+        }),
+        [selectedPosts],
+    );
+
+    // Get posts for search functionality
+    const searchPosts = useSelect(
+        (select) => {
+            if (!searchTerm) {
+                return null;
+            }
+            return select("core").getEntityRecords(
+                "postType",
+                postType,
+                searchQuery,
+            );
+        },
+        [searchTerm, postType, searchQuery],
+    );
+
+    // Get data for currently selected posts
+    const selectedPostsData = useSelect(
+        (select) => {
+            if (selectedPosts.length === 0) {
+                return null;
+            }
+            return select("core").getEntityRecords(
+                "postType",
+                postType,
+                selectedPostsQuery,
+            );
+        },
+        [selectedPosts, postType, selectedPostsQuery],
+    );
+
+    // Get loading state
+    const isLoading = useSelect(
+        (select) => {
+            if (!searchTerm) {
+                return false;
+            }
+            return select("core/data").isResolving("core", "getEntityRecords", [
+                "postType",
+                postType,
+                searchQuery,
+            ]);
+        },
+        [searchTerm, postType, searchQuery],
+    );
+
+    // Memoize posts with fallback to prevent new array creation
+    const posts = useMemo(() => {
+        return searchPosts || [];
+    }, [searchPosts]);
+
+    // Memoize selected posts data with fallback to prevent new array creation
+    const memoizedSelectedPostsData = useMemo(() => {
+        return selectedPostsData || [];
+    }, [selectedPostsData]);
 
     // Create suggestions for FormTokenField
     const suggestions = useMemo(() => {
-        if (!posts) return [];
+        if (!posts || posts.length === 0) return [];
         return posts.map((post) => ({
             id: post.id,
             value: post.title?.rendered || `Post #${post.id}`,
@@ -74,10 +112,10 @@ function ManualPostSelector({
 
     // Create values for FormTokenField (selected items as readable names)
     const selectedValues = useMemo(() => {
-        return selectedPostsData.map(
+        return memoizedSelectedPostsData.map(
             (post) => post.title?.rendered || `Post #${post.id}`,
         );
-    }, [selectedPostsData]);
+    }, [memoizedSelectedPostsData]);
 
     // Handle search with debouncing
     useEffect(() => {
@@ -97,8 +135,9 @@ function ManualPostSelector({
 
         tokens.forEach((token) => {
             // Check if it's an existing selection
-            const existingPost = selectedPostsData.find(
-                (post) => post.title?.rendered === token,
+            const existingPost = memoizedSelectedPostsData.find(
+                (post) =>
+                    (post.title?.rendered || `Post #${post.id}`) === token,
             );
 
             if (existingPost) {
@@ -108,7 +147,8 @@ function ManualPostSelector({
 
             // Check if it's a new selection from search results
             const searchResult = posts.find(
-                (post) => post.title?.rendered === token,
+                (post) =>
+                    (post.title?.rendered || `Post #${post.id}`) === token,
             );
 
             if (searchResult) {
@@ -118,6 +158,30 @@ function ManualPostSelector({
 
         setAttributes({ selectedPosts: newSelections });
     };
+
+    // Create unique suggestions by appending post ID to duplicates
+    const uniqueSuggestions = useMemo(() => {
+        const titleCounts = {};
+        const uniqueSuggestionsList = [];
+
+        suggestions.forEach((suggestion) => {
+            const title = suggestion.value;
+            titleCounts[title] = (titleCounts[title] || 0) + 1;
+        });
+
+        suggestions.forEach((suggestion) => {
+            const title = suggestion.value;
+            // If there are duplicates, append the post ID to make it unique
+            const displayValue =
+                titleCounts[title] > 1
+                    ? `${title} (ID: ${suggestion.id})`
+                    : title;
+
+            uniqueSuggestionsList.push(displayValue);
+        });
+
+        return uniqueSuggestionsList;
+    }, [suggestions]);
 
     return (
         <ToolsPanelItem
@@ -129,9 +193,11 @@ function ManualPostSelector({
             isShownByDefault={isShownByDefault}
         >
             <FormTokenField
+                __next40pxDefaultSize={true}
+                __nextHasNoMarginBottom
                 label={__("Select Posts", "built_starter")}
                 value={selectedValues}
-                suggestions={suggestions.map((s) => s.value)}
+                suggestions={uniqueSuggestions}
                 onChange={handleTokenChange}
                 onInputChange={setSearchTerm}
                 placeholder={__("Type to search posts...", "built_starter")}

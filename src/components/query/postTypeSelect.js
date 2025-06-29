@@ -52,6 +52,8 @@ function PostTypeSelect({
             isShownByDefault={isShownByDefault}
         >
             <SelectControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label={__("Select Post Type", "built_starter")}
                 onChange={(value) => setAttributes({ postType: value })}
                 options={getPostTypesOptions()}

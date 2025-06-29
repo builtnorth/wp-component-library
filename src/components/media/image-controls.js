@@ -31,6 +31,8 @@ const ImageControls = ({
 }) => (
     <PanelBody title={__("Image Settings", "polaris-blocks")}>
         <SelectControl
+            __nextHasNoMarginBottom={true}
+            __next40pxDefaultSize
             label={__("Aspect Ratio", "polaris-blocks")}
             value={aspectRatio}
             onChange={(value) => setAttributes({ aspectRatio: value })}

@@ -22,6 +22,8 @@ const StyleControl = ({
             isShownByDefault={isShownByDefault}
         >
             <SelectControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label={__("Media Style", "polaris-blocks")}
                 value={imageStyle || "none"}
                 options={[

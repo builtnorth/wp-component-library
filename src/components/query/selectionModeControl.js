@@ -38,6 +38,8 @@ function SelectionModeControl({
             isShownByDefault={isShownByDefault}
         >
             <ToggleGroupControl
+                __next40pxDefaultSize={true}
+                __nextHasNoMarginBottom
                 label={__("Selection Mode", "built_starter")}
                 value={selectionMode}
                 onChange={handleSelectionModeChange}

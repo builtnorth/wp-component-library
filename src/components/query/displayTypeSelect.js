@@ -37,6 +37,8 @@ function DisplayTypeSelect({
             isShownByDefault={isShownByDefault}
         >
             <SelectControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label="Display As"
                 value={displayAs}
                 options={displayOptions}

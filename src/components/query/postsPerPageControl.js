@@ -35,6 +35,8 @@ function PostsPerPageControl({
             isShownByDefault={isShownByDefault}
         >
             <RangeControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label={label}
                 value={postsPerPage}
                 onChange={(postsPerPageNew) =>

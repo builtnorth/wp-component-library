@@ -270,6 +270,8 @@ const JustificationSettings = ({ value, onChange, orientation }) => {
                 {__("Justification", "wp-component-library")}
             </span>
             <ToggleGroupControl
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize={true}
                 value={value || ""}
                 onChange={handleChange}
                 isBlock
@@ -313,6 +315,8 @@ const OrientationSettings = ({ value, onChange }) => {
                 {__("Orientation", "wp-component-library")}
             </span>
             <ToggleGroupControl
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize={true}
                 value={value || ""}
                 onChange={handleChange}
                 isBlock
@@ -344,6 +348,8 @@ const AlignmentSettings = ({ value, onChange }) => {
                 {__("Alignment", "wp-component-library")}
             </span>
             <ToggleGroupControl
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize={true}
                 value={value || ""}
                 onChange={handleChange}
                 isBlock
@@ -386,6 +392,8 @@ const ContentAlignmentSettings = ({ value, onChange }) => {
                 {__("Content", "wp-component-library")}
             </span>
             <ToggleGroupControl
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize={true}
                 value={value || ""}
                 onChange={handleChange}
                 isBlock

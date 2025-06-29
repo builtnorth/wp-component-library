@@ -22,7 +22,8 @@ const OpacityControl = ({
             isShownByDefault={isShownByDefault}
         >
             <RangeControl
-                __nextHasNoMarginBottom
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize
                 label={__("Media Opacity", "polaris-blocks")}
                 value={opacity || 15}
                 onChange={onChange}

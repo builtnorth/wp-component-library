@@ -136,6 +136,8 @@ function ManualTermSelector({
     const control = (
         <>
             <FormTokenField
+                __next40pxDefaultSize={true}
+                __nextHasNoMarginBottom
                 label={__("Select Terms", "built")}
                 value={selectedValues}
                 suggestions={suggestions.map((s) => s.value)}

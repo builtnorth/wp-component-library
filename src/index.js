@@ -27,6 +27,7 @@ export {
     JustificationSettings,
     JustificationToolbar,
     LayoutPanel,
+    LayoutWidthControl,
     OrientationSettings,
     OrientationToolbar,
 } from "./components/layout";

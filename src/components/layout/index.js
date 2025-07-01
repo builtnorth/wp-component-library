@@ -4,8 +4,10 @@ import {
     PanelRow,
     ToggleControl,
     __experimentalToggleGroupControl as ToggleGroupControl,
+    __experimentalToggleGroupControlOption as ToggleGroupControlOption,
     __experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
     ToolbarDropdownMenu,
+    __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import {
@@ -437,6 +439,40 @@ const AllowWrapSettings = ({ value, onChange }) => {
     );
 };
 
+const LayoutWidthControl = ({
+    value,
+    setAttributes,
+    isShownByDefault = true,
+}) => {
+    const defaultValue = "constrain";
+    return (
+        <ToolsPanelItem
+            hasValue={() => value !== defaultValue}
+            label={__("Layout", "wp-component-library")}
+            onDeselect={() => setAttributes({ layoutType: defaultValue })}
+            isShownByDefault={isShownByDefault}
+        >
+            <ToggleGroupControl
+                __nextHasNoMarginBottom={true}
+                __next40pxDefaultSize={true}
+                label={__("Type", "wp-component-library")}
+                value={value}
+                onChange={(val) => setAttributes({ layoutType: val })}
+                isBlock
+            >
+                <ToggleGroupControlOption
+                    label={__("Contain", "wp-component-library")}
+                    value="constrained"
+                />
+                <ToggleGroupControlOption
+                    label={__("Full Width", "wp-component-library")}
+                    value="flow"
+                />
+            </ToggleGroupControl>
+        </ToolsPanelItem>
+    );
+};
+
 const LayoutPanel = ({
     panelTitle,
     initialOpen = true,
@@ -514,6 +550,7 @@ export {
     JustificationSettings,
     JustificationToolbar,
     LayoutPanel,
+    LayoutWidthControl,
     OrientationSettings,
     OrientationToolbar,
 };

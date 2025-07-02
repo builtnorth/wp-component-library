@@ -543,6 +543,7 @@ const LayoutPanel = ({
 };
 
 export {
+    AlignmentSettings,
     AlignmentToolbar,
     AllowWrapSettings,
     ContentAlignmentSettings,

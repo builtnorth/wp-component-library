@@ -15,6 +15,8 @@
         "packages-update": "wp-scripts packages-update",
         "plugin-zip": "wp-scripts plugin-zip",
         "start": "wp-scripts start",
+        "start:quiet": "wp-scripts start --webpack-stats=minimal",
+        "start:pretty": "wp-scripts start --config ../../webpack.pretty.config.js",
         "test:e2e": "wp-scripts test-e2e",
         "test:unit": "wp-scripts test-unit-js",
         "build:debug": "NODE_ENV=development wp-scripts build",

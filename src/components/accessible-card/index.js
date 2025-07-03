@@ -11,30 +11,30 @@
  * @returns {WPElement} Accessible card link element to render.
  */
 function AccessibleCard({
-	link = "#",
-	target = null,
-	screenReader = "Read more about ...",
-	className = null,
+    link = "#",
+    target = null,
+    screenReader = "Read more about ...",
+    className = null,
 }) {
-	// Add target attribute
-	const targetAttr = target ? { target: target } : {};
+    // Add target attribute
+    const targetAttr = target ? { target: target } : {};
 
-	// Add class
-	const linkClass = className
-		? `${className}__accessible-card-link accessible-card-link`
-		: "accessible-card-link";
+    // Add class
+    const linkClass = className
+        ? `${className}__accessible-card-link accessible-card-link`
+        : "accessible-card-link";
 
-	return (
-		<a
-			className={linkClass}
-			aria-hidden="true"
-			tabIndex="-1"
-			href={link}
-			{...targetAttr}
-		>
-			<span className="screen-reader-text">{screenReader}</span>
-		</a>
-	);
+    return (
+        <a
+            className={linkClass}
+            aria-hidden="true"
+            tabIndex="-1"
+            href={link}
+            {...targetAttr}
+        >
+            <span className="screen-reader-only">{screenReader}</span>
+        </a>
+    );
 }
 
 export { AccessibleCard };

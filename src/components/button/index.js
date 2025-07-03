@@ -24,7 +24,7 @@ function ButtonFrontend({
 }) {
     // Add screen reader text
     const screenReaderElement = screenReader ? (
-        <span className="screen-reader-text">{screenReader}</span>
+        <span className="screen-reader-only">{screenReader}</span>
     ) : null;
 
     // Add target attribute

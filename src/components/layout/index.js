@@ -97,11 +97,11 @@ const AlignmentToolbar = ({ value, onChange }) => {
                 {
                     icon: <Icon icon={getIcon("top")} />,
                     title: __("Top", "wp-component-library"),
-                    isActive: value === "flex-start",
-                    onClick: () => handleChange("flex-start"),
+                    isActive: value === "top",
+                    onClick: () => handleChange("top"),
                 },
                 {
-                    icon: <Icon icon={getIcon("middle")} />,
+                    icon: <Icon icon={getIcon("center")} />,
                     title: __("Center", "wp-component-library"),
                     isActive: value === "center",
                     onClick: () => handleChange("center"),
@@ -109,8 +109,8 @@ const AlignmentToolbar = ({ value, onChange }) => {
                 {
                     icon: <Icon icon={getIcon("bottom")} />,
                     title: __("Bottom", "wp-component-library"),
-                    isActive: value === "flex-end",
-                    onClick: () => handleChange("flex-end"),
+                    isActive: value === "bottom",
+                    onClick: () => handleChange("bottom"),
                 },
                 {
                     icon: <Icon icon={getIcon("stretch")} />,

@@ -1,7 +1,9 @@
 import {
     Flex,
-    PanelBody,
+    FlexBlock,
     SelectControl,
+    __experimentalToolsPanel as ToolsPanel,
+    __experimentalToolsPanelItem as ToolsPanelItem,
     __experimentalUnitControl as UnitControl,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
@@ -24,37 +26,86 @@ const aspectRatioOptions = [
  * @param {function} props.setAttributes
  */
 const ImageControls = ({
-    aspectRatio = "original",
+    aspectRatio = "4/3",
     width = "auto",
     height = "auto",
     setAttributes,
-}) => (
-    <PanelBody title={__("Image Settings", "polaris-blocks")}>
-        <SelectControl
-            __nextHasNoMarginBottom={true}
-            __next40pxDefaultSize
-            label={__("Aspect Ratio", "polaris-blocks")}
-            value={aspectRatio}
-            onChange={(value) => setAttributes({ aspectRatio: value })}
-            options={aspectRatioOptions}
-        />
-        <Flex align="flex-start" gap={2}>
-            <UnitControl
-                __next40pxDefaultSize
-                label={__("Width", "polaris-blocks")}
-                onChange={(value) => setAttributes({ width: value })}
-                value={width}
-                placeholder={__("Auto", "polaris-blocks")}
-            />
-            <UnitControl
-                __next40pxDefaultSize
-                label={__("Height", "polaris-blocks")}
-                onChange={(value) => setAttributes({ height: value })}
-                value={height}
-                placeholder={__("Auto", "polaris-blocks")}
-            />
-        </Flex>
-    </PanelBody>
-);
+}) => {
+    const resetAllFilter = (newAttributes) => {
+        return {
+            ...newAttributes,
+            aspectRatio: "4/3",
+            width: "auto",
+            height: "auto",
+        };
+    };
+
+    return (
+        <ToolsPanel
+            label={__("Image Settings", "polaris-blocks")}
+            resetAllFilter={resetAllFilter}
+            panelId="image-settings"
+        >
+            <ToolsPanelItem
+                hasValue={() => aspectRatio !== "4/3"}
+                label={__("Aspect Ratio", "polaris-blocks")}
+                onDeselect={() => setAttributes({ aspectRatio: "4/3" })}
+                resetAllFilter={resetAllFilter}
+                isShownByDefault
+                panelId="image-settings"
+            >
+                <SelectControl
+                    __nextHasNoMarginBottom={true}
+                    __next40pxDefaultSize
+                    label={__("Aspect Ratio", "polaris-blocks")}
+                    value={aspectRatio}
+                    onChange={(value) => setAttributes({ aspectRatio: value })}
+                    options={aspectRatioOptions}
+                />
+            </ToolsPanelItem>
+
+            <Flex gap={4} style={{ minWidth: 250 }}>
+                <FlexBlock>
+                    <ToolsPanelItem
+                        hasValue={() => width !== "auto"}
+                        label={__("Width", "polaris-blocks")}
+                        onDeselect={() => setAttributes({ width: "auto" })}
+                        resetAllFilter={resetAllFilter}
+                        panelId="image-settings"
+                    >
+                        <UnitControl
+                            __next40pxDefaultSize
+                            label={__("Width", "polaris-blocks")}
+                            onChange={(value) =>
+                                setAttributes({ width: value })
+                            }
+                            value={width}
+                            placeholder={__("Auto", "polaris-blocks")}
+                        />
+                    </ToolsPanelItem>
+                </FlexBlock>
+                <FlexBlock>
+                    <ToolsPanelItem
+                        hasValue={() => height !== "auto"}
+                        label={__("Height", "polaris-blocks")}
+                        onDeselect={() => setAttributes({ height: "auto" })}
+                        resetAllFilter={resetAllFilter}
+                        panelId="image-settings"
+                    >
+                        <UnitControl
+                            __next40pxDefaultSize
+                            label={__("Height", "polaris-blocks")}
+                            onChange={(value) =>
+                                setAttributes({ height: value })
+                            }
+                            value={height}
+                            placeholder={__("Auto", "polaris-blocks")}
+                        />
+                    </ToolsPanelItem>
+                </FlexBlock>
+            </Flex>
+        </ToolsPanel>
+    );
+};
 
 export { ImageControls };

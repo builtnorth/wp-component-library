@@ -5,7 +5,7 @@
  */
 
 /* Styles */
-import "./styles/_misc.scss";
+import "./styles/index.scss";
 
 /* Components */
 export { AccessibleCard } from "./components/accessible-card";

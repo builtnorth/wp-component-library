@@ -15,8 +15,6 @@ import { edit, upload } from "@wordpress/icons";
 import { AttachmentImage } from "../attachment-image";
 const ALLOWED_MEDIA_TYPES = ["image"];
 
-import "./index.scss";
-
 /**
  * Toolbar Media Upload
  *

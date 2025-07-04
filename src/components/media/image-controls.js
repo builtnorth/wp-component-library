@@ -2,6 +2,7 @@ import {
     Flex,
     FlexBlock,
     SelectControl,
+    ToggleControl,
     __experimentalToolsPanel as ToolsPanel,
     __experimentalToolsPanelItem as ToolsPanelItem,
     __experimentalUnitControl as UnitControl,
@@ -23,12 +24,14 @@ const aspectRatioOptions = [
  * @param {string} props.aspectRatio
  * @param {string} props.width
  * @param {string} props.height
+ * @param {boolean} props.showCaption
  * @param {function} props.setAttributes
  */
 const ImageControls = ({
     aspectRatio = "4/3",
     width = "auto",
     height = "auto",
+    showCaption = false,
     setAttributes,
 }) => {
     const resetAllFilter = (newAttributes) => {
@@ -37,6 +40,7 @@ const ImageControls = ({
             aspectRatio: "4/3",
             width: "auto",
             height: "auto",
+            showCaption: false,
         };
     };
 
@@ -104,6 +108,22 @@ const ImageControls = ({
                     </ToolsPanelItem>
                 </FlexBlock>
             </Flex>
+
+            <ToolsPanelItem
+                hasValue={() => showCaption !== false}
+                label={__("Show Caption", "polaris-blocks")}
+                onDeselect={() => setAttributes({ showCaption: false })}
+                resetAllFilter={resetAllFilter}
+                isShownByDefault={false}
+                panelId="image-settings"
+            >
+                <ToggleControl
+                    __nextHasNoMarginBottom={true}
+                    label={__("Show Caption", "polaris-blocks")}
+                    checked={showCaption}
+                    onChange={(value) => setAttributes({ showCaption: value })}
+                />
+            </ToolsPanelItem>
         </ToolsPanel>
     );
 };

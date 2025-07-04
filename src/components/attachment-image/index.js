@@ -23,6 +23,7 @@ function AttachmentImage({
     includeFigure = true,
     size = "full",
     maxWidth = "100px",
+    caption = null,
     ...overrideProps
 }) {
     const { image } = useSelect((select) => ({
@@ -65,9 +66,9 @@ function AttachmentImage({
 
     const imgElement = <img {...imageAttributes()} />;
     const captionElement =
-        showCaption && image.caption.rendered ? (
+        showCaption && caption ? (
             <figcaption className={appendToFirstClass(className, "__caption")}>
-                {image.caption.rendered}
+                {caption}
             </figcaption>
         ) : null;
 

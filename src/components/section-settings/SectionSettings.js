@@ -12,6 +12,7 @@ import {
     ImageSourceControl,
     MediaSelectControl,
     OpacityControl,
+    ShowCaptionControl,
     StyleControl,
 } from "./controls";
 
@@ -22,6 +23,7 @@ const SectionSettings = ({
     opacity = 15,
     imageStyle = "none",
     useFeaturedImage = false,
+    showCaption = false,
 
     // Event handlers
     onImageSelect,
@@ -30,11 +32,13 @@ const SectionSettings = ({
     onOpacityChange,
     onImageStyleChange,
     onFeaturedImageToggle,
+    onShowCaptionChange,
 
     // Feature flags
     enableFeaturedImage = false,
     enableMediaStyle = false,
     enableMediaOpacity = false,
+    enableShowCaption = false,
 
     // Panel configuration
     panelTitle = __("Background Media", "polaris-blocks"),
@@ -82,6 +86,9 @@ const SectionSettings = ({
         }
         if (enableMediaStyle && onImageStyleChange) {
             onImageStyleChange("none");
+        }
+        if (enableShowCaption && onShowCaptionChange) {
+            onShowCaptionChange(false);
         }
         if (onImageRemove) {
             onImageRemove();
@@ -132,6 +139,15 @@ const SectionSettings = ({
                                             isShownByDefault={false}
                                         />
                                     )}
+
+                                    {enableShowCaption &&
+                                        onShowCaptionChange && (
+                                            <ShowCaptionControl
+                                                showCaption={showCaption}
+                                                onChange={onShowCaptionChange}
+                                                isShownByDefault={false}
+                                            />
+                                        )}
                                 </Fragment>
                             )}
                         </Fragment>

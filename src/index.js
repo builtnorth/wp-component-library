@@ -42,6 +42,7 @@ export { MetaAdvanced } from "./components/meta/meta-advanced";
 export { MetaPanel } from "./components/meta/meta-panel";
 export { Pagination } from "./components/pagination";
 // Query Controls - Individual ToolsPanelItems that can be composed together
+export { aspectRatioOptions } from "./components/media/utils/aspect-ratios";
 export {
     ColumnCountControl,
     defaultOrderOptions,

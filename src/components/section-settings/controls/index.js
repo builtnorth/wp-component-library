@@ -9,4 +9,5 @@ export { ImageCaptionControl } from "./ImageCaptionControl";
 export { ImageSourceControl } from "./ImageSourceControl";
 export { MediaSelectControl } from "./MediaSelectControl";
 export { OpacityControl } from "./OpacityControl";
+export { ShowCaptionControl } from "./ShowCaptionControl";
 export { StyleControl } from "./StyleControl";

@@ -9,14 +9,7 @@ import {
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
-const aspectRatioOptions = [
-    { label: __("Original", "polaris-blocks"), value: "original" },
-    { label: "16:9 (Extra Wide)", value: "16/9" },
-    { label: "4:3 (Wide)", value: "4/3" },
-    { label: "1:1 (Square)", value: "1/1" },
-    { label: "3:4 (Tall)", value: "3/4" },
-    { label: "9:16 (Extra Tall)", value: "9/16" },
-];
+import { aspectRatioOptions } from "./utils/aspect-ratios";
 
 /**
  * Reusable image controls for aspect ratio, width, and height.

@@ -26,6 +26,7 @@
         }
 
         &__toolbar {
+            border: 1px solid #d6d7d7 !important;
             background-color: transparent;
             position: absolute;
             top: -16px;
@@ -35,8 +36,16 @@
             height: 36px;
             border: none;
 
+            .components-toolbar-group {
+                height: 36px;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                border-color: #d6d7d7;
+            }
+
             // Toolbar button styling
-            .components-button.has-icon {
+            .components-button {
                 min-height: 36px;
                 height: 36px;
             }
@@ -47,16 +56,10 @@
             }
 
             // All toolbar sections
-            .components-toolbar {
-                border: 1px solid #d6d7d7;
-                background-color: #ffffff;
-                margin-right: -1px;
-                min-height: 36px;
-                height: 36px;
-
+            .components-toolbar-group {
                 svg {
-                    height: 18px;
-                    width: 18px;
+                    height: 20px;
+                    width: 20px;
                 }
             }
         }

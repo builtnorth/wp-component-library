@@ -23,6 +23,7 @@ function AttachmentImage({
     includeFigure = true,
     size = "full",
     maxWidth = "100px",
+    aspectRatio = "4/3",
     caption = null,
     ...overrideProps
 }) {
@@ -30,7 +31,7 @@ function AttachmentImage({
         image: select("core").getMedia(imageId),
     }));
 
-    if (!image) return null;
+    if (!imageId || imageId === 0 || !image) return null;
 
     const appendToFirstClass = (classString, appendix) => {
         const classes = classString.split(" ");
@@ -48,6 +49,9 @@ function AttachmentImage({
             width: image.media_details.width,
             height: image.media_details.height,
             sizes: `(max-width: ${maxWidth}) 100vw, ${maxWidth}`,
+            style: {
+                aspectRatio: aspectRatio,
+            },
         };
 
         if (

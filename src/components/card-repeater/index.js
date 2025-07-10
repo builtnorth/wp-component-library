@@ -10,7 +10,7 @@ import {
     ToolbarGroup,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { chevronDown, chevronUp, plus, trash } from "@wordpress/icons";
+import { arrowDown, arrowUp, plus, trash } from "@wordpress/icons";
 import PropTypes from "prop-types";
 
 import "./index.scss";
@@ -96,32 +96,35 @@ function CardRepeater({
                         >
                             <CardBody>
                                 <Toolbar
+                                    label={__(
+                                        "Card Repeater Toolbar",
+                                        "polaris",
+                                    )}
                                     className="card-repeater__toolbar"
                                     style={{ marginBottom: "1rem" }}
                                 >
                                     <ToolbarGroup>
                                         <ToolbarButton
-                                            icon={getDefaultIcon(item, index)}
                                             title={getDefaultTitle(item, index)}
                                             text={getDefaultTitle(item, index)}
                                             disabled={true}
                                         />
                                     </ToolbarGroup>
-                                    {index > 0 && (
-                                        <ToolbarGroup>
+                                    <ToolbarGroup>
+                                        {index > 0 && (
                                             <ToolbarButton
-                                                icon={chevronUp}
+                                                icon={arrowUp}
                                                 title={__("Move Up", "polaris")}
                                                 onClick={() =>
                                                     handleMove(index, "up")
                                                 }
                                             />
-                                        </ToolbarGroup>
-                                    )}
+                                        )}
+                                    </ToolbarGroup>
                                     {index < items.length - 1 && (
                                         <ToolbarGroup>
                                             <ToolbarButton
-                                                icon={chevronDown}
+                                                icon={arrowDown}
                                                 title={__(
                                                     "Move Down",
                                                     "polaris",
@@ -178,7 +181,8 @@ function CardRepeater({
 CardRepeater.propTypes = {
     items: PropTypes.arrayOf(
         PropTypes.shape({
-            id: PropTypes.string.isRequired,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+                .isRequired,
         }),
     ).isRequired,
     renderItem: PropTypes.func.isRequired,

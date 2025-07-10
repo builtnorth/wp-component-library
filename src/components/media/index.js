@@ -28,12 +28,22 @@ function ToolbarMediaUpload({
     multiple,
     buttonTitle,
 }) {
+    // Handle both ID and object formats for mediaIDs
+    const getMediaId = (mediaData) => {
+        if (!mediaData) return null;
+        if (typeof mediaData === "number") return mediaData;
+        if (typeof mediaData === "object" && mediaData.id) return mediaData.id;
+        return null;
+    };
+
+    const mediaId = getMediaId(mediaIDs);
+
     return (
         <MediaUploadCheck>
             <MediaUpload
                 onSelect={onSelect}
                 allowedTypes={ALLOWED_MEDIA_TYPES}
-                value={mediaIDs}
+                value={mediaId}
                 render={({ open }) => (
                     <ToolbarButton
                         icon={edit}
@@ -62,17 +72,42 @@ function InspectorMediaUpload({
     multiple,
     buttonTitle,
     variant,
+    showFeatureImage = false,
+    featureImage = null,
+    label = null,
+    help = null,
     showImagePlaceholder,
     getImageUrlFromMediaIDs,
 }) {
-    const hasImage = Array.isArray(mediaIDs) ? mediaIDs.length > 0 : !!mediaIDs;
+    // Handle both ID and object formats for mediaIDs
+    const getMediaId = (mediaData) => {
+        if (!mediaData) return null;
+        if (typeof mediaData === "number") return mediaData;
+        if (typeof mediaData === "object" && mediaData.id) return mediaData.id;
+        return null;
+    };
+
+    const mediaId = getMediaId(mediaIDs);
+    const hasImage = !!mediaId;
+    const hasFeatureImage = !!(
+        showFeatureImage &&
+        featureImage &&
+        featureImage !== 0
+    );
 
     return (
-        <>
-            {showImagePlaceholder && !hasImage && (
+        <Flex direction="column" expanded={true} style={{ flexGrow: 1 }}>
+            {(label || help) && (
+                <div className="polaris-label-and-help">
+                    {label && <p className="polaris-pseudo-label">{label}</p>}
+                    {help && <p className="polaris-help-text">{help}</p>}
+                </div>
+            )}
+            {showImagePlaceholder && !hasImage && !hasFeatureImage && (
                 <Placeholder
                     withIllustration={true}
                     className="built-editor-panel-image placeholder-image placeholder-image--built"
+                    style={{ aspectRatio: "16/9" }}
                 />
             )}
 
@@ -80,8 +115,20 @@ function InspectorMediaUpload({
                 <div className="built-editor-panel-image">
                     <AttachmentImage
                         className="built-editor-panel-image"
-                        imageId={mediaIDs}
-                        size="full"
+                        imageId={mediaId}
+                        size="wide_medium"
+                        aspectRatio={16 / 9}
+                    />
+                </div>
+            )}
+
+            {showImagePlaceholder && hasFeatureImage && !hasImage && (
+                <div className="built-editor-panel-image">
+                    <AttachmentImage
+                        className="built-editor-panel-image"
+                        imageId={featureImage}
+                        size="wide_medium"
+                        aspectRatio={16 / 9}
                     />
                 </div>
             )}
@@ -91,7 +138,7 @@ function InspectorMediaUpload({
                     <MediaUpload
                         onSelect={onSelect}
                         allowedTypes={ALLOWED_MEDIA_TYPES}
-                        value={mediaIDs}
+                        value={mediaId}
                         render={({ open }) => (
                             <Button
                                 __next40pxDefaultSize
@@ -111,11 +158,11 @@ function InspectorMediaUpload({
                         multiple={multiple}
                     />
                 ) : (
-                    <Flex>
+                    <Flex direction="column">
                         <MediaUpload
                             onSelect={onSelect}
                             allowedTypes={ALLOWED_MEDIA_TYPES}
-                            value={mediaIDs}
+                            value={mediaId}
                             render={({ open }) => (
                                 <Button
                                     __next40pxDefaultSize
@@ -143,7 +190,7 @@ function InspectorMediaUpload({
                     </Flex>
                 )}
             </MediaUploadCheck>
-        </>
+        </Flex>
     );
 }
 
@@ -161,6 +208,16 @@ function EditorMediaUpload({
     buttonTitle,
     style,
 }) {
+    // Handle both ID and object formats for mediaIDs
+    const getMediaId = (mediaData) => {
+        if (!mediaData) return null;
+        if (typeof mediaData === "number") return mediaData;
+        if (typeof mediaData === "object" && mediaData.id) return mediaData.id;
+        return null;
+    };
+
+    const mediaId = getMediaId(mediaIDs);
+
     return (
         <Placeholder
             style={style}
@@ -171,7 +228,7 @@ function EditorMediaUpload({
                 <MediaUpload
                     onSelect={onSelect}
                     allowedTypes={ALLOWED_MEDIA_TYPES}
-                    value={mediaIDs}
+                    value={mediaId}
                     render={({ open }) => (
                         <Button
                             icon={upload}

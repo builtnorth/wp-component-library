@@ -3,6 +3,8 @@ import { useRef, useState } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 import { Icon, plusCircle } from "@wordpress/icons";
 
+import "./index.scss";
+
 /**
  * VariableInserter Component
  *
@@ -26,7 +28,7 @@ const VariableInserter = ({
     buttonProps = {},
     placeholder = __("Insert Variable", "wp-component-library"),
     className = "",
-    size = "small",
+    size = "default",
     variant = "tertiary",
     ...props
 }) => {

@@ -45,15 +45,15 @@ export { Pagination } from "./components/pagination";
 export { aspectRatioOptions } from "./components/media/utils/aspect-ratios";
 export {
     ColumnCountControl,
-    defaultOrderOptions,
     DisplayTypeSelect,
     ManualPostSelector,
     ManualTermSelector,
     OrderBySelect,
-    PostsPerPageControl,
     PostTypeSelect,
+    PostsPerPageControl,
     SelectionModeControl,
     TaxonomySelect,
+    defaultOrderOptions,
 } from "./components/query";
 export {
     // Individual control components for custom compositions
@@ -66,3 +66,4 @@ export {
     StyleControl,
 } from "./components/section-settings";
 export { GetTerms } from "./components/terms";
+export { default as VariableInserter } from "./components/variable-inserter";

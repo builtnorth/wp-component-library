@@ -1,0 +1,54 @@
+.variable-inserter {
+    display: inline-flex;
+    align-items: center;
+
+    &__popover {
+        min-width: 280px;
+        max-width: 400px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    &__variables {
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__variable {
+        display: flex;
+        align-items: center;
+        text-align: left;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: var(--wp-admin-theme-color);
+            color: white;
+        }
+    }
+
+    &__variable-label {
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    &__empty {
+        padding: 16px;
+        text-align: center;
+        color: #666;
+        font-style: italic;
+    }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+    .variable-inserter {
+        &__empty {
+            color: #ccc;
+        }
+    }
+}

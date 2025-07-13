@@ -13,37 +13,39 @@
  * @returns {WPElement} Button element to render.
  */
 function ButtonFrontend({
-	className = null,
-	style = "default",
-	text = "Button Text",
-	link = "#",
-	target = null,
-	screenReader = null,
+    className = null,
+    size = "default",
+    style = "default",
+    text = "Button Text",
+    link = "#",
+    target = null,
+    screenReader = null,
+    wrapperAttributes = null,
 }) {
-	// Add screen reader text
-	const screenReaderElement = screenReader ? (
-		<span className="screen-reader-text">{screenReader}</span>
-	) : null;
+    // Add screen reader text
+    const screenReaderElement = screenReader ? (
+        <span className="screen-reader-only">{screenReader}</span>
+    ) : null;
 
-	// Add target attribute
-	const targetAttr = target ? { target: target } : {};
+    // Add target attribute
+    const targetAttr = target ? { target: target } : {};
 
-	// Add classes
-	const wrapperClass = className
-		? `${className}__button wp-block-button is-style-${style}`
-		: `wp-block-button is-style-${style}`;
-	const linkClass = className
-		? `${className}__button-link wp-block-button__link wp-element-button`
-		: "wp-block-button__link wp-element-button";
+    // Add classes
+    const wrapperClass = className
+        ? `${className}__button is-size-${size}`
+        : `wp-block-polaris-button is-style-${style} is-size-${size}`;
+    const linkClass = className
+        ? `wp-block-polaris-button__link wp-block-polaris-button__text`
+        : "wp-block-polaris-button__text";
 
-	return (
-		<div className={wrapperClass}>
-			<a className={linkClass} href={link} {...targetAttr}>
-				{text}
-				{screenReaderElement}
-			</a>
-		</div>
-	);
+    return (
+        <span className={wrapperClass}>
+            <span className={linkClass}>
+                {text}
+                {screenReaderElement}
+            </span>
+        </span>
+    );
 }
 
 export { ButtonFrontend };

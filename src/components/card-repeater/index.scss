@@ -1,0 +1,131 @@
+.card-repeater {
+    .card-repeater {
+        &__items {
+            margin-bottom: 0;
+        }
+
+        &__item {
+            margin-top: 1rem;
+            margin-bottom: 2.5rem;
+            background-color: #f8f8f8;
+            position: relative;
+            border-radius: 0;
+
+            &:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            // Card body adjustments for toolbar positioning
+            .components-card__body {
+                padding-top: 36px;
+            }
+
+            .components-combobox-control__suggestions-container {
+                background-color: var(--color--white);
+            }
+        }
+
+        &__toolbar {
+            border: 1px solid #d6d7d7 !important;
+            background-color: transparent;
+            position: absolute;
+            top: -16px;
+            left: 23px;
+            margin-bottom: 1rem;
+            min-height: 36px;
+            height: 36px;
+            border: none;
+
+            .components-toolbar-group {
+                height: 36px;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                border-color: #d6d7d7;
+            }
+
+            // Toolbar button styling
+            .components-button {
+                min-height: 36px;
+                height: 36px;
+            }
+
+            // First toolbar group (title button)
+            .components-toolbar:first-child .components-button {
+                cursor: default;
+            }
+
+            // All toolbar sections
+            .components-toolbar-group {
+                svg {
+                    height: 20px;
+                    width: 20px;
+                }
+            }
+        }
+
+        &__content {
+            // Custom content styles can be added here
+            // This is where the renderItem content will be displayed
+            width: 100%;
+        }
+
+        &__add-button {
+            justify-self: flex-start;
+            margin-top: 1rem;
+            .components-button {
+                width: 100%;
+                justify-content: center;
+
+                &.has-icon {
+                    justify-content: center;
+
+                    .components-button__icon {
+                        margin-right: 8px;
+                    }
+                }
+            }
+        }
+
+        &__empty-state {
+            p {
+                text-align: left;
+                margin: 0;
+                opacity: 0.75;
+                font-style: italic;
+            }
+        }
+
+        // Form controls styling
+        .components-combobox-control__suggestions-container {
+            background-color: var(--color--white);
+            position: relative;
+        }
+
+        .components-form-token-field__suggestions-list {
+            z-index: 99;
+            position: absolute;
+            top: 32px;
+            background-color: var(--color--white);
+        }
+
+        // URL field disabled state
+        .social-media__url,
+        .admin-link-control .components-text-control {
+            &.is-disabled {
+                opacity: 0.75;
+            }
+        }
+    }
+
+    // Responsive adjustments
+    @media (max-width: 600px) {
+        .card-repeater {
+            &__toolbar {
+                .components-toolbar {
+                    margin-right: 4px;
+                }
+            }
+        }
+    }
+}

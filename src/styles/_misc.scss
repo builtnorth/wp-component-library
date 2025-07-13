@@ -1,0 +1,31 @@
+.components-button.is-full-width {
+    flex-grow: 1;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Mimic core help text style */
+.polaris-help-text,
+.polaris-admin-help-text {
+    font-size: 12px;
+    font-style: normal;
+    color: rgb(117, 117, 117);
+}
+
+/* Mimic label style from core, if a field has no label */
+.polaris-pseudo-label {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: calc(8px);
+    padding: 0px;
+}
+
+/* Editor panel image */
+.built-editor-panel-image {
+    &__img {
+        object-fit: cover;
+    }
+}

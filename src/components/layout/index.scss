@@ -1,12 +1,20 @@
 .builtnorth-wp-component-library-toggle-control {
-	margin-top: 10px;
-	.components-toggle-control__label {
-		max-width: 100%;
-	}
+    margin-top: 10px;
+    .components-toggle-control__label {
+        max-width: 100%;
+    }
 }
 
 .builtnorth-vertical-align-control {
-	svg {
-		transform: rotate(90deg);
-	}
+    svg {
+        transform: rotate(90deg);
+    }
+}
+
+// Scoped to avoid conflicts with dashboard styles
+.builtnorth-layout-controls,
+.wp-component-library {
+    .components-panel__row {
+        min-height: 0;
+    }
 }

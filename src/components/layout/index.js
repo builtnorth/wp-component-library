@@ -23,7 +23,6 @@ import {
     justifyStretch,
 } from "@wordpress/icons";
 
-import "./index.scss";
 
 const AlignmentToolbar = ({ value, onChange }) => {
     const getIcon = (alignment) => {

@@ -11,13 +11,8 @@
     }
 }
 
-.builtnorth-layout-controls {
-    .components-panel__row {
-        min-height: 0;
-    }
-}
-
 // Scoped to avoid conflicts with dashboard styles
+.builtnorth-layout-controls,
 .wp-component-library {
     .components-panel__row {
         min-height: 0;

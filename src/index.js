@@ -4,8 +4,17 @@
  * A collection of reusable components for WordPress projects.
  */
 
-/* Styles */
-import "./styles/index.scss";
+/**
+ * Styles
+ * 
+ * NOTE: Styles are now built separately to prevent duplication.
+ * Import the built CSS file in your project:
+ * - For development: import '@builtnorth/wp-component-library/build/style.css';
+ * - For production: Enqueue the CSS file separately in WordPress
+ * 
+ * If you need styles bundled with JS (not recommended), uncomment:
+ * import "./styles/index.scss";
+ */
 
 /* Components */
 export { AccessibleCard } from "./components/accessible-card";

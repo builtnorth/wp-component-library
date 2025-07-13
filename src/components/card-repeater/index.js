@@ -13,8 +13,6 @@ import { __ } from "@wordpress/i18n";
 import { arrowDown, arrowUp, plus, trash } from "@wordpress/icons";
 import PropTypes from "prop-types";
 
-import "./index.scss";
-
 /**
  * Card Repeater Component
  *

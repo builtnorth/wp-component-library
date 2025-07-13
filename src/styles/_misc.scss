@@ -4,6 +4,8 @@
     width: 100%;
 }
 
+/* Mimic core help text style */
+.polaris-help-text,
 .polaris-admin-help-text {
     font-size: 12px;
     font-style: normal;
@@ -19,13 +21,6 @@
     display: inline-block;
     margin-bottom: calc(8px);
     padding: 0px;
-}
-
-/* Mimic core help text style */
-.polaris-help-text {
-    font-size: 12px;
-    font-style: normal;
-    color: rgb(117, 117, 117);
 }
 
 /* Editor panel image */

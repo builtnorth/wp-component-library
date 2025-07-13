@@ -6,8 +6,6 @@ import { Icon, plus } from "@wordpress/icons";
 
 import { __ } from "@wordpress/i18n";
 
-import "./index.scss";
-
 function CustomBlockAppender({
     rootClientId,
     appenderTitle,

@@ -3,7 +3,6 @@ import { useRef, useState } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 import { Icon, plusCircle } from "@wordpress/icons";
 
-import "./index.scss";
 
 /**
  * VariableInserter Component

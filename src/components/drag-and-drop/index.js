@@ -18,7 +18,6 @@ import React from "react";
  * @param {string} props.emptyStateText - Text to show when list is empty
  */
 
-import "./index.scss";
 
 const ReorderableList = ({
     items = [],

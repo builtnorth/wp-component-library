@@ -44,6 +44,7 @@ export {
 export {
     EditorMediaUpload,
     InspectorMediaUpload,
+    SettingsMediaUpload,
     ToolbarMediaUpload,
 } from "./components/media";
 export { ImageControls } from "./components/media/image-controls";

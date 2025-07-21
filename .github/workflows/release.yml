@@ -28,7 +28,7 @@ jobs:
               with:
                   repository: ${{ github.repository_owner }}/basecamp-dev
                   path: workspace-root
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ secrets.POLARIS_PLUGIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
             - name: Setup workspace and install dependencies
               run: |

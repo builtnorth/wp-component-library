@@ -84,7 +84,7 @@ jobs:
 
             - name: Publish to GitHub Packages
               run: |
-                  cd release-package
+                  cd workspace-root/npm_packages/${{ steps.version.outputs.PACKAGE_NAME }}/release-package
 
                   # Configure npm for GitHub Packages
                   echo "@builtnorth:registry=https://npm.pkg.github.com" >> .npmrc
@@ -122,4 +122,4 @@ jobs:
 
                       ### Changelog
                       See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)" \
-                    ./${{ steps.version.outputs.PACKAGE_NAME }}-${{ steps.version.outputs.VERSION }}.tar.gz
+                    workspace-root/npm_packages/${{ steps.version.outputs.PACKAGE_NAME }}/${{ steps.version.outputs.PACKAGE_NAME }}-${{ steps.version.outputs.VERSION }}.tar.gz

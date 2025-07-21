@@ -23,14 +23,35 @@ jobs:
               with:
                   node-version: "22"
 
-            - name: Install dependencies
-              run: npm ci
+            - name: Checkout parent repository for workspace
+              uses: actions/checkout@v3
+              with:
+                  repository: ${{ github.repository_owner }}/basecamp-dev
+                  path: workspace-root
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Setup workspace and install dependencies
+              run: |
+                  # Copy this package into the workspace structure
+                  mkdir -p workspace-root/npm_packages
+                  cp -r . workspace-root/npm_packages/${{ steps.version.outputs.PACKAGE_NAME }}
+                  
+                  # Navigate to workspace root
+                  cd workspace-root
+                  
+                  # Install all dependencies (respects workspace)
+                  npm ci
 
             - name: Build package
-              run: npm run build
+              run: |
+                  cd workspace-root/npm_packages/${{ steps.version.outputs.PACKAGE_NAME }}
+                  npm run build
 
             - name: Create distribution package
               run: |
+                  # Work from the package directory
+                  cd workspace-root/npm_packages/${{ steps.version.outputs.PACKAGE_NAME }}
+                  
                   # Create dist directory
                   mkdir -p dist
                   

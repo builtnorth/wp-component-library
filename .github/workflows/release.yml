@@ -34,7 +34,8 @@ jobs:
               run: |
                   # Copy this package into the workspace structure
                   mkdir -p workspace-root/npm_packages
-                  cp -r . workspace-root/npm_packages/${{ steps.version.outputs.PACKAGE_NAME }}
+                  # Use rsync to exclude the workspace-root directory itself
+                  rsync -av --exclude='workspace-root' --exclude='.git' . workspace-root/npm_packages/${{ steps.version.outputs.PACKAGE_NAME }}/
                   
                   # Navigate to workspace root
                   cd workspace-root

@@ -1,40 +1,37 @@
 {
-    "name": "@builtnorth/wp-component-library",
-    "version": "1.0.0",
-    "description": "Library of components for use in the WordPress block editor.",
-    "main": "src/index.js",
-    "style": "build/style.css",
-    "scripts": {
-        "build": "wp-scripts build",
-        "check-engines": "wp-scripts check-engines",
-        "check-licenses": "wp-scripts check-licenses",
-        "format": "wp-scripts format",
-        "lint:css": "wp-scripts lint-style",
-        "lint:js": "wp-scripts lint-js",
-        "lint:md:docs": "wp-scripts lint-md-docs",
-        "lint:pkg-json": "wp-scripts lint-pkg-json",
-        "packages-update": "wp-scripts packages-update",
-        "plugin-zip": "wp-scripts plugin-zip",
-        "start": "wp-scripts start",
-        "start:quiet": "wp-scripts start --webpack-stats=minimal",
-        "start:pretty": "wp-scripts start --config ../../webpack.pretty.config.js",
-        "test:e2e": "wp-scripts test-e2e",
-        "test:unit": "wp-scripts test-unit-js",
-        "build:debug": "NODE_ENV=development wp-scripts build",
-        "inspect": "wp-scripts build --webpack-bundle-analyzer"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+:https://github.com/builtnorth/wp-component-library.git"
-    },
-    "author": "Built North",
-    "license": "GPL-2.0-or-later",
-    "bugs": {
-        "url": "https://github.com/builtnorth/wp-component-library.git/issues"
-    },
-    "homepage": "https://github.com/builtnorth/wp-admin-dashboard?tab=readme-ov-file#readme",
-    "devDependencies": {
-        "@wordpress/icons": "^10.7.0",
-        "@wordpress/scripts": "^30.18.0"
-    }
+	"name": "@builtnorth/wp-component-library",
+	"version": "1.0.0",
+	"description": "Library of components for use in the WordPress block editor.",
+	"main": "src/index.js",
+	"style": "build/style.css",
+	"scripts": {
+		"build": "wp-scripts build",
+		"check-engines": "wp-scripts check-engines",
+		"check-licenses": "wp-scripts check-licenses",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"lint:md:docs": "wp-scripts lint-md-docs",
+		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start",
+		"start:quiet": "wp-scripts start --webpack-stats=minimal",
+		"start:pretty": "wp-scripts start --config ../../webpack.pretty.config.js",
+		"test:e2e": "wp-scripts test-e2e",
+		"test:unit": "wp-scripts test-unit-js",
+		"build:debug": "NODE_ENV=development wp-scripts build",
+		"inspect": "wp-scripts build --webpack-bundle-analyzer"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+:https://github.com/builtnorth/wp-component-library.git"
+	},
+	"author": "Built North",
+	"license": "GPL-2.0-or-later",
+	"bugs": {
+		"url": "https://github.com/builtnorth/wp-component-library.git/issues"
+	},
+	"homepage": "https://github.com/builtnorth/wp-admin-dashboard?tab=readme-ov-file#readme",
+	"devDependencies": {}
 }

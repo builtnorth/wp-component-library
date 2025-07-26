@@ -21,6 +21,7 @@ export default function CustomSortableToken({
 	onRemove,
 	disabled = false,
 	isPlainText = false,
+	isVariable = false,
 }) {
 	const {
 		attributes,
@@ -43,7 +44,7 @@ export default function CustomSortableToken({
 		<span
 			ref={setNodeRef}
 			style={style}
-			className={`sortable-select__token ${isDragging ? "is-dragging" : ""} ${isPlainText ? "is-plain-text" : ""}`}
+			className={`sortable-select__token ${isDragging ? "is-dragging" : ""} ${isPlainText ? "is-plain-text" : ""} ${isVariable ? "is-variable" : ""}`}
 			{...attributes}
 			{...listeners}
 		>

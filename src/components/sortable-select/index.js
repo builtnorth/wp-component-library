@@ -313,8 +313,8 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 					// If requirePrefix is set and input doesn't start with @, add as plain text
 					if (requirePrefix && inputValue && !inputValue.startsWith('@')) {
 						const plainTextOption = {
-							[getOptionLabel.name === 'getOptionLabel' ? 'label' : 'name']: inputValue,
-							[getOptionValue.name === 'getOptionValue' ? 'value' : 'id']: inputValue,
+							label: inputValue,
+							value: inputValue,
 							isPlainText: true
 						};
 						handleAddToken(plainTextOption);
@@ -353,13 +353,13 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	const handleBlur = useCallback(() => {
 		if (requirePrefix && inputValue && !inputValue.startsWith('@')) {
 			const plainTextOption = {
-				[getOptionLabel.name === 'getOptionLabel' ? 'label' : 'name']: inputValue,
-				[getOptionValue.name === 'getOptionValue' ? 'value' : 'id']: inputValue,
+				label: inputValue,
+				value: inputValue,
 				isPlainText: true
 			};
 			handleAddToken(plainTextOption);
 		}
-	}, [requirePrefix, inputValue, getOptionLabel, getOptionValue, handleAddToken]);
+	}, [requirePrefix, inputValue, handleAddToken]);
 
 	// Handle drag start
 	const handleDragStart = useCallback(() => {
@@ -445,6 +445,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 								onRemove={() => handleRemoveToken(index)}
 								disabled={isDisabled}
 								isPlainText={item.isPlainText}
+								isVariable={item.isVariable}
 							/>
 						))}
 					</SortableContext>

@@ -44,14 +44,19 @@
 			&.is-plain-text {
 				background: transparent;
 				border-radius: 0;
-				padding: 0 2px 0 4px;
+				padding: 0;
 				cursor: move;
-				margin: 0 2px;
 
 				.sortable-select__token-text {
 					font-weight: normal;
-					padding-right: 4px;
 				}
+			}
+
+			&.is-variable {
+				background: #e0e0e0;
+				border: 1px solid #ccc;
+				font-family: monospace;
+				font-size: 12px;
 			}
 
 			&-text {

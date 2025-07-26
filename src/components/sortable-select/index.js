@@ -41,6 +41,41 @@ import CustomSortableToken from "./custom-sortable-token";
 import "./index.scss";
 
 /**
+ * Convert array of tokens to a properly spaced string
+ * @param {Array} tokens - Array of token objects
+ * @param {Function} getOptionLabel - Function to get label from token
+ * @param {Function} getOptionValue - Function to get value from token
+ * @returns {string} Properly spaced string
+ */
+function tokensToString(tokens, getOptionLabel, getOptionValue) {
+	return tokens.map((token, index) => {
+		const value = getOptionValue(token);
+		const label = getOptionLabel(token);
+		const displayValue = label || value;
+		const prevToken = tokens[index - 1];
+		
+		// Special punctuation that shouldn't have spaces
+		const isPunctuation = /^[\-–—.,;:!?]$/.test(displayValue.trim());
+		
+		let result = displayValue;
+		
+		// Add space before this token if:
+		// - There's a previous token
+		// - This token doesn't start with space or punctuation
+		// - This token isn't punctuation itself
+		if (prevToken && !isPunctuation && !/^[\s\-–—.,;:!?]/.test(displayValue)) {
+			// Also check if previous token ends with punctuation
+			const prevValue = getOptionLabel(prevToken) || getOptionValue(prevToken);
+			if (!/[\s\-–—.,;:!?]$/.test(prevValue)) {
+				result = ' ' + result;
+			}
+		}
+		
+		return result;
+	}).join('');
+}
+
+/**
  * Memoized input component to prevent re-renders during drag
  */
 const SearchInput = memo(function SearchInput({
@@ -50,33 +85,41 @@ const SearchInput = memo(function SearchInput({
 	setShowSuggestions,
 	suggestions,
 	handleKeyDown,
+	handleBlur,
 	placeholder,
 	isDisabled,
 	isDragging,
+	inputType = 'text',
 }) {
-	return (
-		<input
-			ref={inputRef}
-			type="text"
-			className="sortable-select__input"
-			value={inputValue}
-			onChange={(e) => setInputValue(e.target.value)}
-			onFocus={() => setShowSuggestions(suggestions.length > 0)}
-			onBlur={(e) => {
-				// Prevent blur if we're dragging
-				if (isDragging) {
-					e.preventDefault();
-					e.target.focus();
-					return;
-				}
-				// Hide suggestions after a small delay to allow clicks
-				setTimeout(() => setShowSuggestions(false), 200);
-			}}
-			onKeyDown={handleKeyDown}
-			placeholder={placeholder}
-			disabled={isDisabled}
-		/>
-	);
+	const InputComponent = inputType === 'textarea' ? 'textarea' : 'input';
+	const inputProps = {
+		ref: inputRef,
+		className: "sortable-select__input",
+		value: inputValue,
+		onChange: (e) => setInputValue(e.target.value),
+		onFocus: () => setShowSuggestions(suggestions.length > 0),
+		onBlur: (e) => {
+			// Prevent blur if we're dragging
+			if (isDragging) {
+				e.preventDefault();
+				e.target.focus();
+				return;
+			}
+			// Call the blur handler
+			handleBlur();
+			// Hide suggestions after a small delay to allow clicks
+			setTimeout(() => setShowSuggestions(false), 200);
+		},
+		onKeyDown: handleKeyDown,
+		placeholder: placeholder,
+		disabled: isDisabled,
+	};
+	
+	if (inputType !== 'textarea') {
+		inputProps.type = 'text';
+	}
+	
+	return <InputComponent {...inputProps} />;
 });
 
 /**
@@ -94,6 +137,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	isDisabled,
 	maxItems,
 	requirePrefix,
+	inputType,
 }, ref) {
 	const [suggestions, setSuggestions] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -150,7 +194,14 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 			? inputValue.slice(1).trim() 
 			: inputValue;
 
-		if (!shouldSearch || !searchQuery) {
+		// Special case: if requirePrefix and user just typed "@", show all options
+		if (requirePrefix && inputValue === '@' && !loadOptions) {
+			setSuggestions(options);
+			setShowSuggestions(options.length > 0);
+			return;
+		}
+
+		if (!shouldSearch || (!searchQuery && !requirePrefix)) {
 			setSuggestions([]);
 			setShowSuggestions(false);
 			return;
@@ -158,12 +209,21 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 
 		if (!loadOptions) {
 			// Use static options
-			const filtered = options.filter((option) => {
-				const label = getOptionLabel(option);
-				return label.toLowerCase().includes(searchQuery.toLowerCase());
+			const filtered = searchQuery 
+				? options.filter((option) => {
+					const label = getOptionLabel(option);
+					return label.toLowerCase().includes(searchQuery.toLowerCase());
+				})
+				: options; // Show all options if searchQuery is empty (just @ typed)
+			
+			// Filter out already selected options
+			const availableOptions = filtered.filter((option) => {
+				const optionValue = getOptionValue(option);
+				return !value.some(v => getOptionValue(v) === optionValue);
 			});
-			setSuggestions(filtered);
-			setShowSuggestions(filtered.length > 0);
+			
+			setSuggestions(availableOptions);
+			setShowSuggestions(availableOptions.length > 0);
 			return;
 		}
 
@@ -289,6 +349,18 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 		[showSuggestions, suggestions, selectedIndex, handleAddToken, requirePrefix, inputValue, getOptionLabel, getOptionValue, value, onChange],
 	);
 
+	// Handle blur - save plain text if requirePrefix and has value
+	const handleBlur = useCallback(() => {
+		if (requirePrefix && inputValue && !inputValue.startsWith('@')) {
+			const plainTextOption = {
+				[getOptionLabel.name === 'getOptionLabel' ? 'label' : 'name']: inputValue,
+				[getOptionValue.name === 'getOptionValue' ? 'value' : 'id']: inputValue,
+				isPlainText: true
+			};
+			handleAddToken(plainTextOption);
+		}
+	}, [requirePrefix, inputValue, getOptionLabel, getOptionValue, handleAddToken]);
+
 	// Handle drag start
 	const handleDragStart = useCallback(() => {
 		setIsDragging(true);
@@ -372,6 +444,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 								value={getOptionLabel(item)}
 								onRemove={() => handleRemoveToken(index)}
 								disabled={isDisabled}
+								isPlainText={item.isPlainText}
 							/>
 						))}
 					</SortableContext>
@@ -382,11 +455,11 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 						setShowSuggestions={setShowSuggestions}
 						suggestions={suggestions}
 						handleKeyDown={handleKeyDown}
-						placeholder={value.length === 0 
-							? (requirePrefix ? __("Type @ to search or enter text...", "wp-component-library") : placeholder) 
-							: ""}
+						handleBlur={handleBlur}
+						placeholder={value.length === 0 ? placeholder : ""}
 						isDisabled={isDisabled}
 						isDragging={isDragging}
+						inputType={inputType}
 					/>
 				</div>
 			</DndContext>
@@ -456,21 +529,17 @@ export default function SortableSelect({
 	className = "",
 	maxItems,
 	requirePrefix = false,
+	inputType = 'text',
 	...props
 }) {
 	const innerRef = useRef();
-	
-	// Modify help text if requirePrefix is set
-	const finalHelp = requirePrefix && !help 
-		? __("Type @ to search, or enter plain text and press Enter. Drag to reorder.", "wp-component-library")
-		: help;
 	
 	return (
 		<BaseControl
 			__nextHasNoMarginBottom
 			__next40pxDefaultMarginBottom
 			label={label}
-			help={finalHelp}
+			help={help}
 			className={`sortable-select ${className}`}
 			onClick={(e) => {
 				// Focus input when clicking anywhere on the BaseControl
@@ -489,7 +558,11 @@ export default function SortableSelect({
 				isDisabled={isDisabled}
 				maxItems={maxItems}
 				requirePrefix={requirePrefix}
+				inputType={inputType}
 			/>
 		</BaseControl>
 	);
 }
+
+// Export the utility function for external use
+export { tokensToString };

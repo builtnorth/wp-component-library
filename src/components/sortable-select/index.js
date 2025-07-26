@@ -13,7 +13,7 @@ import {
 	useState,
 } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
-import { DOWN, ENTER, ESCAPE, UP } from "@wordpress/keycodes";
+import { BACKSPACE, DOWN, ENTER, ESCAPE, UP } from "@wordpress/keycodes";
 
 /**
  * External dependencies
@@ -93,6 +93,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	placeholder,
 	isDisabled,
 	maxItems,
+	requirePrefix,
 }, ref) {
 	const [suggestions, setSuggestions] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -143,11 +144,23 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 			return;
 		}
 
+		// If requirePrefix is set, only search when input starts with @
+		const shouldSearch = requirePrefix ? inputValue.startsWith('@') : true;
+		const searchQuery = requirePrefix && inputValue.startsWith('@') 
+			? inputValue.slice(1).trim() 
+			: inputValue;
+
+		if (!shouldSearch || !searchQuery) {
+			setSuggestions([]);
+			setShowSuggestions(false);
+			return;
+		}
+
 		if (!loadOptions) {
 			// Use static options
 			const filtered = options.filter((option) => {
 				const label = getOptionLabel(option);
-				return label.toLowerCase().includes(inputValue.toLowerCase());
+				return label.toLowerCase().includes(searchQuery.toLowerCase());
 			});
 			setSuggestions(filtered);
 			setShowSuggestions(filtered.length > 0);
@@ -158,7 +171,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 		const loadSuggestions = async () => {
 			setIsLoading(true);
 			try {
-				const results = await loadOptions(inputValue);
+				const results = await loadOptions(searchQuery);
 				// Filter out already selected
 				const filtered = results.filter((option) => {
 					const optionValue = getOptionValue(option);
@@ -225,26 +238,47 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	// Handle keyboard navigation
 	const handleKeyDown = useCallback(
 		(event) => {
-			if (!showSuggestions || suggestions.length === 0) {
-				return;
-			}
-
 			switch (event.keyCode) {
+				case BACKSPACE:
+					// Remove last token if input is empty
+					if (inputValue === '' && value.length > 0) {
+						event.preventDefault();
+						const newValue = value.slice(0, -1);
+						onChange(newValue);
+					}
+					break;
 				case ENTER:
 					event.preventDefault();
-					if (suggestions[selectedIndex]) {
+					
+					// If requirePrefix is set and input doesn't start with @, add as plain text
+					if (requirePrefix && inputValue && !inputValue.startsWith('@')) {
+						const plainTextOption = {
+							[getOptionLabel.name === 'getOptionLabel' ? 'label' : 'name']: inputValue,
+							[getOptionValue.name === 'getOptionValue' ? 'value' : 'id']: inputValue,
+							isPlainText: true
+						};
+						handleAddToken(plainTextOption);
+						return;
+					}
+					
+					// Otherwise, add selected suggestion if available
+					if (showSuggestions && suggestions.length > 0 && suggestions[selectedIndex]) {
 						handleAddToken(suggestions[selectedIndex]);
 					}
 					break;
 				case UP:
-					event.preventDefault();
-					setSelectedIndex((prev) => Math.max(0, prev - 1));
+					if (showSuggestions && suggestions.length > 0) {
+						event.preventDefault();
+						setSelectedIndex((prev) => Math.max(0, prev - 1));
+					}
 					break;
 				case DOWN:
-					event.preventDefault();
-					setSelectedIndex((prev) =>
-						Math.min(suggestions.length - 1, prev + 1),
-					);
+					if (showSuggestions && suggestions.length > 0) {
+						event.preventDefault();
+						setSelectedIndex((prev) =>
+							Math.min(suggestions.length - 1, prev + 1),
+						);
+					}
 					break;
 				case ESCAPE:
 					event.preventDefault();
@@ -252,7 +286,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 					break;
 			}
 		},
-		[showSuggestions, suggestions, selectedIndex, handleAddToken],
+		[showSuggestions, suggestions, selectedIndex, handleAddToken, requirePrefix, inputValue, getOptionLabel, getOptionValue, value, onChange],
 	);
 
 	// Handle drag start
@@ -348,7 +382,9 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 						setShowSuggestions={setShowSuggestions}
 						suggestions={suggestions}
 						handleKeyDown={handleKeyDown}
-						placeholder={value.length === 0 ? placeholder : ""}
+						placeholder={value.length === 0 
+							? (requirePrefix ? __("Type @ to search or enter text...", "wp-component-library") : placeholder) 
+							: ""}
 						isDisabled={isDisabled}
 						isDragging={isDragging}
 					/>
@@ -419,16 +455,22 @@ export default function SortableSelect({
 	isDisabled = false,
 	className = "",
 	maxItems,
+	requirePrefix = false,
 	...props
 }) {
 	const innerRef = useRef();
+	
+	// Modify help text if requirePrefix is set
+	const finalHelp = requirePrefix && !help 
+		? __("Type @ to search, or enter plain text and press Enter. Drag to reorder.", "wp-component-library")
+		: help;
 	
 	return (
 		<BaseControl
 			__nextHasNoMarginBottom
 			__next40pxDefaultMarginBottom
 			label={label}
-			help={help}
+			help={finalHelp}
 			className={`sortable-select ${className}`}
 			onClick={(e) => {
 				// Focus input when clicking anywhere on the BaseControl
@@ -446,6 +488,7 @@ export default function SortableSelect({
 				placeholder={placeholder}
 				isDisabled={isDisabled}
 				maxItems={maxItems}
+				requirePrefix={requirePrefix}
 			/>
 		</BaseControl>
 	);

@@ -41,16 +41,7 @@ module.exports = {
     ],
     optimization: {
         ...defaultConfig.optimization,
-        splitChunks: {
-            cacheGroups: {
-                style: {
-                    name: 'style',
-                    test: /\.s?css$/,
-                    chunks: 'all',
-                    enforce: true,
-                },
-            },
-        },
+        splitChunks: false, // Disable splitChunks for library builds
     },
     externals: {
         ...defaultConfig.externals,

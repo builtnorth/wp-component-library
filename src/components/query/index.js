@@ -8,3 +8,4 @@ export { PostsPerPageControl } from "./postsPerPageControl";
 export { PostTypeSelect } from "./postTypeSelect";
 export { SelectionModeControl } from "./selectionModeControl";
 export { TaxonomySelect } from "./taxonomySelect";
+export { reorderByIds, useOrderedTerms } from "./utils";

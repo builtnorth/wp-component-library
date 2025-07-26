@@ -84,3 +84,4 @@ export {
 export { GetTerms } from "./components/terms";
 export { default as VariableInserter } from "./components/variable-inserter";
 export { default as SortableSelect, tokensToString } from "./components/sortable-select";
+export { default as VariableField } from "./components/variable-field";

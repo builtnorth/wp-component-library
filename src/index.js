@@ -72,6 +72,7 @@ export {
 	SectionPatternSettings,
 } from "./components/section-pattern";
 export {
+	SectionDivider,
 	SectionDividerSettings,
 } from "./components/section-divider";
 export {

@@ -21,8 +21,9 @@ const SectionDividerSettings = ({
 	className = "built-inspector-section-divider-settings",
 }) => {
 	// Get divider configuration
-	const dividerConfig = window.polaris_localize?.blocks?.editor_experience?.section_divider;
-	
+	const dividerConfig =
+		window.polaris_localize?.blocks?.editor_experience?.section_divider;
+
 	// Don't render if dividers are disabled
 	if (!dividerConfig?.enabled) {
 		return null;
@@ -68,10 +69,6 @@ const SectionDividerSettings = ({
 						<ToggleGroupControlOption
 							value="bottom"
 							label={__("Bottom", "wp-component-library")}
-						/>
-						<ToggleGroupControlOption
-							value="both"
-							label={__("Both", "wp-component-library")}
 						/>
 					</ToggleGroupControl>
 				</ToolsPanelItem>

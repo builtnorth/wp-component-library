@@ -1,19 +1,8 @@
 /**
- * Section Divider Component
+ * Section Divider Components
  *
- * Component for handling divider settings in WordPress blocks.
- * Adds has-divider-top and has-divider-bottom classes based on selection.
+ * Components for handling divider settings and rendering in WordPress blocks.
  */
 
 // Main components
 export { SectionDividerSettings } from "./SectionDividerSettings";
-
-/**
- * Usage Example:
- *
- * // Use SectionDividerSettings in block edit
- * <SectionDividerSettings
- *     divider={divider}
- *     onDividerChange={(value) => setAttributes({divider: value})}
- * />
- */

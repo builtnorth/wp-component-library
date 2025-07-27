@@ -27,7 +27,6 @@ export {
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
 export { default as CardRepeater } from "./components/card-repeater";
-export { ReorderableList } from "./components/drag-and-drop";
 export {
 	AlignmentSettings,
 	AlignmentToolbar,
@@ -51,6 +50,7 @@ export { ImageControls } from "./components/media/image-controls";
 export { MetaAdvanced } from "./components/meta/meta-advanced";
 export { MetaPanel } from "./components/meta/meta-panel";
 export { Pagination } from "./components/pagination";
+export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
 // Query Controls - Individual ToolsPanelItems that can be composed together
 export { aspectRatioOptions } from "./components/media/utils/aspect-ratios";
 export {
@@ -62,9 +62,12 @@ export {
 	OrderBySelect,
 	PostsPerPageControl,
 	PostTypeSelect,
+	reorderByIds,
 	SelectionModeControl,
 	TaxonomySelect,
+	useOrderedTerms,
 } from "./components/query";
+export { SectionDividerSettings } from "./components/section-divider";
 export {
 	SectionPattern,
 	SectionPatternSettings,
@@ -79,5 +82,10 @@ export {
 	SectionSettings,
 	StyleControl,
 } from "./components/section-settings";
+export {
+	default as SortableSelect,
+	tokensToString,
+} from "./components/sortable-select";
 export { GetTerms } from "./components/terms";
+export { default as VariableField } from "./components/variable-field";
 export { default as VariableInserter } from "./components/variable-inserter";

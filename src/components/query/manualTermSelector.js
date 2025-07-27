@@ -1,11 +1,8 @@
-import {
-    FormTokenField,
-    Spinner,
-    __experimentalToolsPanelItem as ToolsPanelItem,
-} from "@wordpress/components";
+import { __experimentalToolsPanelItem as ToolsPanelItem } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { useEffect, useMemo, useState } from "@wordpress/element";
+import { useCallback, useMemo } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
+import SortableSelect from "../sortable-select";
 
 /**
  * Standalone term selection control
@@ -19,168 +16,125 @@ import { __ } from "@wordpress/i18n";
  * @returns {WPElement} Element to render
  */
 function ManualTermSelector({
-    attributes: { selectedTerms = [] },
-    setAttributes,
-    selectedTaxonomy,
-    renderAsToolsPanelItem = true,
-    isShownByDefault = true,
+	attributes: { selectedTerms = [] },
+	setAttributes,
+	selectedTaxonomy,
+	renderAsToolsPanelItem = true,
+	isShownByDefault = true,
 }) {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isSearching, setIsSearching] = useState(false);
-    const defaultSelectedTerms = [];
+	const defaultSelectedTerms = [];
 
-    // Fetch terms for the selected taxonomy
-    const { terms, selectedTermsData, isLoading } = useSelect(
-        (select) => {
-            if (!selectedTaxonomy) {
-                return {
-                    terms: [],
-                    selectedTermsData: [],
-                    isLoading: false,
-                };
-            }
+	// Fetch selected terms data
+	const selectedTermsData = useSelect(
+		(select) => {
+			if (!selectedTaxonomy || selectedTerms.length === 0) {
+				return [];
+			}
 
-            const query = {
-                per_page: 20,
-                hide_empty: false,
-                search: searchTerm,
-            };
+			return (
+				select("core").getEntityRecords("taxonomy", selectedTaxonomy, {
+					include: selectedTerms,
+					per_page: selectedTerms.length,
+				}) || []
+			);
+		},
+		[selectedTaxonomy, selectedTerms],
+	);
 
-            // Get terms for search
-            const searchTerms = searchTerm
-                ? select("core").getEntityRecords(
-                      "taxonomy",
-                      selectedTaxonomy,
-                      query,
-                  )
-                : [];
+	// Load terms with search
+	const loadTerms = useCallback(
+		async (inputValue) => {
+			if (!selectedTaxonomy) {
+				return [];
+			}
 
-            // Get data for currently selected terms
-            const selectedData =
-                selectedTerms.length > 0
-                    ? select("core").getEntityRecords(
-                          "taxonomy",
-                          selectedTaxonomy,
-                          {
-                              include: selectedTerms,
-                              per_page: selectedTerms.length,
-                          },
-                      )
-                    : [];
+			try {
+				const query = {
+					per_page: 20,
+					hide_empty: false,
+					search: inputValue || '',
+				};
 
-            return {
-                terms: searchTerms || [],
-                selectedTermsData: selectedData || [],
-                isLoading: select("core/data").isResolving(
-                    "core",
-                    "getEntityRecords",
-                    ["taxonomy", selectedTaxonomy, query],
-                ),
-            };
-        },
-        [searchTerm, selectedTaxonomy, selectedTerms],
-    );
+				// Use resolveSelect for async data fetching
+				const terms = await wp.data.resolveSelect("core").getEntityRecords(
+					"taxonomy",
+					selectedTaxonomy,
+					query,
+				);
 
-    // Create suggestions for FormTokenField
-    const suggestions = useMemo(() => {
-        if (!terms) return [];
-        return terms.map((term) => ({
-            id: term.id,
-            value: term.name || `Term #${term.id}`,
-        }));
-    }, [terms]);
+				return terms || [];
+			} catch (error) {
+				console.error('Error loading terms:', error);
+				return [];
+			}
+		},
+		[selectedTaxonomy],
+	);
 
-    // Create values for FormTokenField (selected items as readable names)
-    const selectedValues = useMemo(() => {
-        return selectedTermsData.map((term) => term.name || `Term #${term.id}`);
-    }, [selectedTermsData]);
+	// Handle selection change
+	const handleChange = useCallback(
+		(newSelection) => {
+			const termIds = newSelection.map((term) => term.id);
+			setAttributes({ selectedTerms: termIds });
+		},
+		[setAttributes],
+	);
 
-    // Handle search with debouncing
-    useEffect(() => {
-        if (searchTerm) {
-            setIsSearching(true);
-            const timeoutId = setTimeout(() => {
-                setIsSearching(false);
-            }, 500);
+	// Format selected value for SortableSelect - maintain order
+	const selectedValue = useMemo(() => {
+		return selectedTerms
+			.map((termId) =>
+				selectedTermsData.find((term) => term.id === termId),
+			)
+			.filter(Boolean);
+	}, [selectedTermsData, selectedTerms]);
 
-            return () => clearTimeout(timeoutId);
-        }
-    }, [searchTerm]);
+	const control = (
+		<SortableSelect
+			value={selectedValue}
+			onChange={handleChange}
+			loadOptions={loadTerms}
+			getOptionLabel={(term) => term.name || `Term #${term.id}`}
+			getOptionValue={(term) => term.id}
+			placeholder={__("Type to search terms...", "built")}
+			label={__("Select Terms", "built")}
+			help={__(
+				"Start typing to search for taxonomy terms, then select them from the dropdown. Drag to reorder.",
+				"built",
+			)}
+			isMulti={true}
+			isClearable={false}
+			isSearchable={true}
+			hideDropdownIndicator={true}
+			renderSelectedItem={(term) => (
+				<span>
+					{term.name}
+					{term.count !== undefined && (
+						<span style={{ color: "#666", marginLeft: "4px" }}>
+							({term.count})
+						</span>
+					)}
+				</span>
+			)}
+		/>
+	);
 
-    // Handle token field changes
-    const handleTokenChange = (tokens) => {
-        const newSelections = [];
+	if (!renderAsToolsPanelItem) {
+		return control;
+	}
 
-        tokens.forEach((token) => {
-            // Check if it's an existing selection
-            const existingTerm = selectedTermsData.find(
-                (term) => term.name === token,
-            );
-
-            if (existingTerm) {
-                newSelections.push(existingTerm.id);
-                return;
-            }
-
-            // Check if it's a new selection from search results
-            const searchResult = terms.find((term) => term.name === token);
-
-            if (searchResult) {
-                newSelections.push(searchResult.id);
-            }
-        });
-
-        setAttributes({ selectedTerms: newSelections });
-    };
-
-    const control = (
-        <>
-            <FormTokenField
-                __next40pxDefaultSize={true}
-                __nextHasNoMarginBottom
-                label={__("Select Terms", "built")}
-                value={selectedValues}
-                suggestions={suggestions.map((s) => s.value)}
-                onChange={handleTokenChange}
-                onInputChange={setSearchTerm}
-                placeholder={__("Type to search terms...", "built")}
-                help={__(
-                    "Start typing to search for taxonomy terms, then select them from the dropdown.",
-                    "built",
-                )}
-            />
-            {(isLoading || isSearching) && (
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        marginTop: "8px",
-                    }}
-                >
-                    <Spinner />
-                    <span>{__("Searching terms...", "built")}</span>
-                </div>
-            )}
-        </>
-    );
-
-    if (!renderAsToolsPanelItem) {
-        return control;
-    }
-
-    return (
-        <ToolsPanelItem
-            hasValue={() => selectedTerms && selectedTerms.length > 0}
-            label={__("Select Terms", "built")}
-            onDeselect={() =>
-                setAttributes({ selectedTerms: defaultSelectedTerms })
-            }
-            isShownByDefault={isShownByDefault}
-        >
-            {control}
-        </ToolsPanelItem>
-    );
+	return (
+		<ToolsPanelItem
+			hasValue={() => selectedTerms && selectedTerms.length > 0}
+			label={__("Select Terms", "built")}
+			onDeselect={() =>
+				setAttributes({ selectedTerms: defaultSelectedTerms })
+			}
+			isShownByDefault={isShownByDefault}
+		>
+			{control}
+		</ToolsPanelItem>
+	);
 }
 
 export { ManualTermSelector };

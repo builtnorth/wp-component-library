@@ -1,11 +1,8 @@
-import {
-    FormTokenField,
-    Spinner,
-    __experimentalToolsPanelItem as ToolsPanelItem,
-} from "@wordpress/components";
+import { __experimentalToolsPanelItem as ToolsPanelItem } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
-import { useEffect, useMemo, useState } from "@wordpress/element";
+import { useCallback, useMemo } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
+import SortableSelect from "../sortable-select";
 
 /**
  * Standalone manual post selection control
@@ -23,202 +20,103 @@ function ManualPostSelector({
     postType = "post",
     isShownByDefault = true,
 }) {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isSearching, setIsSearching] = useState(false);
     const defaultSelectedPosts = [];
 
-    // Memoize the search query to prevent recreation
-    const searchQuery = useMemo(
-        () => ({
-            per_page: 20,
-            status: "publish",
-            search: searchTerm,
-        }),
-        [searchTerm],
-    );
-
-    // Memoize the selected posts query to prevent recreation
-    const selectedPostsQuery = useMemo(
-        () => ({
-            include: selectedPosts,
-            per_page: selectedPosts.length,
-        }),
-        [selectedPosts],
-    );
-
-    // Get posts for search functionality
-    const searchPosts = useSelect(
-        (select) => {
-            if (!searchTerm) {
-                return null;
-            }
-            return select("core").getEntityRecords(
-                "postType",
-                postType,
-                searchQuery,
-            );
-        },
-        [searchTerm, postType, searchQuery],
-    );
-
-    // Get data for currently selected posts
+    // Fetch selected posts data
     const selectedPostsData = useSelect(
         (select) => {
-            if (selectedPosts.length === 0) {
-                return null;
+            if (!postType || selectedPosts.length === 0) {
+                return [];
             }
-            return select("core").getEntityRecords(
-                "postType",
-                postType,
-                selectedPostsQuery,
+
+            return (
+                select("core").getEntityRecords("postType", postType, {
+                    include: selectedPosts,
+                    per_page: selectedPosts.length,
+                }) || []
             );
         },
-        [selectedPosts, postType, selectedPostsQuery],
+        [postType, selectedPosts],
     );
 
-    // Get loading state
-    const isLoading = useSelect(
-        (select) => {
-            if (!searchTerm) {
-                return false;
+    // Load posts with search
+    const loadPosts = useCallback(
+        async (inputValue) => {
+            if (!postType) {
+                return [];
             }
-            return select("core/data").isResolving("core", "getEntityRecords", [
-                "postType",
-                postType,
-                searchQuery,
-            ]);
+
+            try {
+                const query = {
+                    per_page: 20,
+                    status: "publish",
+                    search: inputValue || '',
+                };
+
+                // Use resolveSelect for async data fetching
+                const posts = await wp.data.resolveSelect("core").getEntityRecords(
+                    "postType",
+                    postType,
+                    query,
+                );
+
+                return posts || [];
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                return [];
+            }
         },
-        [searchTerm, postType, searchQuery],
+        [postType],
     );
 
-    // Memoize posts with fallback to prevent new array creation
-    const posts = useMemo(() => {
-        return searchPosts || [];
-    }, [searchPosts]);
+    // Handle selection change
+    const handleChange = useCallback(
+        (newSelection) => {
+            const postIds = newSelection.map((post) => post.id);
+            setAttributes({ selectedPosts: postIds });
+        },
+        [setAttributes],
+    );
 
-    // Memoize selected posts data with fallback to prevent new array creation
-    const memoizedSelectedPostsData = useMemo(() => {
-        return selectedPostsData || [];
-    }, [selectedPostsData]);
+    // Format selected value for SortableSelect - maintain order
+    const selectedValue = useMemo(() => {
+        return selectedPosts
+            .map((postId) =>
+                selectedPostsData.find((post) => post.id === postId),
+            )
+            .filter(Boolean);
+    }, [selectedPostsData, selectedPosts]);
 
-    // Create suggestions for FormTokenField
-    const suggestions = useMemo(() => {
-        if (!posts || posts.length === 0) return [];
-        return posts.map((post) => ({
-            id: post.id,
-            value: post.title?.rendered || `Post #${post.id}`,
-        }));
-    }, [posts]);
-
-    // Create values for FormTokenField (selected items as readable names)
-    const selectedValues = useMemo(() => {
-        return memoizedSelectedPostsData.map(
-            (post) => post.title?.rendered || `Post #${post.id}`,
-        );
-    }, [memoizedSelectedPostsData]);
-
-    // Handle search with debouncing
-    useEffect(() => {
-        if (searchTerm) {
-            setIsSearching(true);
-            const timeoutId = setTimeout(() => {
-                setIsSearching(false);
-            }, 500);
-
-            return () => clearTimeout(timeoutId);
-        }
-    }, [searchTerm]);
-
-    // Handle token field changes
-    const handleTokenChange = (tokens) => {
-        const newSelections = [];
-
-        tokens.forEach((token) => {
-            // Check if it's an existing selection
-            const existingPost = memoizedSelectedPostsData.find(
-                (post) =>
-                    (post.title?.rendered || `Post #${post.id}`) === token,
-            );
-
-            if (existingPost) {
-                newSelections.push(existingPost.id);
-                return;
-            }
-
-            // Check if it's a new selection from search results
-            const searchResult = posts.find(
-                (post) =>
-                    (post.title?.rendered || `Post #${post.id}`) === token,
-            );
-
-            if (searchResult) {
-                newSelections.push(searchResult.id);
-            }
-        });
-
-        setAttributes({ selectedPosts: newSelections });
-    };
-
-    // Create unique suggestions by appending post ID to duplicates
-    const uniqueSuggestions = useMemo(() => {
-        const titleCounts = {};
-        const uniqueSuggestionsList = [];
-
-        suggestions.forEach((suggestion) => {
-            const title = suggestion.value;
-            titleCounts[title] = (titleCounts[title] || 0) + 1;
-        });
-
-        suggestions.forEach((suggestion) => {
-            const title = suggestion.value;
-            // If there are duplicates, append the post ID to make it unique
-            const displayValue =
-                titleCounts[title] > 1
-                    ? `${title} (ID: ${suggestion.id})`
-                    : title;
-
-            uniqueSuggestionsList.push(displayValue);
-        });
-
-        return uniqueSuggestionsList;
-    }, [suggestions]);
+    const control = (
+        <SortableSelect
+            value={selectedValue}
+            onChange={handleChange}
+            loadOptions={loadPosts}
+            getOptionLabel={(post) => post.title?.rendered || `Post #${post.id}`}
+            getOptionValue={(post) => post.id}
+            placeholder={__("Type to search posts...", "built")}
+            label={__("Select Posts", "built")}
+            help={__(
+                "Start typing to search for posts, then select them from the dropdown. Drag to reorder.",
+                "built",
+            )}
+            isMulti={true}
+            isClearable={false}
+            isSearchable={true}
+            hideDropdownIndicator={true}
+        />
+    );
 
     return (
         <ToolsPanelItem
             hasValue={() => selectedPosts && selectedPosts.length > 0}
-            label={__("Select Posts", "built_starter")}
+            label={__("Select Posts", "built")}
             onDeselect={() =>
                 setAttributes({ selectedPosts: defaultSelectedPosts })
             }
             isShownByDefault={isShownByDefault}
         >
-            <FormTokenField
-                __next40pxDefaultSize={true}
-                __nextHasNoMarginBottom
-                label={__("Select Posts", "built_starter")}
-                value={selectedValues}
-                suggestions={uniqueSuggestions}
-                onChange={handleTokenChange}
-                onInputChange={setSearchTerm}
-                placeholder={__("Type to search posts...", "built_starter")}
-                help={__(
-                    "Start typing to search for posts, then select them from the dropdown.",
-                    "built_starter",
-                )}
-            />
-            {(isLoading || isSearching) && (
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        marginTop: "8px",
-                    }}
-                >
-                    <Spinner />
-                    <span>{__("Searching posts...", "built_starter")}</span>
-                </div>
-            )}
+            {control}
         </ToolsPanelItem>
     );
 }

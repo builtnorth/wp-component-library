@@ -72,6 +72,9 @@ export {
 	SectionPatternSettings,
 } from "./components/section-pattern";
 export {
+	SectionDividerSettings,
+} from "./components/section-divider";
+export {
 	// Individual control components for custom compositions
 	FocalPointControl,
 	ImageSourceControl,

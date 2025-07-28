@@ -19,13 +19,82 @@ import {
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import styled from "@emotion/styled";
 import { Button } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { dragHandle, plusCircle, trash } from "@wordpress/icons";
 import PropTypes from "prop-types";
 import React, { createContext, useContext, useState } from "react";
 
-import "./index.scss";
+// Styled components
+const StyledRepeater = styled.div`
+	.built-repeater__items {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+		margin-bottom: 3rem;
+	}
+
+	.built-repeater__empty-state {
+		padding: 1rem;
+		background: #f0f0f0;
+		border-radius: 4px;
+		margin-bottom: 1rem;
+		opacity: 0.75;
+	}
+
+	.built-repeater__drag-overlay {
+		opacity: 0.9;
+	}
+`;
+
+const StyledSortableItem = styled.div`
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+
+	&.polaris-repeater__item--dragging {
+		opacity: 0.5;
+	}
+
+	&.polaris-repeater__item--integrated {
+		/* In integrated mode, ensure proper flex layout */
+		> * {
+			flex-grow: 1;
+		}
+
+		/* Drag handle and remove button should not grow */
+		.built-repeater__drag-handle,
+		.built-repeater__remove-item {
+			flex-grow: 0;
+			flex-shrink: 0;
+			margin-top: 26px;
+		}
+	}
+
+	.built-repeater__item-handle {
+		cursor: grab;
+		flex-shrink: 0;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	.built-repeater__item-content {
+		flex-grow: 1;
+		width: 100%;
+	}
+
+	.built-repeater__item-actions {
+		flex-shrink: 0;
+	}
+`;
+
+const StyledDragHandle = styled.div`
+	margin-top: 26px;
+	flex-shrink: 0;
+`;
 
 /**
  * Context for repeater item data
@@ -49,8 +118,8 @@ export const DragHandle = ({
 	const { attributes, listeners } = context;
 
 	return (
-		<div
-			className="polaris-repeater__drag-handle"
+		<StyledDragHandle
+			className="built-repeater__drag-handle"
 			{...attributes}
 			{...listeners}
 		>
@@ -62,7 +131,7 @@ export const DragHandle = ({
 				tabIndex={-1}
 				{...props}
 			/>
-		</div>
+		</StyledDragHandle>
 	);
 };
 
@@ -85,7 +154,7 @@ export const RemoveButton = ({ label = __("Remove", "polaris"), ...props }) => {
 
 	return (
 		<Button
-			className="polaris-repeater__remove-item"
+			className="built-repeater__remove-item"
 			label={label}
 			icon={trash}
 			iconSize={20}
@@ -134,26 +203,26 @@ const SortableItem = ({
 	if (renderMode === "integrated") {
 		return (
 			<RepeaterItemContext.Provider value={contextValue}>
-				<div
+				<StyledSortableItem
 					ref={setNodeRef}
 					style={style}
-					className={`polaris-repeater__item polaris-repeater__item--integrated ${isDragging ? "polaris-repeater__item--dragging" : ""}`}
+					className={`polaris-repeater__item--integrated ${isDragging ? "polaris-repeater__item--dragging" : ""}`}
 				>
 					{children}
-				</div>
+				</StyledSortableItem>
 			</RepeaterItemContext.Provider>
 		);
 	}
 
 	// Default mode with built-in controls
 	return (
-		<div
+		<StyledSortableItem
 			ref={setNodeRef}
 			style={style}
-			className={`polaris-repeater__item ${isDragging ? "polaris-repeater__item--dragging" : ""}`}
+			className={isDragging ? "polaris-repeater__item--dragging" : ""}
 		>
 			<div
-				className="polaris-repeater__item-handle"
+				className="built-repeater__item-handle"
 				{...attributes}
 				{...listeners}
 			>
@@ -166,9 +235,9 @@ const SortableItem = ({
 					tabIndex={-1}
 				/>
 			</div>
-			<div className="polaris-repeater__item-content">{children}</div>
+			<div className="built-repeater__item-content">{children}</div>
 			{!isDragOverlay && canRemove && (
-				<div className="polaris-repeater__item-actions">
+				<div className="built-repeater__item-actions">
 					<Button
 						size="compact"
 						label={__("Remove", "polaris")}
@@ -180,7 +249,7 @@ const SortableItem = ({
 					/>
 				</div>
 			)}
-		</div>
+		</StyledSortableItem>
 	);
 };
 
@@ -261,7 +330,7 @@ const Repeater = ({
 		: null;
 
 	return (
-		<div className={`polaris-repeater ${className}`}>
+		<StyledRepeater className={className}>
 			<DndContext
 				sensors={sensors}
 				collisionDetection={closestCenter}
@@ -270,7 +339,7 @@ const Repeater = ({
 				modifiers={[restrictToVerticalAxis, restrictToParentElement]}
 			>
 				{items.length === 0 ? (
-					<div className="polaris-repeater__empty-state">
+					<div className="built-repeater__empty-state">
 						{emptyStateText}
 					</div>
 				) : (
@@ -278,7 +347,7 @@ const Repeater = ({
 						items={items.map((item) => item.id)}
 						strategy={verticalListSortingStrategy}
 					>
-						<div className="polaris-repeater__items">
+						<div className="built-repeater__items">
 							{items.map((item) => (
 								<SortableItem
 									key={item.id}
@@ -295,7 +364,7 @@ const Repeater = ({
 				)}
 				<DragOverlay>
 					{activeId && activeItem ? (
-						<div className="polaris-repeater__drag-overlay">
+						<div className="built-repeater__drag-overlay">
 							<SortableItem
 								id={activeId}
 								isDragOverlay={true}
@@ -310,7 +379,7 @@ const Repeater = ({
 				</DragOverlay>
 			</DndContext>
 			{canAddItem && (
-				<div className="polaris-repeater__add-button">
+				<div className="built-repeater__add-button">
 					<Button
 						variant="secondary"
 						icon={plusCircle}
@@ -321,7 +390,7 @@ const Repeater = ({
 					</Button>
 				</div>
 			)}
-		</div>
+		</StyledRepeater>
 	);
 };
 

@@ -6,8 +6,73 @@ import { MediaUpload, MediaUploadCheck } from "@wordpress/media-utils";
 import { Button, Flex, Placeholder } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { __ } from "@wordpress/i18n";
+import styled from '@emotion/styled';
 
 const ALLOWED_MEDIA_TYPES = ["image"];
+
+// Styled components
+const StyledSettingsMediaUpload = styled.div`
+    &__header {
+        margin-bottom: 12px;
+    }
+`;
+
+const StyledLabel = styled.h4`
+    margin: 0 0 4px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e1e1e;
+`;
+
+const StyledHelp = styled.p`
+    margin: 0;
+    font-size: 13px;
+    color: #757575;
+    line-height: 1.4;
+`;
+
+const StyledPreview = styled.div`
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f9f9f9;
+`;
+
+const StyledImage = styled.img`
+    max-width: 100%;
+    height: auto;
+    display: block;
+    max-height: 200px;
+    object-fit: cover;
+`;
+
+const StyledPlaceholder = styled(Placeholder)`
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .components-placeholder__label {
+        font-size: 13px;
+        color: #757575;
+    }
+    
+    .components-placeholder__icon {
+        margin-bottom: 8px;
+        opacity: 0.3;
+    }
+`;
+
+const StyledButtons = styled.div`
+    .components-flex {
+        align-items: center;
+    }
+
+    .components-button {
+        min-width: 100px;
+    }
+`;
 
 /**
  * Settings Media Upload
@@ -45,44 +110,42 @@ function SettingsMediaUpload({
     const hasImage = !!imageId;
 
     return (
-        <div className="settings-media-upload">
+        <StyledSettingsMediaUpload>
             {/* Label and Help */}
             {(label || help) && (
                 <div className="settings-media-upload__header">
                     {label && (
-                        <h4 className="settings-media-upload__label">
+                        <StyledLabel>
                             {label}
-                        </h4>
+                        </StyledLabel>
                     )}
                     {help && (
-                        <p className="settings-media-upload__help">
+                        <StyledHelp>
                             {help}
-                        </p>
+                        </StyledHelp>
                     )}
                 </div>
             )}
 
             {/* Image Preview or Placeholder */}
             {showImagePlaceholder && (
-                <div className="settings-media-upload__preview">
+                <StyledPreview>
                     {hasImage && imageData ? (
-                        <img
+                        <StyledImage
                             src={imageData.source_url}
                             alt={imageData.alt_text || "Selected image"}
-                            className="settings-media-upload__image"
                         />
                     ) : (
-                        <Placeholder
+                        <StyledPlaceholder
                             icon="format-image"
                             label={__("No image selected", "wp-component-library")}
-                            className="settings-media-upload__placeholder"
                         />
                     )}
-                </div>
+                </StyledPreview>
             )}
 
             {/* Buttons */}
-            <div className="settings-media-upload__buttons">
+            <StyledButtons>
                 <MediaUploadCheck>
                     <Flex gap={2}>
                         <MediaUpload
@@ -117,8 +180,8 @@ function SettingsMediaUpload({
                         )}
                     </Flex>
                 </MediaUploadCheck>
-            </div>
-        </div>
+            </StyledButtons>
+        </StyledSettingsMediaUpload>
     );
 }
 

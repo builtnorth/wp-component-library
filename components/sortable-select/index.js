@@ -38,7 +38,104 @@ import {
  * Internal dependencies
  */
 import CustomSortableToken from "./custom-sortable-token";
-import "./index.scss";
+import styled from '@emotion/styled';
+
+// Styled components
+const StyledWrapper = styled.div`
+	position: relative;
+`;
+
+const StyledInputWrapper = styled.div`
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	align-items: center;
+	min-height: 30px;
+	padding: 2px 8px;
+	border: 1px solid #757575;
+	border-radius: 2px;
+	background: #fff;
+
+	&:focus-within {
+		border-color: var(--wp-admin-theme-color, #007cba);
+		box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #007cba);
+		outline: 2px solid transparent;
+	}
+`;
+
+const StyledInput = styled.input`
+	flex: 1;
+	min-width: 60px;
+	border: none;
+	outline: none;
+	box-shadow: none !important;
+	background: transparent;
+	margin: 0;
+	font-size: 13px;
+	font-family: inherit;
+`;
+
+const StyledTextarea = styled.textarea`
+	flex: 1;
+	min-width: 60px;
+	border: none;
+	outline: none;
+	box-shadow: none !important;
+	background: transparent;
+	margin: 0;
+	font-size: 13px;
+	font-family: inherit;
+	resize: vertical;
+	min-height: 80px;
+	max-height: 140px;
+	line-height: 1.4;
+	padding-top: 2px;
+`;
+
+const StyledSuggestionsContainer = styled.div`
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	margin-top: 4px;
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+`;
+
+const StyledSuggestions = styled.div`
+	max-height: 200px;
+	overflow-y: auto;
+	padding: 4px 0;
+`;
+
+const StyledSuggestion = styled.button`
+	display: block;
+	width: 100%;
+	padding: 6px 12px;
+	text-align: left;
+	border: none;
+	background: none;
+	cursor: pointer;
+	font-size: 13px;
+
+	&:hover,
+	&.is-selected {
+		background: var(--wp-admin-theme-color, #007cba);
+		color: #fff;
+	}
+`;
+
+const StyledLoading = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 12px;
+	font-size: 13px;
+`;
 
 /**
  * Convert array of tokens to a properly spaced string
@@ -91,10 +188,9 @@ const SearchInput = memo(function SearchInput({
 	isDragging,
 	inputType = 'text',
 }) {
-	const InputComponent = inputType === 'textarea' ? 'textarea' : 'input';
+	const InputComponent = inputType === 'textarea' ? StyledTextarea : StyledInput;
 	const inputProps = {
 		ref: inputRef,
-		className: "sortable-select__input",
 		value: inputValue,
 		onChange: (e) => setInputValue(e.target.value),
 		onFocus: () => setShowSuggestions(suggestions.length > 0),
@@ -418,9 +514,8 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	);
 
 	return (
-		<div 
+		<StyledWrapper 
 			ref={wrapperRef} 
-			className="sortable-select__wrapper"
 			onClick={(e) => {
 				// Focus input when clicking on wrapper (but not if clicking on input itself)
 				if (e.target !== inputRef.current) {
@@ -435,7 +530,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 				onDragEnd={handleDragEnd}
 				modifiers={[restrictToParentElement]}
 			>
-				<div className="sortable-select__input-wrapper">
+				<StyledInputWrapper>
 					<SortableContext items={ids} strategy={rectSortingStrategy}>
 						{value.map((item, index) => (
 							<CustomSortableToken
@@ -462,19 +557,19 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 						isDragging={isDragging}
 						inputType={inputType}
 					/>
-				</div>
+				</StyledInputWrapper>
 			</DndContext>
 
 			{showSuggestions && (
-				<div className="sortable-select__suggestions-container">
-					<div className="sortable-select__suggestions">
+				<StyledSuggestionsContainer>
+					<StyledSuggestions>
 						{isLoading ? (
-							<div className="sortable-select__loading">
+							<StyledLoading>
 								<Spinner />
 								<span>
 									{__("Loading...", "wp-component-library")}
 								</span>
-							</div>
+							</StyledLoading>
 						) : (
 							suggestions
 								.filter((option) => {
@@ -486,26 +581,26 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 									);
 								})
 								.map((option, index) => (
-									<button
+									<StyledSuggestion
 										key={getOptionValue(option)}
-										className={`sortable-select__suggestion ${
+										className={
 											index === selectedIndex
 												? "is-selected"
 												: ""
-										}`}
+										}
 										onClick={() => handleAddToken(option)}
 										onMouseEnter={() =>
 											setSelectedIndex(index)
 										}
 									>
 										{getOptionLabel(option)}
-									</button>
+									</StyledSuggestion>
 								))
 						)}
-					</div>
-				</div>
+					</StyledSuggestions>
+				</StyledSuggestionsContainer>
 			)}
-		</div>
+		</StyledWrapper>
 	);
 }));
 

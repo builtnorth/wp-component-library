@@ -22,7 +22,28 @@ import {
     justifySpaceBetween,
     justifyStretch,
 } from "@wordpress/icons";
+import styled from '@emotion/styled';
 
+// Styled components
+const StyledToggleControl = styled(ToggleControl)`
+    margin-top: 10px;
+    
+    .components-toggle-control__label {
+        max-width: 100%;
+    }
+`;
+
+const StyledVerticalAlignControl = styled(ToggleGroupControl)`
+    svg {
+        transform: rotate(90deg);
+    }
+`;
+
+const StyledLayoutControls = styled.div`
+    .components-panel__row {
+        min-height: 0;
+    }
+`;
 
 const AlignmentToolbar = ({ value, onChange }) => {
     const getIcon = (alignment) => {
@@ -348,14 +369,13 @@ const AlignmentSettings = ({ value, onChange }) => {
             <span className="components-base-control__label">
                 {__("Alignment", "wp-component-library")}
             </span>
-            <ToggleGroupControl
+            <StyledVerticalAlignControl
                 __nextHasNoMarginBottom
                 __next40pxDefaultSize={true}
                 value={value || ""}
                 onChange={handleChange}
                 isBlock
                 isDeselectable
-                className="builtnorth-vertical-align-control"
             >
                 <ToggleGroupControlOptionIcon
                     icon={justifyLeft}
@@ -377,7 +397,7 @@ const AlignmentSettings = ({ value, onChange }) => {
                     label={__("Stretch", "wp-component-library")}
                     value="stretch"
                 />
-            </ToggleGroupControl>
+            </StyledVerticalAlignControl>
         </div>
     );
 };
@@ -426,14 +446,13 @@ const AllowWrapSettings = ({ value, onChange }) => {
     };
 
     return (
-        <ToggleControl
+        <StyledToggleControl
             label={__(
                 "Allow to wrap to multiple lines",
                 "wp-component-library",
             )}
             checked={value}
             onChange={handleChange}
-            className="builtnorth-wp-component-library-toggle-control"
         />
     );
 };
@@ -498,7 +517,7 @@ const LayoutPanel = ({
             title={panelTitle || __("Layout", "wp-component-library")}
             initialOpen={initialOpen}
         >
-            <div className="builtnorth-layout-controls">
+            <StyledLayoutControls>
                 <PanelRow>
                     {controls.includes("horizontal") && (
                         <JustificationSettings
@@ -536,7 +555,7 @@ const LayoutPanel = ({
                         />
                     </PanelRow>
                 )}
-            </div>
+            </StyledLayoutControls>
         </PanelBody>
     );
 };

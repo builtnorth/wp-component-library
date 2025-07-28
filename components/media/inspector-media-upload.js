@@ -5,6 +5,14 @@ import { MediaUpload, MediaUploadCheck } from "@wordpress/block-editor";
 import { Button, Flex, Placeholder } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { AttachmentImage } from "../attachment-image";
+import styled from '@emotion/styled';
+
+// Styled components
+const StyledImageContainer = styled.div`
+    .components-flex {
+        height: auto;
+    }
+`;
 
 const ALLOWED_MEDIA_TYPES = ["image"];
 
@@ -49,9 +57,9 @@ function InspectorMediaUpload({
 	return (
 		<Flex direction="column" expanded={true} style={{ flexGrow: 1 }}>
 			{(label || help) && (
-				<div className="polaris-label-and-help">
-					{label && <p className="polaris-pseudo-label">{label}</p>}
-					{help && <p className="polaris-help-text">{help}</p>}
+				<div className="built-label-and-help">
+					{label && <p className="built-pseudo-label">{label}</p>}
+					{help && <p className="built-help-text">{help}</p>}
 				</div>
 			)}
 			{showImagePlaceholder && !hasImage && !hasFeatureImage && (
@@ -63,25 +71,25 @@ function InspectorMediaUpload({
 			)}
 
 			{showImagePlaceholder && hasImage && (
-				<div className="built-editor-panel-image">
+				<StyledImageContainer className="built-editor-panel-image">
 					<AttachmentImage
 						className="built-editor-panel-image"
 						imageId={mediaId}
 						size="wide_medium"
 						aspectRatio={aspectRatio}
 					/>
-				</div>
+				</StyledImageContainer>
 			)}
 
 			{showImagePlaceholder && hasFeatureImage && !hasImage && (
-				<div className="built-editor-panel-image">
+				<StyledImageContainer className="built-editor-panel-image">
 					<AttachmentImage
 						className="built-editor-panel-image"
 						imageId={featureImage}
 						size="wide_medium"
 						aspectRatio={aspectRatio}
 					/>
-				</div>
+				</StyledImageContainer>
 			)}
 
 			<MediaUploadCheck>

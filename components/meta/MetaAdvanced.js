@@ -1,8 +1,8 @@
 import { InspectorAdvancedControls } from "@wordpress/block-editor";
 import { compose } from "@wordpress/compose";
 import { withDispatch, withSelect } from "@wordpress/data";
-import { useEffect, useRef, useCallback, useMemo, memo } from "@wordpress/element";
-import { useSelect, useDispatch } from "@wordpress/data";
+import { useEffect, useRef, memo } from "@wordpress/element";
+import { useSelect, useDispatch, select as wpSelect } from "@wordpress/data";
 import { MetaFieldSelector } from "./MetaFieldSelector";
 
 const BaseMetaAdvanced = ({
@@ -13,17 +13,6 @@ const BaseMetaAdvanced = ({
 }) => {
 	const isImageBlock = blockName === "core/image";
 	
-	// TEMPORARY: Return minimal component to test if the issue is with our hooks
-	if (!metaField) {
-		return (
-			<InspectorAdvancedControls>
-				<MetaFieldSelector 
-					value={metaField} 
-					onChange={onMetaFieldChange} 
-				/>
-			</InspectorAdvancedControls>
-		);
-	}
 	
 	const { updateBlockAttributes } = useDispatch("core/block-editor");
 	const { editPost } = useDispatch("core/editor");
@@ -75,17 +64,16 @@ const BaseMetaAdvanced = ({
 		// Update last synced ID
 		lastSyncedId.current = imageId;
 
-		// Sync immediately without timeout
-		const { select } = wp.data;
-		const postMeta = select("core/editor").getEditedPostAttribute("meta") || {};
+		// Get current data from store
+		const postMeta = wpSelect("core/editor").getEditedPostAttribute("meta") || {};
 
 		const updates = {
 			[metaField]: imageId,
 		};
 
 		// Get the latest media data
-		const currentMedia = select("core").getMedia(imageId);
-		const attributes = select("core/block-editor").getBlockAttributes(clientId) || {};
+		const currentMedia = wpSelect("core").getMedia(imageId);
+		const attributes = wpSelect("core/block-editor").getBlockAttributes(clientId) || {};
 
 		// If we have media data, also save the URL and alt
 		if (currentMedia) {
@@ -130,8 +118,7 @@ const BaseMetaAdvanced = ({
 		}
 		
 		// Get current block attributes to check existing bindings
-		const { select } = wp.data;
-		const currentAttributes = select("core/block-editor").getBlockAttributes(clientId) || {};
+		const currentAttributes = wpSelect("core/block-editor").getBlockAttributes(clientId) || {};
 		const currentBindings = currentAttributes.metadata?.bindings;
 		
 		if (metaField) {

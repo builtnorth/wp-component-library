@@ -17,7 +17,7 @@ import { Button, Modal } from "@wordpress/components";
 import { compose } from "@wordpress/compose";
 import { withSelect } from "@wordpress/data";
 import { PluginPostStatusInfo } from "@wordpress/editor";
-import { useState } from "@wordpress/element";
+import { useState, memo } from "@wordpress/element";
 
 const MetaPanelBase = ({
     title,
@@ -59,6 +59,9 @@ const MetaPanelBase = ({
     );
 };
 
+// Memoize to prevent unnecessary re-renders
+const MetaPanelMemo = memo(MetaPanelBase);
+
 const MetaPanel = compose([
     withSelect((select) => {
         const { getCurrentPostType } = select("core/editor");
@@ -67,6 +70,6 @@ const MetaPanel = compose([
             currentPostType: getCurrentPostType(),
         };
     }),
-])(MetaPanelBase);
+])(MetaPanelMemo);
 
 export { MetaPanel };

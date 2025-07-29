@@ -60,12 +60,15 @@ const MetaPanelBase = ({
 };
 
 const MetaPanel = compose([
-    withSelect((select) => ({
-        postMeta: {
-            ...select("core/editor").getEditedPostAttribute("meta"),
-            postType: select("core/editor").getCurrentPostType(),
-        },
-    })),
+    withSelect((select) => {
+        const { getCurrentPostType } = select("core/editor");
+        
+        return {
+            postMeta: {
+                postType: getCurrentPostType(),
+            },
+        };
+    }),
 ])(MetaPanelBase);
 
 export { MetaPanel };

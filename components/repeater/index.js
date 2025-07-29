@@ -44,7 +44,19 @@ const StyledRepeater = styled.div`
 	}
 
 	.built-repeater__drag-overlay {
-		opacity: 0.9;
+		opacity: 0.95;
+		box-shadow:
+			0 15px 30px rgba(0, 0, 0, 0.15),
+			0 5px 15px rgba(0, 0, 0, 0.08);
+		border-radius: 8px;
+		background: var(--color--white);
+		cursor: grabbing;
+		transition: transform 0.2s ease;
+
+		> div {
+			background: var(--color--white);
+			border-radius: 8px;
+		}
 	}
 `;
 
@@ -52,9 +64,15 @@ const StyledSortableItem = styled.div`
 	display: flex;
 	align-items: flex-start;
 	gap: 1rem;
+	background-color: var(--color--white, #fff);
+	border: 1px solid var(--color--border, #e0e0e0);
+	border-radius: 4px;
+	padding: 1rem;
+	transition: all 0.2s ease;
+	position: relative;
 
 	&.polaris-repeater__item--dragging {
-		opacity: 0.5;
+		opacity: 0.3;
 	}
 
 	&.polaris-repeater__item--integrated {
@@ -75,9 +93,24 @@ const StyledSortableItem = styled.div`
 	.built-repeater__item-handle {
 		cursor: grab;
 		flex-shrink: 0;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease;
 
 		&:active {
 			cursor: grabbing;
+			opacity: 0.7;
+		}
+
+		button {
+			transition:
+				background-color 0.15s ease,
+				color 0.15s ease;
+
+			&:hover {
+				background-color: var(--wp-admin-theme-color, #007cba);
+				color: var(--color--white);
+			}
 		}
 	}
 
@@ -189,7 +222,6 @@ const SortableItem = ({
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition,
-		opacity: isDragging ? 0.5 : 1,
 	};
 
 	const contextValue = {

@@ -24,12 +24,12 @@ const MetaPanelBase = ({
     postType,
     children,
     buttonText = "Edit Meta Details",
-    postMeta,
+    currentPostType,
 }) => {
     const [isOpen, setOpen] = useState(false);
 
     // Only show for specified post type
-    if (postType && postType !== postMeta?.postType) return null;
+    if (postType && postType !== currentPostType) return null;
 
     return (
         <>
@@ -64,9 +64,7 @@ const MetaPanel = compose([
         const { getCurrentPostType } = select("core/editor");
         
         return {
-            postMeta: {
-                postType: getCurrentPostType(),
-            },
+            currentPostType: getCurrentPostType(),
         };
     }),
 ])(MetaPanelBase);

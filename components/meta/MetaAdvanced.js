@@ -1,7 +1,7 @@
 import { InspectorAdvancedControls } from "@wordpress/block-editor";
 import { compose } from "@wordpress/compose";
 import { withDispatch, withSelect } from "@wordpress/data";
-import { useEffect } from "@wordpress/element";
+import { useEffect, useRef, useCallback, useMemo, memo } from "@wordpress/element";
 import { useSelect, useDispatch } from "@wordpress/data";
 import { MetaFieldSelector } from "./MetaFieldSelector";
 
@@ -9,51 +9,101 @@ const BaseMetaAdvanced = ({
 	metaField,
 	onMetaFieldChange,
 	blockName,
-	blockAttributes,
 	clientId,
 }) => {
 	const isImageBlock = blockName === "core/image";
+	
+	// TEMPORARY: Return minimal component to test if the issue is with our hooks
+	if (!metaField) {
+		return (
+			<InspectorAdvancedControls>
+				<MetaFieldSelector 
+					value={metaField} 
+					onChange={onMetaFieldChange} 
+				/>
+			</InspectorAdvancedControls>
+		);
+	}
+	
 	const { updateBlockAttributes } = useDispatch("core/block-editor");
 	const { editPost } = useDispatch("core/editor");
 
-	// Get media object when we have an image ID
+	// Only get the specific attributes we need
+	const { imageId, imageUrl, imageAlt } = useSelect((select) => {
+		const attributes = select("core/block-editor").getBlockAttributes(clientId) || {};
+		
+		if (!isImageBlock) {
+			return { imageId: null, imageUrl: '', imageAlt: '' };
+		}
+		
+		return { 
+			imageId: attributes.id || null,
+			imageUrl: attributes.url || '',
+			imageAlt: attributes.alt || ''
+		};
+	}, [clientId, isImageBlock]);
+
+	// Get media data separately to avoid re-renders
 	const media = useSelect((select) => {
-		if (!isImageBlock || !blockAttributes?.id) return null;
-		return select("core").getMedia(blockAttributes.id);
-	}, [isImageBlock, blockAttributes?.id]);
+		if (!isImageBlock || !imageId) return null;
+		return select("core").getMedia(imageId);
+	}, [isImageBlock, imageId]);
 
-	// Get post meta
-	const postMeta = useSelect((select) => {
-		return select("core/editor").getEditedPostAttribute("meta") || {};
-	}, []);
-
-	// Save image data to meta when image changes
+	// Track the last synced ID and whether we've initialized
+	const lastSyncedId = useRef(null);
+	const isInitialized = useRef(false);
+	
+	// Save image data to meta when image ID changes
 	useEffect(() => {
-		if (!isImageBlock || !metaField || !blockAttributes?.id) {
+		if (!isImageBlock || !metaField || !imageId) {
 			return;
 		}
 
-		const updates = {
-			[metaField]: blockAttributes.id,
-		};
-
-		// If we have media data, also save the URL and alt
-		if (media) {
-			if (media.source_url) {
-				updates[`${metaField}_url`] = media.source_url;
-			}
-			if (media.alt_text) {
-				updates[`${metaField}_alt`] = media.alt_text;
-			} else if (media.alt) {
-				updates[`${metaField}_alt`] = media.alt;
-			}
-		} else if (blockAttributes.url) {
-			updates[`${metaField}_url`] = blockAttributes.url;
+		// Skip if we already synced this ID
+		if (lastSyncedId.current === imageId) {
+			return;
 		}
 
-		// Save alt text from block attribute if available
-		if (blockAttributes.alt !== undefined && blockAttributes.alt !== '') {
-			updates[`${metaField}_alt`] = blockAttributes.alt;
+		// Mark as initialized after first render
+		if (!isInitialized.current) {
+			isInitialized.current = true;
+			// Skip the first render to avoid saving on mount
+			lastSyncedId.current = imageId;
+			return;
+		}
+
+		// Update last synced ID
+		lastSyncedId.current = imageId;
+
+		// Sync immediately without timeout
+		const { select } = wp.data;
+		const postMeta = select("core/editor").getEditedPostAttribute("meta") || {};
+
+		const updates = {
+			[metaField]: imageId,
+		};
+
+		// Get the latest media data
+		const currentMedia = select("core").getMedia(imageId);
+		const attributes = select("core/block-editor").getBlockAttributes(clientId) || {};
+
+		// If we have media data, also save the URL and alt
+		if (currentMedia) {
+			if (currentMedia.source_url) {
+				updates[`${metaField}_url`] = currentMedia.source_url;
+			}
+			if (currentMedia.alt_text) {
+				updates[`${metaField}_alt`] = currentMedia.alt_text;
+			} else if (currentMedia.alt) {
+				updates[`${metaField}_alt`] = currentMedia.alt;
+			}
+		} else if (attributes.url) {
+			updates[`${metaField}_url`] = attributes.url;
+		}
+
+		// Save alt text
+		if (attributes.alt) {
+			updates[`${metaField}_alt`] = attributes.alt;
 		}
 
 		editPost({
@@ -62,11 +112,42 @@ const BaseMetaAdvanced = ({
 				...updates,
 			},
 		});
-	}, [blockAttributes?.id, blockAttributes?.url, blockAttributes?.alt, media, metaField]);
+	}, [imageId, metaField, clientId, isImageBlock, editPost]); // Include necessary dependencies
 
+	// Track if we've initialized bindings
+	const hasInitializedBindings = useRef(false);
+	
 	// Apply or remove block bindings when metaField changes
 	useEffect(() => {
+		// Skip on first render
+		if (!hasInitializedBindings.current) {
+			hasInitializedBindings.current = true;
+			
+			// Check if there's already a metaField set
+			if (!metaField) {
+				return; // No need to do anything if no metaField
+			}
+		}
+		
+		// Get current block attributes to check existing bindings
+		const { select } = wp.data;
+		const currentAttributes = select("core/block-editor").getBlockAttributes(clientId) || {};
+		const currentBindings = currentAttributes.metadata?.bindings;
+		
 		if (metaField) {
+			// Check if bindings are already set correctly
+			if (
+				currentBindings?.id?.source === "core/post-meta" &&
+				currentBindings?.id?.args?.key === metaField &&
+				currentBindings?.url?.source === "core/post-meta" &&
+				currentBindings?.url?.args?.key === `${metaField}_url` &&
+				currentBindings?.alt?.source === "core/post-meta" &&
+				currentBindings?.alt?.args?.key === `${metaField}_alt`
+			) {
+				// Bindings are already correct, skip update
+				return;
+			}
+			
 			// Bind ID, URL, and alt from separate meta fields
 			const newBindings = {
 				metadata: {
@@ -88,11 +169,15 @@ const BaseMetaAdvanced = ({
 			};
 			
 			updateBlockAttributes(clientId, newBindings);
-		} else {
-			// Remove binding
-			updateBlockAttributes(clientId, { metadata: {} });
+		} else if (currentBindings && Object.keys(currentBindings).length > 0) {
+			// Only remove binding if there are actual bindings to remove
+			// Check if metadata is already empty
+			const currentMetadata = currentAttributes.metadata || {};
+			if (Object.keys(currentMetadata).length > 0 && currentMetadata.bindings) {
+				updateBlockAttributes(clientId, { metadata: {} });
+			}
 		}
-	}, [metaField]);
+	}, [metaField]); // Only watch metaField changes
 
 	return (
 		<InspectorAdvancedControls>
@@ -104,15 +189,26 @@ const BaseMetaAdvanced = ({
 	);
 };
 
+// Memoized version to prevent unnecessary re-renders
+const MetaAdvancedMemo = memo(BaseMetaAdvanced, (prevProps, nextProps) => {
+	return (
+		prevProps.metaField === nextProps.metaField &&
+		prevProps.blockName === nextProps.blockName &&
+		prevProps.clientId === nextProps.clientId
+	);
+});
+
 const MetaAdvanced = compose([
 	withSelect((select, ownProps) => {
 		const { getBlockAttributes, getBlockName } = select("core/block-editor");
-		const blockAttributes = getBlockAttributes(ownProps.clientId);
 		const blockName = getBlockName(ownProps.clientId);
 		
+		// Get only the metaField to minimize re-renders
+		const blockAttributes = getBlockAttributes(ownProps.clientId);
+		const metaField = blockAttributes?.metaField || "";
+		
 		return {
-			metaField: blockAttributes?.metaField || "",
-			blockAttributes,
+			metaField,
 			blockName,
 		};
 	}),
@@ -125,6 +221,6 @@ const MetaAdvanced = compose([
 			},
 		};
 	}),
-])(BaseMetaAdvanced);
+])(MetaAdvancedMemo);
 
 export { MetaAdvanced };

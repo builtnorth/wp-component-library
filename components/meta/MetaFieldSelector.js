@@ -12,6 +12,10 @@ import { useMetaFields } from "./useMetaFields";
 export const MetaFieldSelector = ({ value, onChange, help, label }) => {
 	const metaFieldOptions = useMetaFields();
 
+	// Allow custom values in template context or when no options
+	const allowCustom = metaFieldOptions.length === 0 || 
+		metaFieldOptions.some(opt => opt.label === "── Common Meta Fields ──");
+
 	return (
 		<ComboboxControl
 			__nextHasNoMarginBottom
@@ -23,12 +27,15 @@ export const MetaFieldSelector = ({ value, onChange, help, label }) => {
 			help={
 				help ||
 				__(
-					"Select or search for a meta field to bind this block to.",
+					allowCustom 
+						? "Select a common field or type a custom meta field name."
+						: "Select or search for a meta field to bind this block to.",
 					"wp-component-library",
 				)
 			}
-			placeholder={__("Search meta fields...", "wp-component-library")}
+			placeholder={__("Search or type meta field...", "wp-component-library")}
 			allowReset={true}
+			__experimentalAllowTextInput={allowCustom}
 		/>
 	);
 };

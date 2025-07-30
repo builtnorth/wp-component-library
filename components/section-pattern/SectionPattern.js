@@ -6,6 +6,7 @@ import classnames from "classnames";
 
 const SectionPattern = ({
     pattern = null,
+    patternAlign = "center center",
     className = "",
 }) => {
     const [svgContent, setSvgContent] = useState("");
@@ -52,8 +53,26 @@ const SectionPattern = ({
 
     if (!pattern || !svgContent) return null;
 
+    // Convert alignment value to class name
+    const alignmentToClass = (align) => {
+        const alignmentMap = {
+            "top left": "top-left",
+            "top center": "top-center",
+            "top right": "top-right",
+            "center left": "center-left",
+            "center center": "center-center",
+            "center": "center-center",
+            "center right": "center-right",
+            "bottom left": "bottom-left",
+            "bottom center": "bottom-center",
+            "bottom right": "bottom-right",
+        };
+        return alignmentMap[align] || "center-center";
+    };
+
     const patternClasses = classnames("section-pattern", className, {
         [`has-pattern-${pattern}`]: pattern,
+        [`pattern-align--${alignmentToClass(patternAlign)}`]: patternAlign,
     });
 
     return (

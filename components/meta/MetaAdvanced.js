@@ -14,7 +14,7 @@ const BaseMetaAdvanced = ({
 	const isImageBlock = blockName === "core/image";
 	
 	
-	const { updateBlockAttributes } = useDispatch("core/block-editor");
+	const { updateBlockAttributes, __unstableMarkNextChangeAsNotPersistent } = useDispatch("core/block-editor");
 	const { editPost } = useDispatch("core/editor");
 
 	// Only get the specific attributes we need
@@ -122,47 +122,88 @@ const BaseMetaAdvanced = ({
 		const currentBindings = currentAttributes.metadata?.bindings;
 		
 		if (metaField) {
-			// Check if bindings are already set correctly
-			if (
-				currentBindings?.id?.source === "core/post-meta" &&
-				currentBindings?.id?.args?.key === metaField &&
-				currentBindings?.url?.source === "core/post-meta" &&
-				currentBindings?.url?.args?.key === `${metaField}_url` &&
-				currentBindings?.alt?.source === "core/post-meta" &&
-				currentBindings?.alt?.args?.key === `${metaField}_alt`
-			) {
-				// Bindings are already correct, skip update
-				return;
-			}
-			
-			// Bind ID, URL, and alt from separate meta fields
-			const newBindings = {
-				metadata: {
-					bindings: {
-						id: {
-							source: "core/post-meta",
-							args: { key: metaField },
-						},
-						url: {
-							source: "core/post-meta",
-							args: { key: `${metaField}_url` },
-						},
-						alt: {
-							source: "core/post-meta",
-							args: { key: `${metaField}_alt` },
+			// Different binding for image vs content blocks
+			if (isImageBlock) {
+				// Check if bindings are already set correctly for images
+				if (
+					currentBindings?.id?.source === "core/post-meta" &&
+					currentBindings?.id?.args?.key === metaField &&
+					currentBindings?.url?.source === "core/post-meta" &&
+					currentBindings?.url?.args?.key === `${metaField}_url` &&
+					currentBindings?.alt?.source === "core/post-meta" &&
+					currentBindings?.alt?.args?.key === `${metaField}_alt`
+				) {
+					// Bindings are already correct, skip update
+					return;
+				}
+				
+				// Bind ID, URL, and alt from separate meta fields
+				const newBindings = {
+					metadata: {
+						bindings: {
+							id: {
+								source: "core/post-meta",
+								args: { key: metaField },
+							},
+							url: {
+								source: "core/post-meta",
+								args: { key: `${metaField}_url` },
+							},
+							alt: {
+								source: "core/post-meta",
+								args: { key: `${metaField}_alt` },
+							},
 						},
 					},
-				},
+				};
+				
+				updateBlockAttributes(clientId, newBindings);
+			} else {
+				// For non-image blocks (heading, paragraph, button), bind content
+				if (
+					currentBindings?.content?.source === "core/post-meta" &&
+					currentBindings?.content?.args?.key === metaField
+				) {
+					// Binding is already correct, skip update
+					return;
+				}
+				
+				// Bind content to meta field
+				const newBindings = {
+					metadata: {
+						bindings: {
+							content: {
+								source: "core/post-meta",
+								args: { key: metaField },
+							},
+						},
+					},
+				};
+				
+				updateBlockAttributes(clientId, newBindings);
+			}
+		} else if (currentBindings && Object.keys(currentBindings).length > 0) {
+			// Build attributes object to clear bindings and reset values
+			const attributesToUpdate = { 
+				metadata: undefined, // Use undefined to remove
+				metaField: undefined
 			};
 			
-			updateBlockAttributes(clientId, newBindings);
-		} else if (currentBindings && Object.keys(currentBindings).length > 0) {
-			// Only remove binding if there are actual bindings to remove
-			// Check if metadata is already empty
-			const currentMetadata = currentAttributes.metadata || {};
-			if (Object.keys(currentMetadata).length > 0 && currentMetadata.bindings) {
-				updateBlockAttributes(clientId, { metadata: {} });
+			// For image blocks, we need to handle the Tools Panel reset differently
+			// The Tools Panel expects these specific values to show as "reset"
+			if (currentBindings.id || currentBindings.url || currentBindings.alt) {
+				// For images, setting to undefined should trigger reset
+				attributesToUpdate.id = undefined;
+				attributesToUpdate.url = undefined; 
+				attributesToUpdate.alt = undefined;
 			}
+			
+			// For content blocks
+			if (currentBindings.content) {
+				attributesToUpdate.content = undefined;
+			}
+			
+			updateBlockAttributes(clientId, attributesToUpdate);
 		}
 	}, [metaField]); // Only watch metaField changes
 

@@ -3,7 +3,9 @@
  */
 import { InspectorControls } from "@wordpress/block-editor";
 import {
+	BaseControl,
 	SelectControl,
+	__experimentalAlignmentMatrixControl as AlignmentMatrixControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
@@ -12,6 +14,8 @@ import { __ } from "@wordpress/i18n";
 const SectionPatternSettings = ({
 	pattern,
 	onPatternChange,
+	patternAlign = "center center",
+	onPatternAlignChange,
 	resetAll,
 
 	// Panel configuration
@@ -29,9 +33,11 @@ const SectionPatternSettings = ({
 
 	const availablePatterns = patternConfig.available_patterns || {};
 	const hasPattern = pattern && pattern !== "";
+	const hasPatternAlign = patternAlign && patternAlign !== "center center";
 
 	const handleReset = () => {
 		onPatternChange("");
+		if (onPatternAlignChange) onPatternAlignChange("center center");
 		if (resetAll) resetAll();
 	};
 
@@ -67,6 +73,23 @@ const SectionPatternSettings = ({
 						options={patternOptions}
 					/>
 				</ToolsPanelItem>
+				{hasPattern && onPatternAlignChange && (
+					<ToolsPanelItem
+						hasValue={() => hasPatternAlign}
+						label={__("Pattern Position", "wp-component-library")}
+						onDeselect={() => onPatternAlignChange("center center")}
+					>
+						<BaseControl
+							label={__("Pattern Position", "wp-component-library")}
+							help={__("Choose where the pattern appears in the section", "wp-component-library")}
+						>
+							<AlignmentMatrixControl
+								value={patternAlign}
+								onChange={onPatternAlignChange}
+							/>
+						</BaseControl>
+					</ToolsPanelItem>
+				)}
 			</ToolsPanel>
 		</InspectorControls>
 	);

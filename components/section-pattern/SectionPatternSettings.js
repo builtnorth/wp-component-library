@@ -3,9 +3,9 @@
  */
 import { InspectorControls } from "@wordpress/block-editor";
 import {
+	__experimentalAlignmentMatrixControl as AlignmentMatrixControl,
 	BaseControl,
 	SelectControl,
-	__experimentalAlignmentMatrixControl as AlignmentMatrixControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
@@ -24,8 +24,9 @@ const SectionPatternSettings = ({
 	className = "built-inspector-section-pattern-settings",
 }) => {
 	// Get pattern configuration
-	const patternConfig = window.polaris_localize?.blocks?.editor_experience?.patterns;
-	
+	const patternConfig =
+		window.polaris_localize?.blocks?.editor_experience?.patterns;
+
 	// Don't render if patterns are disabled
 	if (!patternConfig?.enabled) {
 		return null;
@@ -63,6 +64,8 @@ const SectionPatternSettings = ({
 					onDeselect={() => onPatternChange("")}
 				>
 					<SelectControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 						label={__("Pattern", "wp-component-library")}
 						help={__(
 							"Select a background pattern",
@@ -80,8 +83,14 @@ const SectionPatternSettings = ({
 						onDeselect={() => onPatternAlignChange("center center")}
 					>
 						<BaseControl
-							label={__("Pattern Position", "wp-component-library")}
-							help={__("Choose where the pattern appears in the section", "wp-component-library")}
+							label={__(
+								"Pattern Position",
+								"wp-component-library",
+							)}
+							help={__(
+								"Choose where the pattern appears in the section",
+								"wp-component-library",
+							)}
 						>
 							<AlignmentMatrixControl
 								value={patternAlign}

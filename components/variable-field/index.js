@@ -24,21 +24,23 @@ const StyledWrapper = styled.div`
 `;
 
 const StyledInput = styled.input`
-	width: 100%;
-	min-height: 40px;
-	padding: 2px 8px;
-	border: 1px solid #757575;
-	border-radius: 2px;
-	background: #fff;
-	font-size: 13px;
-	font-family: inherit;
-	margin: 0;
-	line-height: 26px;
+	.variable-field & {
+		width: 100%;
+		min-height: 40px;
+		padding: 2px 8px;
+		border: 1px solid #757575;
+		border-radius: 2px;
+		background: #fff;
+		font-size: 13px;
+		font-family: inherit;
+		margin: 0;
+		line-height: 26px;
 
-	&:focus {
-		border-color: var(--wp-admin-theme-color, #007cba);
-		box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #007cba);
-		outline: 2px solid transparent;
+		&:focus {
+			border-color: var(--wp-admin-theme-color, #007cba);
+			box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #007cba);
+			outline: 2px solid transparent;
+		}
 	}
 `;
 
@@ -67,7 +69,7 @@ const StyledTextarea = styled.textarea`
 `;
 
 const StyledSuggestionsContainer = styled.div`
-	position: absolute;
+	position: relative;
 	top: 100%;
 	left: 0;
 	right: 0;

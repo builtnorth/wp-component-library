@@ -51,11 +51,13 @@ const SectionSettings = ({
 	const { imageUrl, featuredImageUrl } = useSelect(
 		(select) => {
 			const { getMedia, getEntityRecord } = select("core");
-			const postId = select("core/editor")?.getCurrentPostId();
+			const { getCurrentPostId, getCurrentPostType } = select("core/editor") || {};
+			const postId = getCurrentPostId?.();
+			const postType = getCurrentPostType?.() || "post";
 
 			let featuredImageData = null;
 			if (postId) {
-				const post = getEntityRecord("postType", "post", postId);
+				const post = getEntityRecord("postType", postType, postId);
 				if (post?.featured_media) {
 					featuredImageData = getMedia(post.featured_media);
 				}

@@ -1,17 +1,26 @@
 /**
  * Inspector Media Upload Component
  */
+import styled from "@emotion/styled";
 import { MediaUpload, MediaUploadCheck } from "@wordpress/block-editor";
-import { Button, Flex, Placeholder } from "@wordpress/components";
+import { BaseControl, Button, Flex, Placeholder } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { AttachmentImage } from "../attachment-image";
-import styled from '@emotion/styled';
 
 // Styled components
+const StyledWrapper = styled.div`
+	max-width: 280px;
+
+	img {
+		width: 100%;
+		height: auto;
+	}
+`;
+
 const StyledImageContainer = styled.div`
-    .components-flex {
-        height: auto;
-    }
+	.components-flex {
+		height: auto;
+	}
 `;
 
 const ALLOWED_MEDIA_TYPES = ["image"];
@@ -54,14 +63,11 @@ function InspectorMediaUpload({
 		featureImage !== 0
 	);
 
-	return (
-		<Flex direction="column" expanded={true} style={{ flexGrow: 1 }}>
-			{(label || help) && (
-				<div className="built-label-and-help">
-					{label && <p className="built-pseudo-label">{label}</p>}
-					{help && <p className="built-help-text">{help}</p>}
-				</div>
-			)}
+	// Generate a unique ID for BaseControl
+	const controlId = `inspector-media-upload-${mediaId || "new"}`;
+
+	const mediaControls = (
+		<>
 			{showImagePlaceholder && !hasImage && !hasFeatureImage && (
 				<Placeholder
 					withIllustration={true}
@@ -76,6 +82,7 @@ function InspectorMediaUpload({
 						className="built-editor-panel-image"
 						imageId={mediaId}
 						size="wide_medium"
+						includeFigure={false}
 						aspectRatio={aspectRatio}
 					/>
 				</StyledImageContainer>
@@ -149,7 +156,33 @@ function InspectorMediaUpload({
 					</Flex>
 				)}
 			</MediaUploadCheck>
-		</Flex>
+		</>
+	);
+
+	// If label or help text is provided, wrap in BaseControl
+	if (label || help) {
+		return (
+			<StyledWrapper>
+				<BaseControl id={controlId} label={label} help={help}>
+					<Flex
+						direction="column"
+						expanded={true}
+						style={{ flexGrow: 1 }}
+					>
+						{mediaControls}
+					</Flex>
+				</BaseControl>
+			</StyledWrapper>
+		);
+	}
+
+	// Otherwise, return controls without BaseControl wrapper
+	return (
+		<StyledWrapper>
+			<Flex direction="column" expanded={true} style={{ flexGrow: 1 }}>
+				{mediaControls}
+			</Flex>
+		</StyledWrapper>
 	);
 }
 

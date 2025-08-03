@@ -124,7 +124,7 @@ function InspectorMediaUpload({
 						multiple={multiple}
 					/>
 				) : (
-					<Flex direction="column">
+					<Flex>
 						<MediaUpload
 							onSelect={onSelect}
 							allowedTypes={ALLOWED_MEDIA_TYPES}

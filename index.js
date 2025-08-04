@@ -72,3 +72,4 @@ export {
 } from "./components/sortable-select";
 export { VariableField } from "./components/variable-field";
 export { VariableInserter } from "./components/variable-inserter";
+export { CaptchaPlaceholder } from "./components/captcha-placeholder";

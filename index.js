@@ -70,7 +70,7 @@ export {
 	default as SortableSelect,
 	tokensToString,
 } from "./components/sortable-select";
-export { VariableField } from "./components/variable-field";
+export { VariableField, EnhancedVariableField } from "./components/variable-field";
 export { VariableInserter } from "./components/variable-inserter";
 export { CaptchaPlaceholder } from "./components/captcha-placeholder";
 export { default as AttributesPanel, useAttributes } from "./components/attributes-panel";

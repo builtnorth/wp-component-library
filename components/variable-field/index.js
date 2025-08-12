@@ -322,3 +322,6 @@ const VariableField = forwardRef(function VariableField(
 });
 
 export { VariableField };
+
+// Export enhanced version
+export { EnhancedVariableField } from "./enhanced";

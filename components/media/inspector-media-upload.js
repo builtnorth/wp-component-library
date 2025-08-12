@@ -2,7 +2,7 @@
  * Inspector Media Upload Component
  */
 import styled from "@emotion/styled";
-import { MediaUpload, MediaUploadCheck } from "@wordpress/block-editor";
+import { MediaUpload } from "@wordpress/block-editor";
 import { BaseControl, Button, Flex, Placeholder } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { AttachmentImage } from "../attachment-image";
@@ -66,7 +66,7 @@ function InspectorMediaUpload({
 	// Generate a unique ID for BaseControl
 	const controlId = `inspector-media-upload-${mediaId || "new"}`;
 
-	const mediaControls = (
+	const imageDisplay = (
 		<>
 			{showImagePlaceholder && !hasImage && !hasFeatureImage && (
 				<Placeholder
@@ -92,15 +92,42 @@ function InspectorMediaUpload({
 				<StyledImageContainer className="built-editor-panel-image">
 					<AttachmentImage
 						className="built-editor-panel-image"
-						imageId={featureImage}
+						imageId={featureImage.id || featureImage}
 						size="wide_medium"
 						aspectRatio={aspectRatio}
 					/>
 				</StyledImageContainer>
 			)}
+		</>
+	);
 
-			<MediaUploadCheck>
-				{!hasImage ? (
+	const buttons = (
+		<>
+			{!hasImage ? (
+				<MediaUpload
+					onSelect={onSelect}
+					allowedTypes={ALLOWED_MEDIA_TYPES}
+					value={mediaId}
+					render={({ open }) => (
+						<Button
+							__next40pxDefaultSize
+							className="is-full-width"
+							size="default"
+							variant={variant || "secondary"}
+							onClick={open}
+						>
+							{buttonTitle ||
+								__(
+									"Select or Upload Media",
+									"polaris-blocks",
+								)}
+						</Button>
+					)}
+					gallery={gallery}
+					multiple={multiple}
+				/>
+			) : (
+				<Flex>
 					<MediaUpload
 						onSelect={onSelect}
 						allowedTypes={ALLOWED_MEDIA_TYPES}
@@ -108,54 +135,29 @@ function InspectorMediaUpload({
 						render={({ open }) => (
 							<Button
 								__next40pxDefaultSize
-								className="is-full-width"
 								size="default"
-								variant={variant || "secondary"}
+								className="is-full-width"
+								variant="secondary"
 								onClick={open}
 							>
-								{buttonTitle ||
-									__(
-										"Select or Upload Media",
-										"polaris-blocks",
-									)}
+								{__("Edit/Replace", "polaris-blocks")}
 							</Button>
 						)}
 						gallery={gallery}
 						multiple={multiple}
 					/>
-				) : (
-					<Flex>
-						<MediaUpload
-							onSelect={onSelect}
-							allowedTypes={ALLOWED_MEDIA_TYPES}
-							value={mediaId}
-							render={({ open }) => (
-								<Button
-									__next40pxDefaultSize
-									size="default"
-									className="is-full-width"
-									variant="secondary"
-									onClick={open}
-								>
-									{__("Edit/Replace", "polaris-blocks")}
-								</Button>
-							)}
-							gallery={gallery}
-							multiple={multiple}
-						/>
-						<Button
-							__next40pxDefaultSize
-							size="default"
-							variant="secondary"
-							className="is-full-width"
-							onClick={onRemove}
-							isDestructive
-						>
-							{__("Remove", "polaris-blocks")}
-						</Button>
-					</Flex>
-				)}
-			</MediaUploadCheck>
+					<Button
+						__next40pxDefaultSize
+						size="default"
+						variant="secondary"
+						className="is-full-width"
+						onClick={onRemove}
+						isDestructive
+					>
+						{__("Remove", "polaris-blocks")}
+					</Button>
+				</Flex>
+			)}
 		</>
 	);
 
@@ -164,14 +166,9 @@ function InspectorMediaUpload({
 		return (
 			<StyledWrapper>
 				<BaseControl id={controlId} label={label} help={help}>
-					<Flex
-						direction="column"
-						expanded={true}
-						style={{ flexGrow: 1 }}
-					>
-						{mediaControls}
-					</Flex>
+					{imageDisplay}
 				</BaseControl>
+				{buttons}
 			</StyledWrapper>
 		);
 	}
@@ -180,7 +177,8 @@ function InspectorMediaUpload({
 	return (
 		<StyledWrapper>
 			<Flex direction="column" expanded={true} style={{ flexGrow: 1 }}>
-				{mediaControls}
+				{imageDisplay}
+				{buttons}
 			</Flex>
 		</StyledWrapper>
 	);

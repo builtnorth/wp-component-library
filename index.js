@@ -74,3 +74,16 @@ export { VariableField } from "./components/variable-field";
 export { VariableInserter } from "./components/variable-inserter";
 export { CaptchaPlaceholder } from "./components/captcha-placeholder";
 export { default as AttributesPanel, useAttributes } from "./components/attributes-panel";
+
+// AI Framework
+export { AIContentFramework } from "./components/ai-framework";
+export { AIGenerator } from "./components/ai-framework/generator";
+export { AIFieldWrapper, AIFieldWithLabel } from "./components/ai-framework/field-wrapper";
+export {
+	extractHeadings,
+	extractListItems,
+	extractFirstParagraph,
+	extractStructuredContent,
+	cleanAIOutput,
+	truncateToSentence
+} from "./components/ai-framework/utilities";

@@ -1,0 +1,67 @@
+/**
+ * AI Field Wrapper Styles
+ */
+
+.ai-field-wrapper {
+    position: relative;
+}
+
+/* Label with AI button */
+.ai-field-wrapper .ai-field-label {
+    margin-bottom: 8px;
+}
+
+.ai-field-wrapper .ai-field-label .components-base-control__label {
+    margin: 0;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* AI button in label - more subtle */
+.ai-field-label .ai-generator-button,
+.ai-field-label .components-button.is-tertiary {
+    min-width: auto;
+    padding: 2px 8px;
+    height: 24px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.ai-field-label:hover .ai-generator-button,
+.ai-field-label:hover .components-button.is-tertiary,
+.ai-field-label .ai-generator-button:hover,
+.ai-field-label .components-button.is-tertiary:hover {
+    opacity: 1;
+}
+
+/* Button positioning variants */
+.ai-field-button-above {
+    margin-bottom: 8px;
+}
+
+.ai-field-button-below {
+    margin-top: 8px;
+}
+
+/* When generating, show loading state */
+.ai-field-wrapper .components-button.is-busy {
+    opacity: 1;
+}
+
+/* Error notices in field context */
+.ai-field-wrapper .components-notice {
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+/* Responsive: Stack on small screens */
+@media (max-width: 600px) {
+    .ai-field-wrapper .ai-field-label {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ai-field-wrapper .ai-field-label .components-button {
+        margin-top: 4px;
+    }
+}

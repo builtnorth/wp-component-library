@@ -69,6 +69,34 @@ export function extractFirstParagraph(content, maxLength = 200) {
 }
 
 /**
+ * Extract paragraphs from HTML content
+ * @param {string} content - HTML content
+ * @param {number} maxParagraphs - Maximum number of paragraphs to extract
+ * @returns {Array} Array of paragraph texts
+ */
+/**
+ * Extract paragraphs from content
+ */
+export function extractParagraphs(content, maxParagraphs = 3) {
+    if (!content) return [];
+    
+    const paragraphs = [];
+    const matches = content.matchAll(/<p[^>]*>(.*?)<\/p>/gi);
+    
+    let count = 0;
+    for (const match of matches) {
+        if (count >= maxParagraphs) break;
+        const text = match[1].replace(/<[^>]*>/g, '').trim();
+        if (text && text.length > 20) { // Filter out very short paragraphs
+            paragraphs.push(text);
+            count++;
+        }
+    }
+    
+    return paragraphs;
+}
+
+/**
  * Extract structured content from HTML
  * @param {string} content - HTML content
  * @param {Object} options - Extraction options

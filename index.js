@@ -78,11 +78,12 @@ export { default as AttributesPanel, useAttributes } from "./components/attribut
 // AI Framework
 export { AIContentFramework } from "./components/ai-framework";
 export { AIGenerator } from "./components/ai-framework/generator";
-export { AIFieldWrapper, AIFieldWithLabel } from "./components/ai-framework/field-wrapper";
+export { AIFieldWrapper } from "./components/ai-framework/field-wrapper";
 export {
 	extractHeadings,
 	extractListItems,
 	extractFirstParagraph,
+	extractParagraphs,
 	extractStructuredContent,
 	cleanAIOutput,
 	truncateToSentence

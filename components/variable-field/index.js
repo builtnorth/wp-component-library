@@ -25,7 +25,7 @@ const StyledWrapper = styled.div`
 
 const StyledFieldContainer = styled.div`
     width: 100%;
-    min-height: 40px;
+    min-height: ${props => props.rows > 1 ? `${(props.rows * 28) + 16}px` : '40px'};
     padding: 6px 8px;
     border: 1px solid #757575;
     border-radius: 2px;
@@ -186,6 +186,7 @@ const VariableField = forwardRef(function VariableField(
         help,
         isDisabled = false,
         className = "",
+        rows = 1,
         ...props
     },
     ref,
@@ -501,6 +502,7 @@ const VariableField = forwardRef(function VariableField(
                     onKeyDown={handleKeyDown}
                     spellCheck={false}
                     data-placeholder={!value ? placeholder : ""}
+                    rows={rows}
                 />
 
                 {showSuggestions && suggestions.length > 0 && (

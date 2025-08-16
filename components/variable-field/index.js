@@ -25,7 +25,7 @@ const StyledWrapper = styled.div`
 
 const StyledFieldContainer = styled.div`
     width: 100%;
-    min-height: ${props => props.rows > 1 ? `${(props.rows * 28) + 16}px` : '40px'};
+    min-height: ${props => props.rows > 1 ? `${(props.rows * 28) + 16}px` : 'auto'};
     padding: 6px 8px;
     border: 1px solid #757575;
     border-radius: 2px;
@@ -45,7 +45,11 @@ const StyledFieldContainer = styled.div`
         content: attr(data-placeholder);
         color: #757575;
         pointer-events: none;
-        position: absolute;
+        display: block;
+        padding: 6px 8px;
+        word-wrap: break-word;
+        white-space: normal;
+        line-height: 24px;
     }
 
     &:focus {
@@ -116,7 +120,7 @@ const StyledSuggestionsContainer = styled.div`
     top: 100%;
     left: 0;
     right: 0;
-    z-index: 10000;
+    z-index: 100100; /* Higher than WordPress panels (100000) */
     margin-top: 4px;
     background: #fff;
     border: 1px solid #ccc;

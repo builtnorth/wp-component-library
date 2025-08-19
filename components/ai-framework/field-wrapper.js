@@ -15,12 +15,7 @@ const StyledFieldWrapper = styled.div`
 `;
 
 const StyledFieldLabel = styled(Flex)`
-	margin-bottom: 8px;
-
 	.components-base-control__label {
-		margin: 0;
-		font-weight: 600;
-		display: inline-block;
 	}
 
 	/* Responsive: Stack on small screens */

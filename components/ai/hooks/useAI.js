@@ -75,8 +75,9 @@ export function useAI(typeId, options = {}) {
         dispatch({ type: 'START_GENERATION' });
         
         try {
-            // Check if we should skip cache (manual trigger)
-            const shouldSkipCache = options.skipCache || overrides._skipCache;
+            // Check if we should skip cache (manual trigger or SEO types which need variety)
+            const shouldSkipCache = options.skipCache || overrides._skipCache || 
+                                  typeId.includes('seo/title') || typeId.includes('seo/meta');
             
             // Check cache if not skipping
             if (!shouldSkipCache) {
@@ -96,10 +97,17 @@ export function useAI(typeId, options = {}) {
                 }
             }
             
-            console.log('AI Generation Request for type:', typeId);
-            
             // Get current post ID for context
             const postId = wp.data.select('core/editor')?.getCurrentPostId();
+            
+            // Build the full context
+            const fullContext = {
+                post_id: postId,
+                ...options.context,
+                ...overrides, // Include all overrides in context
+                // Add variety flag if manually triggered
+                force_variety: shouldSkipCache || overrides.force_variety
+            };
             
             // Call Polaris core endpoint - it handles everything
             // Fetches config, extracts data, builds prompt
@@ -108,10 +116,7 @@ export function useAI(typeId, options = {}) {
                 method: 'POST',
                 data: {
                     type: typeId,
-                    context: {
-                        post_id: postId,
-                        ...options.context
-                    }
+                    context: fullContext
                 }
             });
             
@@ -124,8 +129,9 @@ export function useAI(typeId, options = {}) {
                 provider: response.provider || 'unknown'
             });
             
-            // Cache the result (only if not manually triggered)
-            if (!shouldSkipCache) {
+            // Cache the result (only if not manually triggered and not an SEO type)
+            const isSEOType = typeId.includes('seo/title') || typeId.includes('seo/meta');
+            if (!shouldSkipCache && !isSEOType) {
                 const cacheKey = aiCache.generateKey(typeId, {});
                 await aiCache.set(cacheKey, processedText, options.cacheTimeout);
             }

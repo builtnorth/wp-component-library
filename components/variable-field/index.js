@@ -25,7 +25,7 @@ const StyledWrapper = styled.div`
 
 const StyledFieldContainer = styled.div`
     width: 100%;
-    min-height: ${props => props.rows > 1 ? `${(props.rows * 28) + 16}px` : 'auto'};
+    min-height: ${props => props.rows > 1 ? `${(props.rows * 28) + 16}px` : '36px'};
     padding: 6px 8px;
     border: 1px solid #757575;
     border-radius: 2px;
@@ -40,13 +40,18 @@ const StyledFieldContainer = styled.div`
     white-space: pre-wrap;
     overflow-wrap: break-word;
     position: relative;
+    box-sizing: border-box;
 
     &:empty:before {
         content: attr(data-placeholder);
         color: #757575;
         pointer-events: none;
         display: block;
-        padding: 6px 8px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: inherit;
         word-wrap: break-word;
         white-space: normal;
         line-height: 24px;

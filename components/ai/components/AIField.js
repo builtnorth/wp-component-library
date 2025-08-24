@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { 
     Button, 
     Flex, 
@@ -17,6 +17,8 @@ export function AIField({
     type, 
     value, 
     onChange,
+    context = {}, // Additional context to pass to AI generation
+    getContext, // Optional function to get fresh context at generation time
     buttonText = 'AI',
     buttonSize = 'small',
     buttonVariant = 'secondary',
@@ -24,16 +26,39 @@ export function AIField({
     position = 'label',
     buttonIcon = aiSparkle  // Default to our AI sparkle icon
 }) {
+    // Use a ref to always have the latest context
+    const contextRef = useRef(context);
+    
+    // Update the ref whenever context changes
+    useEffect(() => {
+        contextRef.current = context;
+    }, [context]);
+    
     // Use the AI hook - backend handles all generation logic
     const { generate, isGenerating, lastProvider, error } = useAI(type, {
         initialValue: value,
-        onChange
+        onChange,
+        // Don't pass stale context here - we'll pass it at generation time
     });
     
     const handleGenerate = async () => {
         try {
-            // When user manually clicks, always skip cache to get fresh generation
-            await generate({ _skipCache: true });
+            // Get the freshest possible context
+            // Priority: getContext function > ref > prop
+            const freshContext = getContext ? getContext() : contextRef.current;
+            
+            // Log the size of what we're sending to debug prompt length issues
+            const contextString = JSON.stringify(freshContext);
+            console.log('AIField - Context size:', contextString.length, 'characters');
+            if (contextString.length > 3000) {
+                console.warn('AIField - Context may be too large. Consider reducing content size.');
+            }
+            
+            // Pass the fresh context at generation time
+            await generate({ 
+                _skipCache: true,
+                ...freshContext // Spread fresh context as overrides
+            });
         } catch (err) {
             // Error is already handled by the hook
             console.error('Generation failed:', err);

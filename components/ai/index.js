@@ -19,5 +19,8 @@ export { AICache, aiCache } from './services/AICache';
 // Icons
 export { aiSparkle } from './utils/icons';
 
+// Shortcuts
+export { registerAIShortcuts, AIShortcutHandler } from './shortcuts';
+
 // Backward compatibility wrapper for smooth migration
 export { AIField as AIFieldWrapper } from './components/AIField';

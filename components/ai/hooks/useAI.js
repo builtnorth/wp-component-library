@@ -75,9 +75,11 @@ export function useAI(typeId, options = {}) {
         dispatch({ type: 'START_GENERATION' });
         
         try {
+            // Determine if this is an SEO type (needs special handling)
+            const isSEOType = typeId && typeof typeId === 'string' && typeId.startsWith('polaris-seo/');
+            
             // Check if we should skip cache (manual trigger or SEO types which need variety)
-            const shouldSkipCache = options.skipCache || overrides._skipCache || 
-                                  typeId.includes('seo/title') || typeId.includes('seo/meta');
+            const shouldSkipCache = options.skipCache || overrides._skipCache || isSEOType;
             
             // Check cache if not skipping
             if (!shouldSkipCache) {
@@ -98,7 +100,8 @@ export function useAI(typeId, options = {}) {
             }
             
             // Get current post ID for context
-            const postId = wp.data.select('core/editor')?.getCurrentPostId();
+            const editor = wp.data && wp.data.select ? wp.data.select('core/editor') : null;
+            const postId = editor ? editor.getCurrentPostId() : null;
             
             // Build the full context
             const fullContext = {
@@ -109,16 +112,57 @@ export function useAI(typeId, options = {}) {
                 force_variety: shouldSkipCache || overrides.force_variety
             };
             
-            // Call Polaris core endpoint - it handles everything
-            // Fetches config, extracts data, builds prompt
-            const response = await apiFetch({
-                path: '/polaris/v1/ai/generate',
-                method: 'POST',
-                data: {
-                    type: typeId,
-                    context: fullContext
+            // Route SEO types through job-dispatcher for consistency
+            // This ensures single posts use the same system as bulk operations
+            let response;
+            
+            if (isSEOType && postId) {
+                // Use the new job-dispatcher endpoint for SEO single posts
+                // Determine which type to generate based on typeId
+                let generationType = 'both';
+                if (typeId === 'polaris-seo/title') {
+                    generationType = 'title';
+                } else if (typeId === 'polaris-seo/meta-description') {
+                    generationType = 'description';
                 }
-            });
+                
+                response = await apiFetch({
+                    path: '/polaris-seo/v1/ai/generate-single',
+                    method: 'POST',
+                    data: {
+                        post_id: postId,
+                        type: generationType
+                        // test_mode can be passed via overrides if needed for testing
+                    }
+                });
+                
+                // Extract the appropriate field from the response
+                if (response && response.success) {
+                    if (typeId === 'polaris-seo/title') {
+                        response = { text: response.title || '', provider: 'job-dispatcher' };
+                    } else if (typeId === 'polaris-seo/meta-description') {
+                        response = { text: response.description || '', provider: 'job-dispatcher' };
+                    } else {
+                        // For 'both' type, return the first non-empty field
+                        response = { 
+                            text: response.title || response.description || '', 
+                            provider: 'job-dispatcher' 
+                        };
+                    }
+                } else {
+                    throw new Error((response && response.message) || 'Generation failed');
+                }
+            } else {
+                // Use the standard Polaris endpoint for non-SEO types
+                response = await apiFetch({
+                    path: '/polaris/v1/ai/generate',
+                    method: 'POST',
+                    data: {
+                        type: typeId,
+                        context: fullContext
+                    }
+                });
+            }
             
             // Process response
             const processedText = response.text || response;
@@ -130,7 +174,7 @@ export function useAI(typeId, options = {}) {
             });
             
             // Cache the result (only if not manually triggered and not an SEO type)
-            const isSEOType = typeId.includes('seo/title') || typeId.includes('seo/meta');
+            // Using the isSEOType variable already declared above
             if (!shouldSkipCache && !isSEOType) {
                 const cacheKey = aiCache.generateKey(typeId, {});
                 await aiCache.set(cacheKey, processedText, options.cacheTimeout);

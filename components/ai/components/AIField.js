@@ -19,6 +19,7 @@ export function AIField({
     onChange,
     context = {}, // Additional context to pass to AI generation
     getContext, // Optional function to get fresh context at generation time
+    aiOptions = {}, // Custom AI options (buildRequest, etc.)
     buttonText = 'AI',
     buttonSize = 'small',
     buttonVariant = 'secondary',
@@ -38,6 +39,7 @@ export function AIField({
     const { generate, isGenerating, lastProvider, error } = useAI(type, {
         initialValue: value,
         onChange,
+        ...aiOptions, // Spread custom AI options (buildRequest, etc.)
         // Don't pass stale context here - we'll pass it at generation time
     });
     

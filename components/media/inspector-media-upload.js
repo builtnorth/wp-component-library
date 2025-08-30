@@ -9,8 +9,6 @@ import { AttachmentImage } from "../attachment-image";
 
 // Styled components
 const StyledWrapper = styled.div`
-	max-width: 280px;
-
 	img {
 		width: 100%;
 		height: auto;
@@ -117,10 +115,7 @@ function InspectorMediaUpload({
 							onClick={open}
 						>
 							{buttonTitle ||
-								__(
-									"Select or Upload Media",
-									"polaris-blocks",
-								)}
+								__("Select or Upload Media", "polaris-blocks")}
 						</Button>
 					)}
 					gallery={gallery}

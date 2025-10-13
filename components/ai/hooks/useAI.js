@@ -111,7 +111,7 @@ export function useAI(typeId, options = {}) {
             };
             
             // Allow custom endpoint configuration via options
-            const endpoint = options.customEndpoint || '/polaris/v1/ai/generate';
+            const endpoint = options.customEndpoint || '/polaris-ai/v1/generate';
             const customRequestBuilder = options.buildRequest;
             
             let response;

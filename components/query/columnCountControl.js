@@ -1,6 +1,6 @@
 import {
-    RangeControl,
-    __experimentalToolsPanelItem as ToolsPanelItem,
+	RangeControl,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
@@ -17,43 +17,43 @@ import { __ } from "@wordpress/i18n";
  * @returns {WPElement} Element to render
  */
 function ColumnCountControl({
-    attributes: { columnCount, displayAs },
-    setAttributes,
-    min = 1,
-    max = 4,
-    isShownByDefault = false,
+	attributes: { columnCount, displayAs },
+	setAttributes,
+	min = 1,
+	max = 6,
+	isShownByDefault = false,
 }) {
-    const defaultColumnCount = 3;
+	const defaultColumnCount = 3;
 
-    // Don't render for list or pills display types
-    if (displayAs === "list" || displayAs === "pills") {
-        return null;
-    }
+	// Don't render for list or pills display types
+	if (displayAs === "list" || displayAs === "pills") {
+		return null;
+	}
 
-    const label = displayAs === "grid" ? __("Columns") : __("Slides to Show");
+	const label = displayAs === "grid" ? __("Columns") : __("Slides to Show");
 
-    return (
-        <ToolsPanelItem
-            hasValue={() => columnCount !== defaultColumnCount}
-            label={__("Columns/Slides", "built_starter")}
-            onDeselect={() =>
-                setAttributes({ columnCount: defaultColumnCount })
-            }
-            isShownByDefault={isShownByDefault}
-        >
-            <RangeControl
-                __nextHasNoMarginBottom={true}
-                __next40pxDefaultSize
-                label={label}
-                value={columnCount}
-                onChange={(columnCountNew) =>
-                    setAttributes({ columnCount: columnCountNew })
-                }
-                min={min}
-                max={max}
-            />
-        </ToolsPanelItem>
-    );
+	return (
+		<ToolsPanelItem
+			hasValue={() => columnCount !== defaultColumnCount}
+			label={__("Columns/Slides", "built_starter")}
+			onDeselect={() =>
+				setAttributes({ columnCount: defaultColumnCount })
+			}
+			isShownByDefault={isShownByDefault}
+		>
+			<RangeControl
+				__nextHasNoMarginBottom={true}
+				__next40pxDefaultSize
+				label={label}
+				value={columnCount}
+				onChange={(columnCountNew) =>
+					setAttributes({ columnCount: columnCountNew })
+				}
+				min={min}
+				max={max}
+			/>
+		</ToolsPanelItem>
+	);
 }
 
 export { ColumnCountControl };

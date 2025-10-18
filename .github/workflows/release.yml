@@ -18,6 +18,9 @@ on:
 
 jobs:
     release:
+        permissions:
+            contents: write
+            packages: write
         uses: builtnorth/.github/.github/workflows/npm-package-release.yml@main
         with:
             version: ${{ inputs.version }}
@@ -27,8 +30,6 @@ jobs:
             publish-to-npm: false
             publish-to-github: true
             use-workspace: false # Component library doesn't need workspace dependencies
-        permissions:
-            contents: write
         secrets:
             POLARIS_PLUGIN_GITHUB_TOKEN: ${{ secrets.POLARIS_PLUGIN_GITHUB_TOKEN }}
             NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

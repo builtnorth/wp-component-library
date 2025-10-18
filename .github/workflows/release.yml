@@ -22,11 +22,11 @@ jobs:
         with:
             version: ${{ inputs.version }}
             prerelease: ${{ inputs.prerelease }}
-            package-name: "ui-kit"
+            package-name: "wp-component-library"
             node-version: "22"
             publish-to-npm: false
             publish-to-github: true
-            use-workspace: false # SCSS package doesn't need workspace dependencies
+            use-workspace: false # Component library doesn't need workspace dependencies
         secrets:
             POLARIS_PLUGIN_GITHUB_TOKEN: ${{ secrets.POLARIS_PLUGIN_GITHUB_TOKEN }}
             NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

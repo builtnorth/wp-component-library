@@ -1,0 +1,32 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - "v*"
+    workflow_dispatch:
+        inputs:
+            version:
+                description: "Version to release (e.g., 1.0.0)"
+                required: true
+                type: string
+            prerelease:
+                description: "Is this a pre-release?"
+                required: false
+                type: boolean
+                default: false
+
+jobs:
+    release:
+        uses: builtnorth/basecamp-dev/.github/.github/workflows/npm-package-release.yml@dev
+        with:
+            version: ${{ inputs.version }}
+            prerelease: ${{ inputs.prerelease }}
+            package-name: "ui-kit"
+            node-version: "22"
+            publish-to-npm: false
+            publish-to-github: true
+            use-workspace: false # SCSS package doesn't need workspace dependencies
+        secrets:
+            POLARIS_PLUGIN_GITHUB_TOKEN: ${{ secrets.POLARIS_PLUGIN_GITHUB_TOKEN }}
+            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

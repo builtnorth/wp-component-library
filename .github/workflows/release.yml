@@ -18,7 +18,7 @@ on:
 
 jobs:
     release:
-        uses: builtnorth/basecamp-dev/.github/.github/workflows/npm-package-release.yml@dev
+        uses: builtnorth/.github/.github/workflows/npm-package-release.yml@main
         with:
             version: ${{ inputs.version }}
             prerelease: ${{ inputs.prerelease }}
@@ -27,6 +27,8 @@ jobs:
             publish-to-npm: false
             publish-to-github: true
             use-workspace: false # Component library doesn't need workspace dependencies
+        permissions:
+            contents: write
         secrets:
             POLARIS_PLUGIN_GITHUB_TOKEN: ${{ secrets.POLARIS_PLUGIN_GITHUB_TOKEN }}
             NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

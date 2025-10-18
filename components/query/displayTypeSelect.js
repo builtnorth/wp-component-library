@@ -27,6 +27,7 @@ function DisplayTypeSelect({
         { label: "Slider", value: "slider" },
         { label: "List", value: "list" },
         { label: "Pills", value: "pills" },
+        { label: "Marquee", value: "marquee" },
     ].filter((option) => allowedDisplayOptions.includes(option.value));
 
     return (

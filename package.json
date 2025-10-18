@@ -2,8 +2,10 @@
 	"name": "@builtnorth/wp-component-library",
 	"version": "1.0.0",
 	"description": "Library of components for use in the WordPress block editor.",
-	"main": "index.js",
+	"main": "build/index.js",
+	"module": "build/index.js",
 	"scripts": {
+		"build": "wp-scripts build",
 		"format": "wp-scripts format",
 		"lint:js": "wp-scripts lint-js",
 		"lint:md:docs": "wp-scripts lint-md-docs",

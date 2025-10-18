@@ -1,0 +1,189 @@
+import { useState, useCallback, useReducer } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
+import { aiCache } from '../services/AICache';
+
+// Reducer for managing AI generation state
+const aiReducer = (state, action) => {
+    switch (action.type) {
+        case 'START_GENERATION':
+            return {
+                ...state,
+                isGenerating: true,
+                error: null
+            };
+            
+        case 'SUCCESS':
+            return {
+                ...state,
+                isGenerating: false,
+                value: action.payload,
+                lastProvider: action.provider,
+                history: [...state.history.slice(-9), action.payload],
+                attempts: 0
+            };
+            
+        case 'ERROR':
+            return {
+                ...state,
+                isGenerating: false,
+                error: action.payload,
+                attempts: state.attempts + 1
+            };
+            
+        case 'RETRY':
+            return {
+                ...state,
+                attempts: state.attempts + 1
+            };
+            
+        case 'UNDO':
+            const previous = state.history[state.history.length - 1];
+            return {
+                ...state,
+                value: previous || state.value,
+                history: state.history.slice(0, -1)
+            };
+            
+        case 'RESET':
+            return {
+                ...action.initialState,
+                history: []
+            };
+            
+        default:
+            return state;
+    }
+};
+
+/**
+ * Main AI generation hook
+ * Completely type-driven - the backend handles everything based on the type config
+ */
+export function useAI(typeId, options = {}) {
+    const initialState = {
+        value: options.initialValue || '',
+        isGenerating: false,
+        error: null,
+        lastProvider: null,
+        history: [],
+        attempts: 0
+    };
+    
+    const [state, dispatch] = useReducer(aiReducer, initialState);
+    
+    const generate = useCallback(async (overrides = {}) => {
+        dispatch({ type: 'START_GENERATION' });
+        
+        try {
+            // Check if we should skip cache (manual trigger or configured types)
+            const shouldSkipCache = options.skipCache || overrides._skipCache || 
+                                  typeId.includes('seo/title') || typeId.includes('seo/meta');
+            
+            // Check cache if not skipping
+            if (!shouldSkipCache) {
+                const cacheKey = aiCache.generateKey(typeId, {});
+                const cached = await aiCache.get(cacheKey);
+                if (cached) {
+                    console.log('Using cached AI response');
+                    dispatch({ 
+                        type: 'SUCCESS', 
+                        payload: cached,
+                        provider: 'cache'
+                    });
+                    if (options.onChange) {
+                        options.onChange(cached);
+                    }
+                    return cached;
+                }
+            }
+            
+            // Get current post ID for context
+            const editor = wp.data && wp.data.select ? wp.data.select('core/editor') : null;
+            const postId = editor ? editor.getCurrentPostId() : null;
+            
+            // Build the full context
+            const fullContext = {
+                post_id: postId,
+                ...options.context,
+                ...overrides, // Include all overrides in context
+                // Add variety flag if manually triggered
+                force_variety: shouldSkipCache || overrides.force_variety
+            };
+            
+            // Allow custom endpoint configuration via options
+            const endpoint = options.customEndpoint || '/polaris-ai/v1/generate';
+            const customRequestBuilder = options.buildRequest;
+            
+            let response;
+            
+            // If a custom request builder is provided, use it
+            if (customRequestBuilder && typeof customRequestBuilder === 'function') {
+                const customRequest = customRequestBuilder(typeId, fullContext, postId);
+                if (customRequest) {
+                    response = await apiFetch(customRequest);
+                } else {
+                    // Fallback to standard endpoint if builder returns null
+                    response = await apiFetch({
+                        path: endpoint,
+                        method: 'POST',
+                        data: {
+                            type: typeId,
+                            context: fullContext
+                        }
+                    });
+                }
+            } else {
+                // Use standard endpoint
+                response = await apiFetch({
+                    path: endpoint,
+                    method: 'POST',
+                    data: {
+                        type: typeId,
+                        context: fullContext
+                    }
+                });
+            }
+            
+            // Handle response - extract text or use whole response
+            const responseData = response.text || response;
+            
+            dispatch({ 
+                type: 'SUCCESS', 
+                payload: responseData,
+                provider: response.provider || 'unknown'
+            });
+            
+            // Cache the result (only if not manually triggered)
+            const isSEOType = typeId.includes('seo/title') || typeId.includes('seo/meta');
+            if (!shouldSkipCache && !isSEOType) {
+                const cacheKey = aiCache.generateKey(typeId, {});
+                await aiCache.set(cacheKey, responseData, options.cacheTimeout);
+            }
+            
+            // Call onChange callback if provided
+            if (options.onChange) {
+                options.onChange(responseData);
+            }
+            
+            return responseData;
+            
+        } catch (error) {
+            console.error('AI Generation Error:', error);
+            dispatch({ type: 'ERROR', payload: error.message || 'Generation failed' });
+            
+            if (options.onError) {
+                options.onError(error);
+            }
+            
+            throw error;
+        }
+    }, [typeId, options]);
+    
+    return {
+        ...state,
+        generate,
+        canUndo: state.history.length > 0,
+        reset: () => dispatch({ type: 'RESET', initialState }),
+        undo: () => dispatch({ type: 'UNDO' })
+    };
+}

@@ -74,3 +74,16 @@ export { VariableField } from "./components/variable-field";
 export { VariableInserter } from "./components/variable-inserter";
 export { CaptchaPlaceholder } from "./components/captcha-placeholder";
 export { default as AttributesPanel, useAttributes } from "./components/attributes-panel";
+export { Badge } from "./components/badge";
+
+// AI Framework (Clean Architecture)
+export { 
+    useAI,
+    AIField,
+    AIFieldWrapper, // Maps to AIField for backward compatibility
+    AIButton,
+    AIInline,
+    AIModal,
+    aiCache
+} from "./components/ai";
+// Content extraction utilities removed - use AI type configs instead

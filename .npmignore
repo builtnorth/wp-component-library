@@ -1,6 +1,22 @@
+# Build configuration
+webpack.config.js
 rollup.config.js
-.babelrc
-node_modules
-dist
 rollup.config.mjs
+.babelrc
 babel.config.json
+
+# Development
+node_modules
+.github
+.git
+
+# Source files (only ship built files)
+components/
+index.js
+
+# Documentation
+*.md
+!README.md
+
+# Other build artifacts
+dist/

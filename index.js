@@ -36,7 +36,13 @@ export { MetaAdvanced } from "./components/meta/MetaAdvanced";
 export { MetaPanel } from "./components/meta/MetaPanel";
 export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
 // Query Controls - Individual ToolsPanelItems that can be composed together
-export { aspectRatioOptions } from "./components/media/utils/aspect-ratios";
+export {
+	default as AttributesPanel,
+	useAttributes,
+} from "./components/attributes-panel";
+export { Badge } from "./components/badge";
+export { CaptchaPlaceholder } from "./components/captcha-placeholder";
+export { useAspectRatioOptions } from "./components/media/utils/aspect-ratios";
 export {
 	ColumnCountControl,
 	defaultOrderOptions,
@@ -72,18 +78,15 @@ export {
 } from "./components/sortable-select";
 export { VariableField } from "./components/variable-field";
 export { VariableInserter } from "./components/variable-inserter";
-export { CaptchaPlaceholder } from "./components/captcha-placeholder";
-export { default as AttributesPanel, useAttributes } from "./components/attributes-panel";
-export { Badge } from "./components/badge";
 
 // AI Framework (Clean Architecture)
-export { 
-    useAI,
-    AIField,
-    AIFieldWrapper, // Maps to AIField for backward compatibility
-    AIButton,
-    AIInline,
-    AIModal,
-    aiCache
+export {
+	AIButton,
+	aiCache,
+	AIField,
+	AIFieldWrapper,
+	AIInline,
+	AIModal,
+	useAI,
 } from "./components/ai";
 // Content extraction utilities removed - use AI type configs instead

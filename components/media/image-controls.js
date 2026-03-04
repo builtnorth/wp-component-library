@@ -3,6 +3,8 @@ import {
 	FlexBlock,
 	SelectControl,
 	ToggleControl,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 	__experimentalUnitControl as UnitControl,
@@ -12,19 +14,26 @@ import { __ } from "@wordpress/i18n";
 import { useAspectRatioOptions } from "./utils/aspect-ratios";
 
 /**
- * Reusable image controls for aspect ratio, width, and height.
+ * Reusable image controls for aspect ratio, width, height, scale, and caption.
  * @param {object} props
  * @param {string} props.aspectRatio
  * @param {string} props.width
  * @param {string} props.height
  * @param {boolean} props.showCaption
+ * @param {string} props.scale - Object-fit value: "cover" or "contain".
  * @param {function} props.setAttributes
  */
+const SCALE_HELP = {
+	cover: __("Image covers the space evenly.", "polaris-blocks"),
+	contain: __("Image is contained without cropping.", "polaris-blocks"),
+};
+
 const ImageControls = ({
 	aspectRatio = "4/3",
 	width = "auto",
 	height = "auto",
 	showCaption = false,
+	scale = "cover",
 	setAttributes,
 }) => {
 	// Get aspect ratio options from theme.json
@@ -37,6 +46,7 @@ const ImageControls = ({
 			width: "auto",
 			height: "auto",
 			showCaption: false,
+			scale: "cover",
 		};
 	};
 
@@ -62,6 +72,34 @@ const ImageControls = ({
 					onChange={(value) => setAttributes({ aspectRatio: value })}
 					options={aspectRatioOptions}
 				/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				hasValue={() => scale !== "cover"}
+				label={__("Scale", "polaris-blocks")}
+				onDeselect={() => setAttributes({ scale: "cover" })}
+				resetAllFilter={resetAllFilter}
+				isShownByDefault
+				panelId="image-settings"
+			>
+				<ToggleGroupControl
+					__nextHasNoMarginBottom={true}
+					__next40pxDefaultSize
+					label={__("Scale", "polaris-blocks")}
+					value={scale}
+					onChange={(value) => setAttributes({ scale: value })}
+					isBlock
+					help={SCALE_HELP[scale] ?? ""}
+				>
+					<ToggleGroupControlOption
+						value="cover"
+						label={__("Cover", "polaris-blocks")}
+					/>
+					<ToggleGroupControlOption
+						value="contain"
+						label={__("Contain", "polaris-blocks")}
+					/>
+				</ToggleGroupControl>
 			</ToolsPanelItem>
 
 			<Flex gap={4} style={{ minWidth: 250 }}>

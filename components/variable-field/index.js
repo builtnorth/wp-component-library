@@ -418,6 +418,32 @@ const VariableField = forwardRef(function VariableField(
         }
     }, [showSuggestions, suggestions, selectedIndex, selectSuggestion, getPlainText, onChange]);
 
+    // Handle paste — strip HTML and insert plain text only
+    const handlePaste = useCallback((e) => {
+        e.preventDefault();
+        const text = e.clipboardData.getData("text/plain");
+        if (!text) return;
+
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(text));
+
+        // Move cursor to end of inserted text
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // Trigger change
+        const newValue = getPlainText();
+        onChange(newValue);
+        if (hiddenInputRef.current) {
+            hiddenInputRef.current.value = newValue;
+        }
+    }, [getPlainText, onChange]);
+
     // Handle chip removal
     useEffect(() => {
         const handleClick = (e) => {
@@ -509,6 +535,7 @@ const VariableField = forwardRef(function VariableField(
                     className={isDisabled ? "is-disabled" : ""}
                     onInput={handleInput}
                     onKeyDown={handleKeyDown}
+                    onPaste={handlePaste}
                     spellCheck={false}
                     data-placeholder={!value ? placeholder : ""}
                     rows={rows}

@@ -7,6 +7,7 @@
 
 // Re-export individual media upload components
 export { EditorMediaUpload } from "./editor-media-upload";
+export { ImageControls } from "./image-controls";
 export { InspectorMediaUpload } from "./inspector-media-upload";
 export { SettingsMediaUpload } from "./SettingsMediaUpload";
 export { ToolbarMediaUpload } from "./toolbar-media-upload";

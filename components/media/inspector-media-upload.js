@@ -1,9 +1,12 @@
 /**
  * Inspector Media Upload Component
+ *
+ * Uses wp.media() directly instead of the block editor's MediaUpload
+ * slot, ensuring it works on both block editor and settings pages.
  */
 import styled from "@emotion/styled";
-import { MediaUpload } from "@wordpress/block-editor";
 import { BaseControl, Button, Flex, Placeholder } from "@wordpress/components";
+import { useCallback } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 import { AttachmentImage } from "../attachment-image";
 
@@ -22,6 +25,33 @@ const StyledImageContainer = styled.div`
 `;
 
 const ALLOWED_MEDIA_TYPES = ["image"];
+
+/**
+ * Hook to open the native wp.media frame.
+ */
+function useMediaOpen({ onSelect, multiple, allowedTypes }) {
+	return useCallback(() => {
+		if (typeof wp === "undefined" || !wp.media) return;
+
+		const frame = wp.media({
+			title: __("Select or Upload Media", "wp-component-library"),
+			multiple: multiple || false,
+			library: { type: allowedTypes || ["image"] },
+			button: { text: __("Select", "wp-component-library") },
+		});
+
+		frame.on("select", () => {
+			const selection = frame.state().get("selection");
+			if (multiple) {
+				onSelect(selection.map((att) => att.toJSON()));
+			} else {
+				onSelect(selection.first().toJSON());
+			}
+		});
+
+		frame.open();
+	}, [onSelect, multiple, allowedTypes]);
+}
 
 /**
  * Inspector Media Upload
@@ -64,6 +94,13 @@ function InspectorMediaUpload({
 	// Generate a unique ID for BaseControl
 	const controlId = `inspector-media-upload-${mediaId || "new"}`;
 
+	// Open native wp.media frame
+	const openMedia = useMediaOpen({
+		onSelect,
+		multiple,
+		allowedTypes: ALLOWED_MEDIA_TYPES,
+	});
+
 	const imageDisplay = (
 		<>
 			{showImagePlaceholder && !hasImage && !hasFeatureImage && (
@@ -102,45 +139,27 @@ function InspectorMediaUpload({
 	const buttons = (
 		<>
 			{!hasImage ? (
-				<MediaUpload
-					onSelect={onSelect}
-					allowedTypes={ALLOWED_MEDIA_TYPES}
-					value={mediaId}
-					render={({ open }) => (
-						<Button
-							__next40pxDefaultSize
-							className="is-full-width"
-							size="default"
-							variant={variant || "secondary"}
-							onClick={open}
-						>
-							{buttonTitle ||
-								__("Select or Upload Media", "polaris-blocks")}
-						</Button>
-					)}
-					gallery={gallery}
-					multiple={multiple}
-				/>
+				<Button
+					__next40pxDefaultSize
+					className="is-full-width"
+					size="default"
+					variant={variant || "secondary"}
+					onClick={openMedia}
+				>
+					{buttonTitle ||
+						__("Select or Upload Media", "polaris-blocks")}
+				</Button>
 			) : (
 				<Flex>
-					<MediaUpload
-						onSelect={onSelect}
-						allowedTypes={ALLOWED_MEDIA_TYPES}
-						value={mediaId}
-						render={({ open }) => (
-							<Button
-								__next40pxDefaultSize
-								size="default"
-								className="is-full-width"
-								variant="secondary"
-								onClick={open}
-							>
-								{__("Edit/Replace", "polaris-blocks")}
-							</Button>
-						)}
-						gallery={gallery}
-						multiple={multiple}
-					/>
+					<Button
+						__next40pxDefaultSize
+						size="default"
+						className="is-full-width"
+						variant="secondary"
+						onClick={openMedia}
+					>
+						{__("Edit/Replace", "polaris-blocks")}
+					</Button>
 					<Button
 						__next40pxDefaultSize
 						size="default"

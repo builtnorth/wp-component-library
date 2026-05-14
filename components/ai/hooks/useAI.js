@@ -75,9 +75,8 @@ export function useAI(typeId, options = {}) {
         dispatch({ type: 'START_GENERATION' });
         
         try {
-            // Check if we should skip cache (manual trigger or configured types)
-            const shouldSkipCache = options.skipCache || overrides._skipCache || 
-                                  typeId.includes('seo/title') || typeId.includes('seo/meta');
+            // Check if we should skip cache (manual trigger or option)
+            const shouldSkipCache = options.skipCache || overrides._skipCache;
             
             // Check cache if not skipping
             if (!shouldSkipCache) {
@@ -115,7 +114,7 @@ export function useAI(typeId, options = {}) {
             const customRequestBuilder = options.buildRequest;
             
             let response;
-            
+
             // If a custom request builder is provided, use it
             if (customRequestBuilder && typeof customRequestBuilder === 'function') {
                 const customRequest = customRequestBuilder(typeId, fullContext, postId);
@@ -127,8 +126,8 @@ export function useAI(typeId, options = {}) {
                         path: endpoint,
                         method: 'POST',
                         data: {
-                            type: typeId,
-                            context: fullContext
+                            ability: typeId,
+                            input: fullContext
                         }
                     });
                 }
@@ -138,14 +137,14 @@ export function useAI(typeId, options = {}) {
                     path: endpoint,
                     method: 'POST',
                     data: {
-                        type: typeId,
-                        context: fullContext
+                        ability: typeId,
+                        input: fullContext
                     }
                 });
             }
-            
-            // Handle response - extract text or use whole response
-            const responseData = response.text || response;
+
+            // Extract the ability result from the response envelope
+            const responseData = response?.data ?? response;
             
             dispatch({ 
                 type: 'SUCCESS', 
@@ -154,8 +153,7 @@ export function useAI(typeId, options = {}) {
             });
             
             // Cache the result (only if not manually triggered)
-            const isSEOType = typeId.includes('seo/title') || typeId.includes('seo/meta');
-            if (!shouldSkipCache && !isSEOType) {
+            if (!shouldSkipCache) {
                 const cacheKey = aiCache.generateKey(typeId, {});
                 await aiCache.set(cacheKey, responseData, options.cacheTimeout);
             }

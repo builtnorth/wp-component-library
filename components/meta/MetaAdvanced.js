@@ -35,7 +35,7 @@ const BaseMetaAdvanced = ({
 	// Get media data separately to avoid re-renders
 	const media = useSelect((select) => {
 		if (!isImageBlock || !imageId) return null;
-		return select("core").getMedia(imageId);
+		return select("core").getEntityRecord("postType", "attachment", imageId);
 	}, [isImageBlock, imageId]);
 
 	// Track the last synced ID and whether we've initialized
@@ -72,7 +72,11 @@ const BaseMetaAdvanced = ({
 		};
 
 		// Get the latest media data
-		const currentMedia = wpSelect("core").getMedia(imageId);
+		const currentMedia = wpSelect("core").getEntityRecord(
+			"postType",
+			"attachment",
+			imageId,
+		);
 		const attributes = wpSelect("core/block-editor").getBlockAttributes(clientId) || {};
 
 		// If we have media data, also save the URL and alt

@@ -102,7 +102,7 @@ function SettingsMediaUpload({
     const imageData = useSelect(
         (select) => {
             if (!imageId) return null;
-            return select("core").getMedia(imageId);
+            return select("core").getEntityRecord("postType", "attachment", imageId);
         },
         [imageId]
     );

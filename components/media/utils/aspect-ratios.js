@@ -1,4 +1,4 @@
-import { useSetting } from "@wordpress/block-editor";
+import { useSettings } from "@wordpress/block-editor";
 import { useMemo } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
@@ -8,7 +8,7 @@ import { __ } from "@wordpress/i18n";
  * Includes "Original" option like core/image block
  */
 export function useAspectRatioOptions() {
-	const aspectRatios = useSetting("dimensions.aspectRatios");
+	const [aspectRatios] = useSettings(["dimensions.aspectRatios"]);
 
 	return useMemo(() => {
 		// Always include "Original" as the first option

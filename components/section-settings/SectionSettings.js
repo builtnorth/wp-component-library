@@ -50,7 +50,7 @@ const SectionSettings = ({
 
 	const { imageUrl, featuredImageUrl } = useSelect(
 		(select) => {
-			const { getMedia, getEntityRecord } = select("core");
+			const { getEntityRecord } = select("core");
 			const { getCurrentPostId, getCurrentPostType } = select("core/editor") || {};
 			const postId = getCurrentPostId?.();
 			const postType = getCurrentPostType?.() || "post";
@@ -59,13 +59,18 @@ const SectionSettings = ({
 			if (postId) {
 				const post = getEntityRecord("postType", postType, postId);
 				if (post?.featured_media) {
-					featuredImageData = getMedia(post.featured_media);
+					featuredImageData = getEntityRecord(
+						"postType",
+						"attachment",
+						post.featured_media,
+					);
 				}
 			}
 
 			return {
 				imageUrl: backgroundImage
-					? getMedia(backgroundImage)?.source_url
+					? getEntityRecord("postType", "attachment", backgroundImage)
+							?.source_url
 					: null,
 				featuredImageUrl: featuredImageData?.source_url,
 			};

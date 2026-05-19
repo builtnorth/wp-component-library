@@ -1,16 +1,22 @@
 /**
  * WordPress dependencies
  */
-import { InspectorControls } from "@wordpress/block-editor";
+import { InspectorControls, store as blockEditorStore } from "@wordpress/block-editor";
 import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
+import { useSelect } from "@wordpress/data";
+import { useEffect } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
+import { getEditorExperienceSectionDivider } from "../../utils/polaris-localize";
+import { sectionHasPolarisSectionBackground } from "./sectionHasDividerBackground";
+
 const SectionDividerSettings = ({
+	clientId,
 	divider,
 	onDividerChange,
 	resetAll,
@@ -20,12 +26,48 @@ const SectionDividerSettings = ({
 	group = "styles",
 	className = "built-inspector-section-divider-settings",
 }) => {
-	// Get divider configuration
-	const dividerConfig =
-		window.polaris_localize?.blocks?.editor_experience?.section_divider;
+	const dividerConfig = getEditorExperienceSectionDivider();
 
-	// Don't render if dividers are disabled
 	if (!dividerConfig?.enabled) {
+		return null;
+	}
+
+	// TODO(pinned): hide panel when no Polaris section background — requires_background + polaris-only check.
+	const requiresBackground = dividerConfig?.requires_background !== false;
+
+	// Read live attributes from the block store (not a stale snapshot).
+	const blockAttributes = useSelect(
+		(select) =>
+			clientId
+				? select(blockEditorStore).getBlockAttributes(clientId)
+				: null,
+		[clientId],
+	);
+
+	const resolvedHasBackground = sectionHasPolarisSectionBackground(
+		blockAttributes ?? {},
+	);
+
+	const showDividerControls =
+		!requiresBackground || resolvedHasBackground;
+
+	useEffect(() => {
+		if (
+			requiresBackground &&
+			!resolvedHasBackground &&
+			divider &&
+			divider !== "none"
+		) {
+			onDividerChange("none");
+		}
+	}, [
+		requiresBackground,
+		resolvedHasBackground,
+		divider,
+		onDividerChange,
+	]);
+
+	if (!showDividerControls) {
 		return null;
 	}
 
@@ -51,7 +93,7 @@ const SectionDividerSettings = ({
 					<ToggleGroupControl
 						label={__("Divider", "wp-component-library")}
 						help={__(
-							"Add dividers to the section",
+							"Requires a section background image or pattern (Section Background / Section Pattern).",
 							"wp-component-library",
 						)}
 						value={divider || "none"}

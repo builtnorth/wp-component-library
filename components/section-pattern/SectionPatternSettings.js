@@ -9,7 +9,33 @@ import {
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
+import { useEffect, useState } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
+
+import {
+	getEditorExperiencePatterns,
+	SKIN_CHANGED_EVENT,
+} from "../../utils/polaris-localize";
+
+function readPatternConfig() {
+	return getEditorExperiencePatterns();
+}
+
+function usePatternConfig() {
+	const [patternConfig, setPatternConfig] = useState(readPatternConfig);
+
+	useEffect(() => {
+		const sync = () => setPatternConfig(readPatternConfig());
+
+		document.addEventListener(SKIN_CHANGED_EVENT, sync);
+
+		return () => {
+			document.removeEventListener(SKIN_CHANGED_EVENT, sync);
+		};
+	}, []);
+
+	return patternConfig;
+}
 
 const SectionPatternSettings = ({
 	pattern,
@@ -23,9 +49,7 @@ const SectionPatternSettings = ({
 	group = "styles",
 	className = "built-inspector-section-pattern-settings",
 }) => {
-	// Get pattern configuration
-	const patternConfig =
-		window.polaris_localize?.blocks?.editor_experience?.patterns;
+	const patternConfig = usePatternConfig();
 
 	// Don't render if patterns are disabled
 	if (!patternConfig?.enabled) {

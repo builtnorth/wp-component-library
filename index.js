@@ -57,7 +57,11 @@ export {
 	TaxonomySelect,
 	useOrderedTerms,
 } from "./components/query";
-export { SectionDividerSettings } from "./components/section-divider";
+export {
+	SectionDividerSettings,
+	sectionHasDividerBackground,
+	sectionHasPolarisSectionBackground,
+} from "./components/section-divider";
 export {
 	SectionPattern,
 	SectionPatternSettings,

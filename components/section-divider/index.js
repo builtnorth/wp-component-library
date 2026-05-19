@@ -6,3 +6,7 @@
 
 // Main components
 export { SectionDividerSettings } from "./SectionDividerSettings";
+export {
+	sectionHasDividerBackground,
+	sectionHasPolarisSectionBackground,
+} from "./sectionHasDividerBackground";

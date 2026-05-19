@@ -13,7 +13,13 @@ import { useEffect } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
 import { getEditorExperienceSectionDivider } from "../../utils/polaris-localize";
-import { sectionHasPolarisSectionBackground } from "./sectionHasDividerBackground";
+import { sectionHasDividerBackground } from "./sectionHasDividerBackground";
+
+const ALL_POSITIONS = [
+	{ value: "none", label: __("None", "wp-component-library") },
+	{ value: "top", label: __("Top", "wp-component-library") },
+	{ value: "bottom", label: __("Bottom", "wp-component-library") },
+];
 
 const SectionDividerSettings = ({
 	clientId,
@@ -25,6 +31,8 @@ const SectionDividerSettings = ({
 	panelTitle = __("Section Divider", "wp-component-library"),
 	group = "styles",
 	className = "built-inspector-section-divider-settings",
+	/** @type {('none'|'top'|'bottom')[]} Which positions to show (default: all three). */
+	positions = ["none", "top", "bottom"],
 }) => {
 	const dividerConfig = getEditorExperienceSectionDivider();
 
@@ -44,7 +52,7 @@ const SectionDividerSettings = ({
 		[clientId],
 	);
 
-	const resolvedHasBackground = sectionHasPolarisSectionBackground(
+	const resolvedHasBackground = sectionHasDividerBackground(
 		blockAttributes ?? {},
 	);
 
@@ -93,25 +101,22 @@ const SectionDividerSettings = ({
 					<ToggleGroupControl
 						label={__("Divider", "wp-component-library")}
 						help={__(
-							"Requires a section background image or pattern (Section Background / Section Pattern).",
+							"Requires a section background (image, pattern, or background color).",
 							"wp-component-library",
 						)}
 						value={divider || "none"}
 						onChange={onDividerChange}
 						isBlock
 					>
-						<ToggleGroupControlOption
-							value="none"
-							label={__("None", "wp-component-library")}
-						/>
-						<ToggleGroupControlOption
-							value="top"
-							label={__("Top", "wp-component-library")}
-						/>
-						<ToggleGroupControlOption
-							value="bottom"
-							label={__("Bottom", "wp-component-library")}
-						/>
+						{ALL_POSITIONS.filter((option) =>
+							positions.includes(option.value),
+						).map((option) => (
+							<ToggleGroupControlOption
+								key={option.value}
+								value={option.value}
+								label={option.label}
+							/>
+						))}
 					</ToggleGroupControl>
 				</ToolsPanelItem>
 			</ToolsPanel>

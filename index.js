@@ -53,6 +53,8 @@ export {
 	OrderBySelect,
 	PostsPerPageControl,
 	PostTypeSelect,
+	CardTemplatePartSelect,
+	getDefaultCardSlugForPostType,
 	reorderByIds,
 	SelectionModeControl,
 	TaxonomySelect,

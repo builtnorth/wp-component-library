@@ -1,6 +1,7 @@
 // Individual Query Controls - Always render as ToolsPanelItems
 export { ColumnCountControl } from "./columnCountControl";
 export { DisplayTypeSelect } from "./displayTypeSelect";
+export { HideCurrentPostControl } from "./hideCurrentPostControl";
 export { ManualPostSelector } from "./manualPostSelector";
 export { ManualTermSelector } from "./manualTermSelector";
 export { defaultOrderOptions, OrderBySelect } from "./orderBySelect";

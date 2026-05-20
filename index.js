@@ -47,6 +47,7 @@ export {
 	ColumnCountControl,
 	defaultOrderOptions,
 	DisplayTypeSelect,
+	HideCurrentPostControl,
 	ManualPostSelector,
 	ManualTermSelector,
 	OrderBySelect,

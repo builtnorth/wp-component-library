@@ -12,6 +12,7 @@ const BaseMetaAdvanced = ({
 	clientId,
 }) => {
 	const isImageBlock = blockName === "core/image";
+	const isIconBlock = blockName === "polaris/icon";
 	
 	
 	const { updateBlockAttributes, __unstableMarkNextChangeAsNotPersistent } = useDispatch("core/block-editor");
@@ -126,8 +127,25 @@ const BaseMetaAdvanced = ({
 		const currentBindings = currentAttributes.metadata?.bindings;
 		
 		if (metaField) {
-			// Different binding for image vs content blocks
-			if (isImageBlock) {
+			if (isIconBlock) {
+				if (
+					currentBindings?.icon?.source === "core/post-meta" &&
+					currentBindings?.icon?.args?.key === metaField
+				) {
+					return;
+				}
+
+				updateBlockAttributes(clientId, {
+					metadata: {
+						bindings: {
+							icon: {
+								source: "core/post-meta",
+								args: { key: metaField },
+							},
+						},
+					},
+				});
+			} else if (isImageBlock) {
 				// Check if bindings are already set correctly for images
 				if (
 					currentBindings?.id?.source === "core/post-meta" &&
@@ -202,6 +220,10 @@ const BaseMetaAdvanced = ({
 				attributesToUpdate.alt = undefined;
 			}
 			
+			if (currentBindings.icon) {
+				attributesToUpdate.icon = undefined;
+			}
+
 			// For content blocks
 			if (currentBindings.content) {
 				attributesToUpdate.content = undefined;

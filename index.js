@@ -54,6 +54,7 @@ export {
 	PostsPerPageControl,
 	PostTypeSelect,
 	CardTemplatePartSelect,
+	CardTemplatePartPanel,
 	getDefaultCardSlugForPostType,
 	reorderByIds,
 	SelectionModeControl,

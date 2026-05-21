@@ -8,6 +8,7 @@ export { defaultOrderOptions, OrderBySelect } from "./orderBySelect";
 export { PostsPerPageControl } from "./postsPerPageControl";
 export { PostTypeSelect } from "./postTypeSelect";
 export { CardTemplatePartSelect } from "./cardTemplatePartSelect";
+export { CardTemplatePartPanel } from "./cardTemplatePartPanel";
 export {
 	buildCardTemplatePartOptions,
 	cardTemplatePartMatchesPostType,

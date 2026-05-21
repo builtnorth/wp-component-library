@@ -22,6 +22,9 @@ import {
  * @param {Function} [props.slugFilter] Optional (slug, postType) => boolean.
  * @param {Function} [props.onSlugChange] Optional side effect when slug changes (e.g. sync inner blocks).
  * @param {boolean} [props.isShownByDefault] ToolsPanelItem default visibility.
+ * @param {string} [props.textDomain] i18n text domain.
+ * @param {boolean} [props.disableAutoFill] Skip auto-setting default slug on mount.
+ * @param {boolean} [props.usePersistedSlugOnly] Select value is the saved slug only (no default fallback writes).
  * @returns {import('react').WPElement|null} Element to render.
  */
 function CardTemplatePartSelect({
@@ -33,6 +36,9 @@ function CardTemplatePartSelect({
 	slugFilter,
 	onSlugChange,
 	isShownByDefault = true,
+	textDomain = "built_starter",
+	disableAutoFill = false,
+	usePersistedSlugOnly = false,
 }) {
 	const postType = postTypeProp || attributes?.postType || "post";
 	const templatePartSlug = attributes?.templatePartSlug || "";
@@ -53,45 +59,70 @@ function CardTemplatePartSelect({
 		[templateParts, postType, slugFilter],
 	);
 
-	const effectiveValue = templatePartSlug || resolvedDefault;
+	const selectValue = usePersistedSlugOnly
+		? templatePartSlug
+		: templatePartSlug || resolvedDefault;
 
 	useEffect(() => {
+		if (disableAutoFill) {
+			return;
+		}
+
 		if (!templatePartSlug && resolvedDefault && options.length > 0) {
 			const hasDefault = options.some((o) => o.value === resolvedDefault);
 			if (hasDefault) {
 				setAttributes({ templatePartSlug: resolvedDefault });
 			}
 		}
-	}, [templatePartSlug, resolvedDefault, options, setAttributes]);
+	}, [
+		templatePartSlug,
+		resolvedDefault,
+		options,
+		setAttributes,
+		disableAutoFill,
+	]);
 
 	if (!options.length) {
 		return null;
 	}
 
 	const handleChange = (value) => {
+		if (!value || value === templatePartSlug) {
+			return;
+		}
+
 		setAttributes({ templatePartSlug: value });
-		onSlugChange?.(value);
+
+		// Caller may already sync in setAttributes (e.g. core/query); skip duplicate updates.
+		if (onSlugChange) {
+			onSlugChange(value);
+		}
 	};
 
 	return (
 		<ToolsPanelItem
-			hasValue={() => effectiveValue !== resolvedDefault}
-			label={__("Card layout", "built_starter")}
+			hasValue={() =>
+				!!templatePartSlug && templatePartSlug !== resolvedDefault
+			}
+			label={__("Card layout", textDomain)}
 			onDeselect={() => {
 				setAttributes({ templatePartSlug: resolvedDefault });
-				onSlugChange?.(resolvedDefault);
+
+				if (onSlugChange) {
+					onSlugChange(resolvedDefault);
+				}
 			}}
 			isShownByDefault={isShownByDefault}
 		>
 			<SelectControl
 				__nextHasNoMarginBottom={true}
 				__next40pxDefaultSize
-				label={__("Card layout", "built_starter")}
+				label={__("Card layout", textDomain)}
 				help={__(
 					"Choose which card template part to use for each post in the loop.",
-					"built_starter",
+					textDomain,
 				)}
-				value={effectiveValue}
+				value={selectValue}
 				options={options}
 				onChange={handleChange}
 			/>

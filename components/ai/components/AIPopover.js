@@ -9,6 +9,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useAI } from '../hooks/useAI';
+import { isAiEnabled } from '../../../utils/ai-gate';
 
 /**
  * AIPopover Component - Popover interface for AI generation with prompt
@@ -62,7 +63,7 @@ export function AIPopover({
         onClose();
     };
     
-    if (!isOpen) return null;
+    if (!isOpen || !isAiEnabled()) return null;
     
     return (
         <Popover

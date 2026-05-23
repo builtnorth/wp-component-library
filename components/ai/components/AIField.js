@@ -7,6 +7,7 @@ import {
 } from '@wordpress/components';
 import { useAI } from '../hooks/useAI';
 import { aiSparkle } from '../utils/icons';
+import { isAiEnabled } from '../../../utils/ai-gate';
 
 /**
  * AIField Component - Clean wrapper for AI generation
@@ -27,6 +28,7 @@ export function AIField({
     position = 'label',
     buttonIcon = aiSparkle  // Default to our AI sparkle icon
 }) {
+    // Hooks must run unconditionally — check isAiEnabled() after them.
     // Use a ref to always have the latest context
     const contextRef = useRef(context);
     
@@ -67,6 +69,12 @@ export function AIField({
         }
     };
     
+    // When AI is not enabled, render children without the AI button.
+    // This check must come after all hooks above.
+    if (!isAiEnabled()) {
+        return <>{children}</>;
+    }
+
     // Button size styles
     const buttonStyles = {
         small: {

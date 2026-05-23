@@ -4,11 +4,16 @@ import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
 import { AIPopover } from '../components/AIPopover';
+import { isAiEnabled } from '../../../utils/ai-gate';
 
 /**
- * Register AI keyboard shortcuts
+ * Register AI keyboard shortcuts. No-ops when AI is not enabled.
  */
 export function registerAIShortcuts() {
+    if (!isAiEnabled()) {
+        return;
+    }
+
     const { registerShortcut } = wp.data.dispatch(keyboardShortcutsStore);
     
     registerShortcut({
@@ -23,10 +28,10 @@ export function registerAIShortcuts() {
 }
 
 /**
- * AI Shortcut Handler Component
- * Listens for keyboard shortcuts and opens AI popover
+ * Inner component — hooks run unconditionally.
+ * Only mounted when AI is enabled.
  */
-export function AIShortcutHandler() {
+function AIShortcutHandlerInner() {
     const [showPopover, setShowPopover] = useState(false);
     const [anchorElement, setAnchorElement] = useState(null);
     
@@ -174,6 +179,19 @@ export function AIShortcutHandler() {
             }
         />
     );
+}
+
+/**
+ * AI Shortcut Handler Component
+ * Listens for keyboard shortcuts and opens the AI popover.
+ * Renders nothing when AI is not enabled — this wrapper keeps hook call order
+ * stable by never mounting the inner component when AI is off.
+ */
+export function AIShortcutHandler() {
+    if (!isAiEnabled()) {
+        return null;
+    }
+    return <AIShortcutHandlerInner />;
 }
 
 // Auto-initialize when loaded

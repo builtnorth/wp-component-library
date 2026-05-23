@@ -100,3 +100,4 @@ export {
 // Content extraction utilities removed - use AI type configs instead
 
 export { getEditorExperienceSectionDivider } from "./utils/polaris-localize";
+export { isAiEnabled, isAiPolicyEnabled, isAiFullyConfigured, isAiSetupRequired } from "./utils/ai-gate";

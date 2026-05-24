@@ -23,6 +23,8 @@ const ALL_POSITIONS = [
 
 const SectionDividerSettings = ({
 	clientId,
+	/** Optional fallback when the block store is unavailable in this frame. */
+	attributes: attributesProp,
 	divider,
 	onDividerChange,
 	resetAll,
@@ -40,11 +42,10 @@ const SectionDividerSettings = ({
 		return null;
 	}
 
-	// TODO(pinned): hide panel when no Polaris section background — requires_background + polaris-only check.
 	const requiresBackground = dividerConfig?.requires_background !== false;
 
-	// Read live attributes from the block store (not a stale snapshot).
-	const blockAttributes = useSelect(
+	// Prefer live block-store attributes; fall back to props from the edit component.
+	const storeAttributes = useSelect(
 		(select) =>
 			clientId
 				? select(blockEditorStore).getBlockAttributes(clientId)
@@ -53,11 +54,13 @@ const SectionDividerSettings = ({
 	);
 
 	const resolvedHasBackground = sectionHasDividerBackground(
-		blockAttributes ?? {},
+		storeAttributes ?? attributesProp ?? {},
 	);
 
-	const showDividerControls =
-		!requiresBackground || resolvedHasBackground;
+	// Hide the panel until the section has a clip surface (color, image, or pattern).
+	const showDividerControls = requiresBackground
+		? resolvedHasBackground
+		: true;
 
 	useEffect(() => {
 		if (

@@ -12,6 +12,7 @@ const BaseMetaAdvanced = ({
 	clientId,
 }) => {
 	const isImageBlock = blockName === "core/image";
+	const isIconBlock = blockName === "polaris/icon";
 	
 	
 	const { updateBlockAttributes, __unstableMarkNextChangeAsNotPersistent } = useDispatch("core/block-editor");
@@ -35,7 +36,7 @@ const BaseMetaAdvanced = ({
 	// Get media data separately to avoid re-renders
 	const media = useSelect((select) => {
 		if (!isImageBlock || !imageId) return null;
-		return select("core").getMedia(imageId);
+		return select("core").getEntityRecord("postType", "attachment", imageId);
 	}, [isImageBlock, imageId]);
 
 	// Track the last synced ID and whether we've initialized
@@ -72,7 +73,11 @@ const BaseMetaAdvanced = ({
 		};
 
 		// Get the latest media data
-		const currentMedia = wpSelect("core").getMedia(imageId);
+		const currentMedia = wpSelect("core").getEntityRecord(
+			"postType",
+			"attachment",
+			imageId,
+		);
 		const attributes = wpSelect("core/block-editor").getBlockAttributes(clientId) || {};
 
 		// If we have media data, also save the URL and alt
@@ -122,8 +127,25 @@ const BaseMetaAdvanced = ({
 		const currentBindings = currentAttributes.metadata?.bindings;
 		
 		if (metaField) {
-			// Different binding for image vs content blocks
-			if (isImageBlock) {
+			if (isIconBlock) {
+				if (
+					currentBindings?.icon?.source === "core/post-meta" &&
+					currentBindings?.icon?.args?.key === metaField
+				) {
+					return;
+				}
+
+				updateBlockAttributes(clientId, {
+					metadata: {
+						bindings: {
+							icon: {
+								source: "core/post-meta",
+								args: { key: metaField },
+							},
+						},
+					},
+				});
+			} else if (isImageBlock) {
 				// Check if bindings are already set correctly for images
 				if (
 					currentBindings?.id?.source === "core/post-meta" &&
@@ -198,6 +220,10 @@ const BaseMetaAdvanced = ({
 				attributesToUpdate.alt = undefined;
 			}
 			
+			if (currentBindings.icon) {
+				attributesToUpdate.icon = undefined;
+			}
+
 			// For content blocks
 			if (currentBindings.content) {
 				attributesToUpdate.content = undefined;

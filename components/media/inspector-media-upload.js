@@ -147,7 +147,7 @@ function InspectorMediaUpload({
 					onClick={openMedia}
 				>
 					{buttonTitle ||
-						__("Select or Upload Media", "polaris-blocks")}
+						__("Select or Upload Media", "wp-component-library")}
 				</Button>
 			) : (
 				<Flex>
@@ -158,7 +158,7 @@ function InspectorMediaUpload({
 						variant="secondary"
 						onClick={openMedia}
 					>
-						{__("Edit/Replace", "polaris-blocks")}
+						{__("Edit/Replace", "wp-component-library")}
 					</Button>
 					<Button
 						__next40pxDefaultSize
@@ -168,7 +168,7 @@ function InspectorMediaUpload({
 						onClick={onRemove}
 						isDestructive
 					>
-						{__("Remove", "polaris-blocks")}
+						{__("Remove", "wp-component-library")}
 					</Button>
 				</Flex>
 			)}

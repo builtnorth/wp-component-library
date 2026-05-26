@@ -6,25 +6,16 @@
 
 export { AttachmentImage } from "./components/attachment-image";
 export {
+	registerBlockExtension,
+	unregisterBlockExtension,
+} from "./components/block-extension";
+export {
 	CustomBlockAppender,
 	CustomColumnAppender,
 	CustomInlineAppender,
 	CustomInspectorAppender,
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
-export {
-	AlignmentSettings,
-	AlignmentToolbar,
-	AllowWrapSettings,
-	ContentAlignmentSettings,
-	ContentAlignmentToolbar,
-	JustificationSettings,
-	JustificationToolbar,
-	LayoutPanel,
-	LayoutWidthControl,
-	OrientationSettings,
-	OrientationToolbar,
-} from "./components/layout";
 export {
 	EditorMediaUpload,
 	InspectorMediaUpload,
@@ -47,17 +38,26 @@ export {
 	ColumnCountControl,
 	defaultOrderOptions,
 	DisplayTypeSelect,
+	HideCurrentPostControl,
 	ManualPostSelector,
 	ManualTermSelector,
 	OrderBySelect,
 	PostsPerPageControl,
 	PostTypeSelect,
+	CardTemplatePartSelect,
+	CardTemplatePartPanel,
+	getDefaultCardSlugForPostType,
 	reorderByIds,
 	SelectionModeControl,
 	TaxonomySelect,
 	useOrderedTerms,
 } from "./components/query";
-export { SectionDividerSettings } from "./components/section-divider";
+export {
+	SectionDividerSettings,
+	sectionHasDividerBackground,
+	sectionHasCustomBackground,
+	sectionHasPolarisSectionBackground, // @deprecated — use sectionHasCustomBackground
+} from "./components/section-divider";
 export {
 	SectionPattern,
 	SectionPatternSettings,
@@ -87,6 +87,35 @@ export {
 	AIFieldWrapper,
 	AIInline,
 	AIModal,
+	configureAI,
 	useAI,
 } from "./components/ai";
 // Content extraction utilities removed - use AI type configs instead
+
+export {
+	getEditorExperienceSectionDivider,
+	getLocalize,
+	getLocalizeWindow,
+	getPolarisLocalize, // @deprecated — use getLocalize
+	getPolarisLocalizeWindow, // @deprecated — use getLocalizeWindow
+} from "./utils/polaris-localize";
+export { isAiEnabled, isAiPolicyEnabled, isAiFullyConfigured, isAiSetupRequired } from "./utils/ai-gate";
+
+// Icon Picker & Registry
+export {
+	iconStore,
+	ICON_STORE_NAME,
+	registerIconSet,
+	registerIcons,
+	removeIconSet,
+	useIconSets,
+	useGroupedIcons,
+	useAllIcons,
+	useIcons,
+	useIcon,
+	Icon,
+	IconPicker,
+	IconPickerModal,
+	IconPickerToolbarButton,
+	InlineIconPicker,
+} from "./components/icon-picker";

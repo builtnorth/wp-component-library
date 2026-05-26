@@ -6,3 +6,8 @@
 
 // Main components
 export { SectionDividerSettings } from "./SectionDividerSettings";
+export {
+	sectionHasDividerBackground,
+	sectionHasCustomBackground,
+	sectionHasPolarisSectionBackground, // @deprecated alias — use sectionHasCustomBackground
+} from "./sectionHasDividerBackground";

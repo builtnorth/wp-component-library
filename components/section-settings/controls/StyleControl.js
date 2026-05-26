@@ -17,30 +17,30 @@ const StyleControl = ({
     return (
         <ToolsPanelItem
             hasValue={() => imageStyle !== defaultImageStyle}
-            label={__("Media Style", "polaris-blocks")}
+            label={__("Media Style", "wp-component-library")}
             onDeselect={() => onChange(defaultImageStyle)}
             isShownByDefault={isShownByDefault}
         >
             <SelectControl
                 __nextHasNoMarginBottom={true}
                 __next40pxDefaultSize
-                label={__("Media Style", "polaris-blocks")}
+                label={__("Media Style", "wp-component-library")}
                 value={imageStyle || "none"}
                 options={[
                     {
-                        label: __("None", "polaris-blocks"),
+                        label: __("None", "wp-component-library"),
                         value: "none",
                     },
                     {
-                        label: __("Blur", "polaris-blocks"),
+                        label: __("Blur", "wp-component-library"),
                         value: "blur",
                     },
                     {
-                        label: __("Grayscale", "polaris-blocks"),
+                        label: __("Grayscale", "wp-component-library"),
                         value: "grayscale",
                     },
                     {
-                        label: __("Blur + Grayscale", "polaris-blocks"),
+                        label: __("Blur + Grayscale", "wp-component-library"),
                         value: "blur-grayscale",
                     },
                 ]}

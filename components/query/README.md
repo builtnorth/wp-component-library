@@ -11,6 +11,7 @@ These controls are always ToolsPanelItems that can be composed together in Tools
 - **`PostTypeSelect`** - Select post type
 - **`OrderBySelect`** - Order posts by date, title, etc.
 - **`SelectionModeControl`** - Toggle between auto and manual selection
+- **`HideCurrentPostControl`** - Exclude the post being viewed from feed results on singles/templates (default on)
 
 ### Manual Selection Controls
 

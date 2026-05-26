@@ -19,15 +19,15 @@ const MediaSelectControl = ({
 			hasValue={() =>
 				backgroundImage && backgroundImage !== defaultBackgroundImage
 			}
-			label={__("Media Select", "polaris-blocks")}
+			label={__("Media Select", "wp-component-library")}
 			onDeselect={() => onRemove()}
 			isShownByDefault={isShownByDefault}
 		>
 			<InspectorMediaUpload
 				buttonTitle={
 					backgroundImage
-						? __("Replace Media", "polaris-blocks")
-						: __("Select or Upload Media", "polaris-blocks")
+						? __("Replace Media", "wp-component-library")
+						: __("Select or Upload Media", "wp-component-library")
 				}
 				gallery={false}
 				multiple={false}

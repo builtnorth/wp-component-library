@@ -4,17 +4,26 @@ import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
 import { AIPopover } from '../components/AIPopover';
+import { isAiEnabled } from '../../../utils/ai-gate';
 
 /**
- * Register AI keyboard shortcuts
+ * Register AI keyboard shortcuts. No-ops when AI is not enabled.
+ *
+ * @param {Object}  [options]
+ * @param {boolean} [options.enabled]  Override the gate check. Defaults to isAiEnabled().
  */
-export function registerAIShortcuts() {
+export function registerAIShortcuts({ enabled } = {}) {
+    const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
+    if (!isEnabled) {
+        return;
+    }
+
     const { registerShortcut } = wp.data.dispatch(keyboardShortcutsStore);
     
     registerShortcut({
-        name: 'polaris/ai-generate',
+        name: 'wpcl/ai-generate',
         category: 'block',
-        description: __('Open AI content generator', 'polaris'),
+        description: __('Open AI content generator', 'wp-component-library'),
         keyCombination: {
             modifier: 'primaryAlt', // Cmd/Ctrl + Alt
             character: 'g', // G for Generate
@@ -23,10 +32,10 @@ export function registerAIShortcuts() {
 }
 
 /**
- * AI Shortcut Handler Component
- * Listens for keyboard shortcuts and opens AI popover
+ * Inner component — hooks run unconditionally.
+ * Only mounted when AI is enabled.
  */
-export function AIShortcutHandler() {
+function AIShortcutHandlerInner() {
     const [showPopover, setShowPopover] = useState(false);
     const [anchorElement, setAnchorElement] = useState(null);
     
@@ -49,7 +58,7 @@ export function AIShortcutHandler() {
     
     // Use the shortcut hook
     useShortcut(
-        'polaris/ai-generate',
+        'wpcl/ai-generate',
         (event) => {
             if (event) {
                 event.preventDefault();
@@ -87,8 +96,8 @@ export function AIShortcutHandler() {
     
     // Determine AI type based on block
     const aiType = selectedBlock.name === 'core/paragraph' 
-        ? 'polaris-blocks/paragraph' 
-        : 'polaris-blocks/heading';
+        ? 'paragraph' 
+        : 'heading';
     
     return (
         <AIPopover
@@ -165,20 +174,37 @@ export function AIShortcutHandler() {
             onClose={() => setShowPopover(false)}
             anchorRef={anchorElement}
             promptLabel={selectedBlock.name === 'core/paragraph' 
-                ? __('What should this paragraph be about?', 'polaris')
-                : __('What should this heading say?', 'polaris')
+                ? __('What should this paragraph be about?', 'wp-component-library')
+                : __('What should this heading say?', 'wp-component-library')
             }
             promptPlaceholder={selectedBlock.name === 'core/paragraph'
-                ? __('e.g., Explain the benefits of solar energy...', 'polaris')
-                : __('e.g., A heading about pricing options...', 'polaris')
+                ? __('e.g., Explain the benefits of solar energy...', 'wp-component-library')
+                : __('e.g., A heading about pricing options...', 'wp-component-library')
             }
         />
     );
 }
 
-// Auto-initialize when loaded
+/**
+ * AI Shortcut Handler Component.
+ * Listens for keyboard shortcuts and opens the AI popover.
+ * Renders nothing when AI is not enabled — this wrapper keeps hook call order
+ * stable by never mounting the inner component when AI is off.
+ *
+ * @param {Object}  [props]
+ * @param {boolean} [props.enabled]  Override the gate check. Defaults to isAiEnabled().
+ */
+export function AIShortcutHandler({ enabled } = {}) {
+    const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
+    if (!isEnabled) {
+        return null;
+    }
+    return <AIShortcutHandlerInner />;
+}
+
+// Auto-initialize using the built-in AI gate.
+// Third-party consumers can call registerAIShortcuts({ enabled: true }) to override.
 if (typeof window !== 'undefined' && window.wp) {
-    // Wait for editor to be ready
     wp.domReady(() => {
         registerAIShortcuts();
     });

@@ -97,11 +97,11 @@ function MyComponent() {
 
 The component provides these CSS classes for customization:
 
-- `.polaris-repeater` - Main container
-- `.polaris-repeater__items` - Items container
-- `.polaris-repeater__item` - Individual item
-- `.polaris-repeater__item-handle` - Drag handle
-- `.polaris-repeater__item-content` - Item content area
-- `.polaris-repeater__item-actions` - Action buttons area
-- `.polaris-repeater__empty-state` - Empty state message
-- `.polaris-repeater__add-button` - Add button container
+- `.wpcl-repeater__item--dragging` - Applied to the placeholder while an item is being dragged
+- `.wpcl-repeater__item--integrated` - Applied in integrated render mode
+- `.built-repeater__items` - Items container
+- `.built-repeater__item-handle` - Drag handle
+- `.built-repeater__item-content` - Item content area
+- `.built-repeater__item-actions` - Action buttons area
+- `.built-repeater__empty-state` - Empty state message
+- `.built-repeater__add-button` - Add button container

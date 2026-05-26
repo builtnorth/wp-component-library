@@ -1,6 +1,7 @@
-import { useState, useCallback, useReducer } from '@wordpress/element';
+import { useCallback, useReducer } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { aiCache } from '../services/AICache';
+import { getAIEndpoint } from '../config';
 
 // Reducer for managing AI generation state
 const aiReducer = (state, action) => {
@@ -75,9 +76,8 @@ export function useAI(typeId, options = {}) {
         dispatch({ type: 'START_GENERATION' });
         
         try {
-            // Check if we should skip cache (manual trigger or configured types)
-            const shouldSkipCache = options.skipCache || overrides._skipCache || 
-                                  typeId.includes('seo/title') || typeId.includes('seo/meta');
+            // Check if we should skip cache (manual trigger or option)
+            const shouldSkipCache = options.skipCache || overrides._skipCache;
             
             // Check cache if not skipping
             if (!shouldSkipCache) {
@@ -110,12 +110,18 @@ export function useAI(typeId, options = {}) {
                 force_variety: shouldSkipCache || overrides.force_variety
             };
             
-            // Allow custom endpoint configuration via options
-            const endpoint = options.customEndpoint || '/polaris-ai/v1/generate';
+            // Resolve endpoint: per-call option → global config → warn
+            const endpoint = options.customEndpoint || getAIEndpoint();
             const customRequestBuilder = options.buildRequest;
+
+            if (!endpoint && !customRequestBuilder) {
+                const msg = 'useAI: no endpoint configured. Call configureAI({ endpoint }) at your plugin entry point, or pass customEndpoint / buildRequest to useAI().';
+                console.error(msg);
+                throw new Error(msg);
+            }
             
             let response;
-            
+
             // If a custom request builder is provided, use it
             if (customRequestBuilder && typeof customRequestBuilder === 'function') {
                 const customRequest = customRequestBuilder(typeId, fullContext, postId);
@@ -127,8 +133,8 @@ export function useAI(typeId, options = {}) {
                         path: endpoint,
                         method: 'POST',
                         data: {
-                            type: typeId,
-                            context: fullContext
+                            ability: typeId,
+                            input: fullContext
                         }
                     });
                 }
@@ -138,14 +144,14 @@ export function useAI(typeId, options = {}) {
                     path: endpoint,
                     method: 'POST',
                     data: {
-                        type: typeId,
-                        context: fullContext
+                        ability: typeId,
+                        input: fullContext
                     }
                 });
             }
-            
-            // Handle response - extract text or use whole response
-            const responseData = response.text || response;
+
+            // Extract the ability result from the response envelope
+            const responseData = response?.data ?? response;
             
             dispatch({ 
                 type: 'SUCCESS', 
@@ -154,8 +160,7 @@ export function useAI(typeId, options = {}) {
             });
             
             // Cache the result (only if not manually triggered)
-            const isSEOType = typeId.includes('seo/title') || typeId.includes('seo/meta');
-            if (!shouldSkipCache && !isSEOType) {
+            if (!shouldSkipCache) {
                 const cacheKey = aiCache.generateKey(typeId, {});
                 await aiCache.set(cacheKey, responseData, options.cacheTimeout);
             }

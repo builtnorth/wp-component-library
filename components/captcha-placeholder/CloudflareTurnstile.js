@@ -84,7 +84,7 @@ export function CloudflareTurnstile({ theme, mode }) {
 	if (mode === 'invisible') {
 		return (
 			<InvisibleNotice>
-				{__("Invisible captcha - runs automatically on form submission", "polaris-forms")}
+				{__("Invisible captcha - runs automatically on form submission", "wp-component-library")}
 			</InvisibleNotice>
 		);
 	}
@@ -95,13 +95,13 @@ export function CloudflareTurnstile({ theme, mode }) {
 				{mode === 'managed' && (
 					<>
 						<TurnstileCheckbox />
-						<TurnstileLabel theme={theme}>{__("Verify you are human", "polaris-forms")}</TurnstileLabel>
+						<TurnstileLabel theme={theme}>{__("Verify you are human", "wp-component-library")}</TurnstileLabel>
 					</>
 				)}
 				{mode === 'non-interactive' && (
 					<TurnstileSpinner>
 						<TurnstileSpinnerInner />
-						<TurnstileLabel theme={theme}>{__("Verifying...", "polaris-forms")}</TurnstileLabel>
+						<TurnstileLabel theme={theme}>{__("Verifying...", "wp-component-library")}</TurnstileLabel>
 					</TurnstileSpinner>
 				)}
 				<TurnstileLogo>Cloudflare</TurnstileLogo>

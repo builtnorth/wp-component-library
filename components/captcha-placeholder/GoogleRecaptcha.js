@@ -101,7 +101,7 @@ export function GoogleRecaptchaV2({ theme, size }) {
 		<CaptchaContainer>
 			<RecaptchaV2 theme={theme} size={size}>
 				<CheckboxBorder />
-				<RecaptchaLabel>{__("I'm not a robot", "polaris-forms")}</RecaptchaLabel>
+				<RecaptchaLabel>{__("I'm not a robot", "wp-component-library")}</RecaptchaLabel>
 				<RecaptchaLogo>
 					<img src={RECAPTCHA_LOGO_BASE64} alt="reCAPTCHA" />
 					<RecaptchaText>

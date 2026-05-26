@@ -26,14 +26,14 @@ const FocalPointControl = ({
                     focalPoint.y !== defaultFocalPoint.y
                 );
             }}
-            label={__("Media Focal Point", "polaris-blocks")}
+            label={__("Media Focal Point", "wp-component-library")}
             onDeselect={() => onChange(defaultFocalPoint)}
             isShownByDefault={true}
         >
             <FocalPointPicker
                 __nextHasNoMarginBottom
                 hideLabelFromVision={true}
-                label={__("Media Focal Point", "polaris-blocks")}
+                label={__("Media Focal Point", "wp-component-library")}
                 url={imageUrl}
                 value={focalPoint || defaultFocalPoint}
                 onDragStart={onChange}

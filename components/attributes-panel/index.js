@@ -70,23 +70,23 @@ function AttributesPanel({
 	const comboboxOptions = useMemo(() => {
 		const options = [
 			// Default HTML attributes
-			{ value: 'id', label: __('ID', 'polaris') },
-			{ value: 'class', label: __('Class', 'polaris') },
-			{ value: 'style', label: __('Style', 'polaris') },
-			{ value: 'title', label: __('Title', 'polaris') },
-			{ value: 'alt', label: __('Alt Text', 'polaris') },
-			{ value: 'rel', label: __('Rel', 'polaris') },
-			{ value: 'target', label: __('Target', 'polaris') },
-			{ value: 'href', label: __('Href', 'polaris') },
-			{ value: 'src', label: __('Src', 'polaris') },
+			{ value: 'id', label: __('ID', 'wp-component-library') },
+			{ value: 'class', label: __('Class', 'wp-component-library') },
+			{ value: 'style', label: __('Style', 'wp-component-library') },
+			{ value: 'title', label: __('Title', 'wp-component-library') },
+			{ value: 'alt', label: __('Alt Text', 'wp-component-library') },
+			{ value: 'rel', label: __('Rel', 'wp-component-library') },
+			{ value: 'target', label: __('Target', 'wp-component-library') },
+			{ value: 'href', label: __('Href', 'wp-component-library') },
+			{ value: 'src', label: __('Src', 'wp-component-library') },
 			// Data attributes
-			{ value: 'data-id', label: __('Data ID', 'polaris') },
-			{ value: 'data-type', label: __('Data Type', 'polaris') },
-			{ value: 'data-value', label: __('Data Value', 'polaris') },
+			{ value: 'data-id', label: __('Data ID', 'wp-component-library') },
+			{ value: 'data-type', label: __('Data Type', 'wp-component-library') },
+			{ value: 'data-value', label: __('Data Value', 'wp-component-library') },
 			// ARIA attributes
-			{ value: 'aria-label', label: __('ARIA Label', 'polaris') },
-			{ value: 'aria-describedby', label: __('ARIA Described By', 'polaris') },
-			{ value: 'aria-hidden', label: __('ARIA Hidden', 'polaris') },
+			{ value: 'aria-label', label: __('ARIA Label', 'wp-component-library') },
+			{ value: 'aria-describedby', label: __('ARIA Described By', 'wp-component-library') },
+			{ value: 'aria-hidden', label: __('ARIA Hidden', 'wp-component-library') },
 			// Meta fields
 			...metaFields.map(field => ({
 				...field,
@@ -175,7 +175,7 @@ function AttributesPanel({
 
 	return (
 		<ToolsPanel
-			label={__('Attributes', 'polaris')}
+			label={__('Attributes', 'wp-component-library')}
 			panelId={panelId}
 			hasInnerWrapper={true}
 			className="attributes-tools-panel"
@@ -191,7 +191,7 @@ function AttributesPanel({
 				<ToolsPanelItem
 					key={attribute.id}
 					hasValue={() => !!attribute.value}
-					label={attribute.label || __('Select attribute', 'polaris')}
+					label={attribute.label || __('Select attribute', 'wp-component-library')}
 					onDeselect={() => removeAttribute(attribute.id)}
 					resetAllFilter={() => resetAttribute(attribute.id)}
 					panelId={panelId}
@@ -199,22 +199,22 @@ function AttributesPanel({
 					<div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
 						<div style={{ flex: 1 }}>
 							<ComboboxControl
-								label={attribute.isNew ? __('Attribute', 'polaris') : attribute.label}
+								label={attribute.isNew ? __('Attribute', 'wp-component-library') : attribute.label}
 								value={attribute.isNew ? '' : attribute.id}
 								onChange={(value) => handleAttributeSelect(attribute.id, value)}
 								options={comboboxOptions}
 								allowReset={false}
-								placeholder={__('Select or type attribute', 'polaris')}
+								placeholder={__('Select or type attribute', 'wp-component-library')}
 							/>
 							{!attribute.isNew && (
 								<ComboboxControl
-									label={__('Value', 'polaris')}
+									label={__('Value', 'wp-component-library')}
 									value={attribute.value || ''}
 									onChange={(value) => handleAttributeChange(attribute.id, value)}
 									options={[]}
 									allowReset={false}
-									placeholder={__('Enter value', 'polaris')}
-									help={attribute.id.startsWith('meta:') ? __('This will pull from post meta', 'polaris') : null}
+									placeholder={__('Enter value', 'wp-component-library')}
+									help={attribute.id.startsWith('meta:') ? __('This will pull from post meta', 'wp-component-library') : null}
 								/>
 							)}
 						</div>
@@ -229,7 +229,7 @@ function AttributesPanel({
 					onClick={addNewAttribute}
 					style={{ width: '100%' }}
 				>
-					{__('Add attribute', 'polaris')}
+					{__('Add attribute', 'wp-component-library')}
 				</Button>
 			</div>
 		</ToolsPanel>

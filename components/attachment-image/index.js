@@ -28,7 +28,7 @@ function AttachmentImage({
     ...overrideProps
 }) {
     const { image } = useSelect((select) => ({
-        image: select("core").getMedia(imageId),
+        image: select("core").getEntityRecord("postType", "attachment", imageId),
     }));
 
     if (!imageId || imageId === 0 || !image) return null;

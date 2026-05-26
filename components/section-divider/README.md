@@ -53,9 +53,9 @@ import { SectionDividerSettings } from '@builtnorth/wp-component-library/compone
 
 ## Theme Configuration
 
-The component integrates with Polaris theme configuration. It checks `window.polaris_localize.global.section_divider` to determine if dividers are enabled.
+The component integrates with the host plugin's localize configuration. It checks the injected localize data to determine if dividers are enabled.
 
-If dividers are disabled in the theme, the component returns `null` and won't render.
+If dividers are disabled in the configuration, the component returns `null` and won't render.
 
 ## Examples
 
@@ -224,8 +224,8 @@ The component uses WordPress's `__experimentalToolsPanel` for consistent UI:
 
 ## Notes
 
-- Component requires Polaris theme configuration
-- Returns `null` if dividers are disabled in theme
+- Component requires localize configuration injected by the host plugin
+- Returns `null` if dividers are disabled in the configuration
 - Integrates with WordPress experimental ToolsPanel
 - Designed for section/container blocks
 - CSS implementation required for visual display

@@ -1,6 +1,51 @@
-import { useSetting } from "@wordpress/block-editor";
+import { useSettings } from "@wordpress/block-editor";
 import { useMemo } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
+
+/**
+ * WordPress core aspect ratio presets (when theme enables defaultAspectRatios).
+ * @see https://developer.wordpress.org/news/2024/08/registering-custom-aspect-ratios-in-wordpress-6-6/
+ */
+const DEFAULT_CORE_ASPECT_RATIOS = [
+	{ name: "Square", ratio: "1" },
+	{ name: "Standard", ratio: "4/3" },
+	{ name: "Portrait", ratio: "3/4" },
+	{ name: "Classic", ratio: "3/2" },
+	{ name: "Classic Portrait", ratio: "2/3" },
+	{ name: "Wide", ratio: "16/9" },
+	{ name: "Extra Wide", ratio: "21/9" },
+	{ name: "Tall", ratio: "9/16" },
+];
+
+/**
+ * Flatten aspect ratio presets from useSettings (array or { default, theme } object).
+ *
+ * @param {unknown} setting
+ * @return {Array<{ name: string, ratio: string }>}
+ */
+function collectAspectRatioPresets(setting) {
+	if (!setting) {
+		return [];
+	}
+
+	if (Array.isArray(setting)) {
+		return setting;
+	}
+
+	if (typeof setting !== "object") {
+		return [];
+	}
+
+	const merged = [];
+
+	for (const key of ["default", "theme", "custom"]) {
+		if (Array.isArray(setting[key])) {
+			merged.push(...setting[key]);
+		}
+	}
+
+	return merged;
+}
 
 /**
  * Hook to get aspect ratio options from theme.json
@@ -8,44 +53,69 @@ import { __ } from "@wordpress/i18n";
  * Includes "Original" option like core/image block
  */
 export function useAspectRatioOptions() {
-	const aspectRatios = useSetting("dimensions.aspectRatios");
+	const [
+		aspectRatiosSetting,
+		defaultPresets,
+		themePresets,
+		defaultAspectRatiosEnabled,
+	] = useSettings([
+		"dimensions.aspectRatios",
+		"dimensions.aspectRatios.default",
+		"dimensions.aspectRatios.theme",
+		"dimensions.defaultAspectRatios",
+	]);
 
 	return useMemo(() => {
-		// Always include "Original" as the first option
-		// This matches WordPress core's Image block behavior
 		const originalOption = {
-			label: __("Original", "polaris-blocks"),
+			label: __("Original", "wp-component-library"),
 			value: "original",
 		};
 
-		// Handle case where aspectRatios might be undefined, null, or not an array
-		if (
-			!aspectRatios ||
-			!Array.isArray(aspectRatios) ||
-			aspectRatios.length === 0
-		) {
-			return [originalOption];
+		let presets = [
+			...collectAspectRatioPresets(aspectRatiosSetting),
+			...collectAspectRatioPresets(defaultPresets),
+			...collectAspectRatioPresets(themePresets),
+		];
+
+		// Deduplicate by ratio value.
+		const seen = new Set();
+		presets = presets.filter((ratio) => {
+			if (
+				!ratio ||
+				typeof ratio !== "object" ||
+				!ratio.name ||
+				!ratio.ratio
+			) {
+				return false;
+			}
+			if (seen.has(ratio.ratio)) {
+				return false;
+			}
+			seen.add(ratio.ratio);
+			return true;
+		});
+
+		if (presets.length === 0 && defaultAspectRatiosEnabled !== false) {
+			presets = DEFAULT_CORE_ASPECT_RATIOS.map((ratio) => ({
+				name: __(ratio.name, "wp-component-library"),
+				ratio: ratio.ratio,
+			}));
 		}
 
-		// Map theme.json aspect ratios to options format
-		// Filter out any existing "original" or "auto" values to avoid duplicates
-		const themeRatios = aspectRatios
+		const ratioOptions = presets
 			.filter(
-				(ratio) =>
-					ratio &&
-					typeof ratio === "object" &&
-					ratio.name &&
-					ratio.ratio &&
-					ratio.ratio !== "original" &&
-					ratio.ratio !== "auto",
+				(ratio) => ratio.ratio !== "original" && ratio.ratio !== "auto",
 			)
 			.map((ratio) => ({
 				label: ratio.name,
 				value: ratio.ratio,
 			}));
 
-		// Always put Original first, then theme ratios
-		// This ensures "Original" is always available regardless of theme.json settings
-		return [originalOption, ...themeRatios];
-	}, [aspectRatios]);
+		return [originalOption, ...ratioOptions];
+	}, [
+		aspectRatiosSetting,
+		defaultPresets,
+		themePresets,
+		defaultAspectRatiosEnabled,
+	]);
 }

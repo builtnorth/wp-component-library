@@ -168,6 +168,11 @@ const StyledSuggestion = styled.button`
     }
 `;
 
+const VARIABLE_TOKEN_PATTERN =
+    /\{\{([a-zA-Z0-9_.-]+)\}\}|\{([a-zA-Z0-9_.-]+)\}/g;
+
+const formatVariableToken = (name) => `{{${name}}}`;
+
 // Hidden input for form submission
 const StyledHiddenInput = styled.input`
     position: absolute;
@@ -208,19 +213,42 @@ const VariableField = forwardRef(function VariableField(
     const wrapperRef = useRef();
     const hiddenInputRef = useRef();
 
+    const resolveChipLabel = useCallback(
+        (varName) => {
+            const token = formatVariableToken(varName);
+            const match = options.find((option) => {
+                const raw = getOptionValue(option);
+                const normalized = raw
+                    .replace(/^\{\{?/, "")
+                    .replace(/\}\}?$/g, "");
+
+                return raw === token || normalized === varName;
+            });
+
+            return match ? getOptionLabel(match) : varName;
+        },
+        [options, getOptionLabel, getOptionValue],
+    );
+
     // Convert value to HTML with chips
     const valueToHTML = useCallback((val) => {
         if (!val) return "";
         // Add zero-width spaces between elements for better cursor positioning
-        let html = val.replace(/{([^}]+)}/g, (match, varName) => {
-            return `<span class="variable-chip" contenteditable="false" data-variable="${varName}">${varName}<span class="chip-remove">×</span></span>`;
-        });
+        let html = val.replace(
+            VARIABLE_TOKEN_PATTERN,
+            (match, doubleName, singleName) => {
+                const varName = doubleName || singleName;
+                const label = resolveChipLabel(varName);
+
+                return `<span class="variable-chip" contenteditable="false" data-variable="${varName}">${label}<span class="chip-remove">×</span></span>`;
+            },
+        );
         // Ensure there's always an editable space at the end
         if (!html.endsWith('\u200B')) {
             html += '\u200B';
         }
         return html;
-    }, []);
+    }, [resolveChipLabel]);
 
     // Get plain text from container
     const getPlainText = useCallback(() => {
@@ -235,7 +263,7 @@ const VariableField = forwardRef(function VariableField(
                 text += node.textContent.replace(/\u200B/g, '');
             } else if (node.classList && node.classList.contains("variable-chip")) {
                 const varName = node.getAttribute('data-variable') || node.firstChild.textContent;
-                text += `{${varName}}`;
+                text += formatVariableToken(varName.replace(/^\{\{?|\}\}?$/g, ""));
             }
         });
         
@@ -327,9 +355,10 @@ const VariableField = forwardRef(function VariableField(
                     
                     // Build new value with variable
                     const optionValue = getOptionValue(option);
-                    // Remove curly braces if they're already in the value
-                    const cleanValue = optionValue.replace(/^\{|\}$/g, '');
-                    const varValue = `{${cleanValue}}`;
+                    const cleanValue = optionValue
+                        .replace(/^\{\{?/, "")
+                        .replace(/\}\}?$/g, "");
+                    const varValue = formatVariableToken(cleanValue);
                     
                     // Replace text node content
                     container.textContent = beforeAt + varValue + " " + afterCursor;

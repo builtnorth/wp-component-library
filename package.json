@@ -26,6 +26,8 @@
 		"@dnd-kit/core": "^6.3.1",
 		"@dnd-kit/modifiers": "^9.0.0",
 		"@dnd-kit/sortable": "^10.0.0",
-		"@dnd-kit/utilities": "^3.2.2"
+		"@dnd-kit/utilities": "^3.2.2",
+		"@leeoniya/ufuzzy": "^1.0.14",
+		"react-window": "^1.8.11"
 	}
 }

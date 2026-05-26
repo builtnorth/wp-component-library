@@ -71,11 +71,11 @@ const StyledSortableItem = styled.div`
 	transition: all 0.2s ease;
 	position: relative;
 
-	&.polaris-repeater__item--dragging {
+	&.wpcl-repeater__item--dragging {
 		opacity: 0.3;
 	}
 
-	&.polaris-repeater__item--integrated {
+	&.wpcl-repeater__item--integrated {
 		/* In integrated mode, ensure proper flex layout */
 		> * {
 			flex-grow: 1;
@@ -138,7 +138,7 @@ const RepeaterItemContext = createContext();
  * Drag handle component that can be used within renderItem
  */
 export const DragHandle = ({
-	label = __("Drag to reorder", "polaris"),
+	label = __("Drag to reorder", "wp-component-library"),
 	...props
 }) => {
 	const context = useContext(RepeaterItemContext);
@@ -171,7 +171,7 @@ export const DragHandle = ({
 /**
  * Remove button component that can be used within renderItem
  */
-export const RemoveButton = ({ label = __("Remove", "polaris"), ...props }) => {
+export const RemoveButton = ({ label = __("Remove", "wp-component-library"), ...props }) => {
 	const context = useContext(RepeaterItemContext);
 
 	if (!context) {
@@ -235,11 +235,11 @@ const SortableItem = ({
 	if (renderMode === "integrated") {
 		return (
 			<RepeaterItemContext.Provider value={contextValue}>
-				<StyledSortableItem
-					ref={setNodeRef}
-					style={style}
-					className={`polaris-repeater__item--integrated ${isDragging ? "polaris-repeater__item--dragging" : ""}`}
-				>
+			<StyledSortableItem
+				ref={setNodeRef}
+				style={style}
+				className={`wpcl-repeater__item--integrated ${isDragging ? "wpcl-repeater__item--dragging" : ""}`}
+			>
 					{children}
 				</StyledSortableItem>
 			</RepeaterItemContext.Provider>
@@ -251,7 +251,7 @@ const SortableItem = ({
 		<StyledSortableItem
 			ref={setNodeRef}
 			style={style}
-			className={isDragging ? "polaris-repeater__item--dragging" : ""}
+			className={isDragging ? "wpcl-repeater__item--dragging" : ""}
 		>
 			<div
 				className="built-repeater__item-handle"
@@ -261,7 +261,7 @@ const SortableItem = ({
 				<Button
 					icon={dragHandle}
 					iconSize={20}
-					label={__("Drag to reorder", "polaris")}
+					label={__("Drag to reorder", "wp-component-library")}
 					variant="tertiary"
 					size="compact"
 					tabIndex={-1}
@@ -272,7 +272,7 @@ const SortableItem = ({
 				<div className="built-repeater__item-actions">
 					<Button
 						size="compact"
-						label={__("Remove", "polaris")}
+						label={__("Remove", "wp-component-library")}
 						icon={trash}
 						iconSize={20}
 						variant="tertiary"
@@ -308,10 +308,10 @@ const Repeater = ({
 	onRemove,
 	onReorder,
 	className = "",
-	addButtonText = __("Add Item", "polaris"),
+	addButtonText = __("Add Item", "wp-component-library"),
 	emptyStateText = __(
 		"No items added yet. Click the button below to add one.",
-		"polaris",
+		"wp-component-library",
 	),
 	maxItems = null,
 	minItems = 0,

@@ -24,8 +24,8 @@ import { useAspectRatioOptions } from "./utils/aspect-ratios";
  * @param {function} props.setAttributes
  */
 const SCALE_HELP = {
-	cover: __("Image covers the space evenly.", "polaris-blocks"),
-	contain: __("Image is contained without cropping.", "polaris-blocks"),
+	cover: __("Image covers the space evenly.", "wp-component-library"),
+	contain: __("Image is contained without cropping.", "wp-component-library"),
 };
 
 const ImageControls = ({
@@ -52,13 +52,13 @@ const ImageControls = ({
 
 	return (
 		<ToolsPanel
-			label={__("Image Settings", "polaris-blocks")}
+			label={__("Image Settings", "wp-component-library")}
 			resetAllFilter={resetAllFilter}
 			panelId="image-settings"
 		>
 			<ToolsPanelItem
 				hasValue={() => aspectRatio !== "4/3"}
-				label={__("Aspect Ratio", "polaris-blocks")}
+				label={__("Aspect Ratio", "wp-component-library")}
 				onDeselect={() => setAttributes({ aspectRatio: "4/3" })}
 				resetAllFilter={resetAllFilter}
 				isShownByDefault
@@ -67,7 +67,7 @@ const ImageControls = ({
 				<SelectControl
 					__nextHasNoMarginBottom={true}
 					__next40pxDefaultSize
-					label={__("Aspect Ratio", "polaris-blocks")}
+					label={__("Aspect Ratio", "wp-component-library")}
 					value={aspectRatio}
 					onChange={(value) => setAttributes({ aspectRatio: value })}
 					options={aspectRatioOptions}
@@ -76,7 +76,7 @@ const ImageControls = ({
 
 			<ToolsPanelItem
 				hasValue={() => scale !== "cover"}
-				label={__("Scale", "polaris-blocks")}
+				label={__("Scale", "wp-component-library")}
 				onDeselect={() => setAttributes({ scale: "cover" })}
 				resetAllFilter={resetAllFilter}
 				isShownByDefault
@@ -85,7 +85,7 @@ const ImageControls = ({
 				<ToggleGroupControl
 					__nextHasNoMarginBottom={true}
 					__next40pxDefaultSize
-					label={__("Scale", "polaris-blocks")}
+					label={__("Scale", "wp-component-library")}
 					value={scale}
 					onChange={(value) => setAttributes({ scale: value })}
 					isBlock
@@ -93,11 +93,11 @@ const ImageControls = ({
 				>
 					<ToggleGroupControlOption
 						value="cover"
-						label={__("Cover", "polaris-blocks")}
+						label={__("Cover", "wp-component-library")}
 					/>
 					<ToggleGroupControlOption
 						value="contain"
-						label={__("Contain", "polaris-blocks")}
+						label={__("Contain", "wp-component-library")}
 					/>
 				</ToggleGroupControl>
 			</ToolsPanelItem>
@@ -106,38 +106,38 @@ const ImageControls = ({
 				<FlexBlock>
 					<ToolsPanelItem
 						hasValue={() => width !== "auto"}
-						label={__("Width", "polaris-blocks")}
+						label={__("Width", "wp-component-library")}
 						onDeselect={() => setAttributes({ width: "auto" })}
 						resetAllFilter={resetAllFilter}
 						panelId="image-settings"
 					>
 						<UnitControl
 							__next40pxDefaultSize
-							label={__("Width", "polaris-blocks")}
+							label={__("Width", "wp-component-library")}
 							onChange={(value) =>
 								setAttributes({ width: value })
 							}
 							value={width}
-							placeholder={__("Auto", "polaris-blocks")}
+							placeholder={__("Auto", "wp-component-library")}
 						/>
 					</ToolsPanelItem>
 				</FlexBlock>
 				<FlexBlock>
 					<ToolsPanelItem
 						hasValue={() => height !== "auto"}
-						label={__("Height", "polaris-blocks")}
+						label={__("Height", "wp-component-library")}
 						onDeselect={() => setAttributes({ height: "auto" })}
 						resetAllFilter={resetAllFilter}
 						panelId="image-settings"
 					>
 						<UnitControl
 							__next40pxDefaultSize
-							label={__("Height", "polaris-blocks")}
+							label={__("Height", "wp-component-library")}
 							onChange={(value) =>
 								setAttributes({ height: value })
 							}
 							value={height}
-							placeholder={__("Auto", "polaris-blocks")}
+							placeholder={__("Auto", "wp-component-library")}
 						/>
 					</ToolsPanelItem>
 				</FlexBlock>
@@ -145,7 +145,7 @@ const ImageControls = ({
 
 			<ToolsPanelItem
 				hasValue={() => showCaption !== false}
-				label={__("Show Caption", "polaris-blocks")}
+				label={__("Show Caption", "wp-component-library")}
 				onDeselect={() => setAttributes({ showCaption: false })}
 				resetAllFilter={resetAllFilter}
 				isShownByDefault={false}
@@ -153,7 +153,7 @@ const ImageControls = ({
 			>
 				<ToggleControl
 					__nextHasNoMarginBottom={true}
-					label={__("Show Caption", "polaris-blocks")}
+					label={__("Show Caption", "wp-component-library")}
 					checked={showCaption}
 					onChange={(value) => setAttributes({ showCaption: value })}
 				/>

@@ -36,7 +36,7 @@ Modular components for handling background media settings in WordPress blocks. T
 Standalone component that renders a background image with styling options.
 
 ```jsx
-import { SectionBackground } from "@polaris/wp-component-library";
+import { SectionBackground } from "@builtnorth/wp-component-library";
 
 <SectionBackground
     backgroundImage={123}
@@ -54,7 +54,7 @@ import { SectionBackground } from "@polaris/wp-component-library";
 Complete settings panel with all background controls.
 
 ```jsx
-import { SectionSettings } from "@polaris/wp-component-library";
+import { SectionSettings } from "@builtnorth/wp-component-library";
 
 <SectionSettings
     backgroundImage={backgroundImage}
@@ -89,7 +89,7 @@ import {
     FocalPointControl,
     OpacityControl,
     StyleControl,
-} from "@polaris/wp-component-library";
+} from "@builtnorth/wp-component-library";
 ```
 
 **Or import from controls directly:**
@@ -101,7 +101,7 @@ import {
     FocalPointControl,
     OpacityControl,
     StyleControl,
-} from "@polaris/wp-component-library/section-settings/controls";
+} from "@builtnorth/wp-component-library/section-settings/controls";
 ```
 
 #### `ImageSourceControl`
@@ -171,7 +171,7 @@ Image style dropdown (blur, grayscale, etc.).
 **Before (deprecated):**
 
 ```jsx
-import { SectionWrapper } from "@polaris/wp-component-library";
+import { SectionWrapper } from "@builtnorth/wp-component-library";
 
 <SectionWrapper
     attributes={attributes}
@@ -192,7 +192,7 @@ import { SectionWrapper } from "@polaris/wp-component-library";
 import {
     SectionSettings,
     SectionBackground,
-} from "@polaris/wp-component-library";
+} from "@builtnorth/wp-component-library";
 import { useBlockProps } from "@wordpress/block-editor";
 
 const blockProps = useBlockProps({
@@ -252,7 +252,7 @@ import {
     MediaSelectControl,
     OpacityControl,
     StyleControl,
-} from "@polaris/wp-component-library";
+} from "@builtnorth/wp-component-library";
 import { __experimentalToolsPanel as ToolsPanel } from "@wordpress/components";
 
 <ToolsPanel label="Custom Background Panel">

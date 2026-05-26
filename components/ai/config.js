@@ -5,11 +5,7 @@
  * components or hooks are used. This keeps provider-specific details
  * (endpoint URL, default options) out of the library itself.
  *
- * @example — Polaris plugins
- *   import { configureAI } from '@builtnorth/wp-component-library';
- *   configureAI({ endpoint: '/polaris-ai/v1/generate' });
- *
- * @example — Third-party plugin
+ * @example — Configure the endpoint for your plugin
  *   configureAI({ endpoint: '/my-plugin/v1/ai/generate' });
  */
 

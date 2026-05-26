@@ -91,9 +91,9 @@ Each position corresponds to CSS background-position values.
 
 ## Theme Configuration
 
-Patterns are loaded from the theme configuration:
-- Pattern list from `window.polaris_localize.global.section_patterns`
-- SVG files loaded from theme's `assets/images/patterns/` directory
+Patterns are loaded from the host plugin's localize configuration:
+- Pattern list resolved via the localize data injected by the host plugin
+- SVG files loaded from the theme's `assets/images/patterns/` directory
 - Automatic fallback to parent theme if pattern not found in child theme
 
 ## Examples
@@ -178,7 +178,7 @@ function DynamicPatternSection() {
     const [availablePatterns, setAvailablePatterns] = useState([]);
     
     useEffect(() => {
-        // Get available patterns from theme
+        // Get available patterns from host plugin localize data
         const patterns = window.polaris_localize?.global?.section_patterns || {};
         setAvailablePatterns(Object.entries(patterns).map(([value, label]) => ({
             value,
@@ -280,6 +280,6 @@ The component includes built-in error handling:
 - Patterns are loaded asynchronously and cached
 - SVGs are sanitized for security (using DOMPurify)
 - Patterns marked with `aria-hidden="true"` for accessibility
-- Component requires Polaris theme configuration
+- Component requires localize configuration injected by the host plugin
 - Consider performance impact with complex patterns
 - Patterns should be decorative only, not contain content

@@ -36,7 +36,7 @@ export function IconPicker({ value, onChange, label = "", className = "" }) {
 
 	return (
 		<BaseControl
-			label={label || __("Icon", "polaris-blocks")}
+			label={label || __("Icon", "wp-component-library")}
 			className={className || undefined}
 			__nextHasNoMarginBottom
 		>
@@ -46,8 +46,8 @@ export function IconPicker({ value, onChange, label = "", className = "" }) {
 				style={{ width: "100%", justifyContent: "flex-start", gap: "8px" }}
 				aria-label={
 					hasIcon
-						? __("Change icon", "polaris-blocks")
-						: __("Choose icon", "polaris-blocks")
+						? __("Change icon", "wp-component-library")
+						: __("Choose icon", "wp-component-library")
 				}
 			>
 				{/* eslint-disable-next-line react/no-danger */}
@@ -55,7 +55,7 @@ export function IconPicker({ value, onChange, label = "", className = "" }) {
 				<PickerName>
 					{hasIcon
 						? value.label || value.name
-						: __("Choose icon\u2026", "polaris-blocks")}
+						: __("Choose icon\u2026", "wp-component-library")}
 				</PickerName>
 			</Button>
 

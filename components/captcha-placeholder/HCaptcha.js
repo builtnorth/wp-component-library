@@ -85,7 +85,7 @@ export function HCaptcha({ theme, size }) {
 		<CaptchaContainer>
 			<HCaptchaWrapper theme={theme} size={size}>
 				<HCaptchaCheckbox />
-				<HCaptchaLabel theme={theme}>{__("I am human", "polaris-forms")}</HCaptchaLabel>
+				<HCaptchaLabel theme={theme}>{__("I am human", "wp-component-library")}</HCaptchaLabel>
 				<HCaptchaLogo>
 					<HCaptchaLogoSvg>h</HCaptchaLogoSvg>
 					<HCaptchaText theme={theme}>

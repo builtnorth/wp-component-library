@@ -9,13 +9,13 @@ function isNonEmptyString(value) {
 }
 
 /**
- * Polaris section background only — image or pattern (matches Section Background / Pattern panels).
+ * Custom section background only — image or pattern (matches Section Background / Pattern panels).
  * Use this to show/hide divider controls in the editor.
  *
  * @param {Object} attributes Block attributes.
  * @return {boolean}
  */
-export function sectionHasPolarisSectionBackground(attributes = {}) {
+export function sectionHasCustomBackground(attributes = {}) {
 	if (!attributes || typeof attributes !== "object") {
 		return false;
 	}
@@ -37,14 +37,14 @@ export function sectionHasPolarisSectionBackground(attributes = {}) {
 }
 
 /**
- * Any clip surface: Polaris media/pattern or block editor background color/gradient.
+ * Any clip surface: custom media/pattern or block editor background color/gradient.
  * Use on the frontend (render.php).
  *
  * @param {Object} attributes Block attributes.
  * @return {boolean}
  */
 export function sectionHasDividerBackground(attributes = {}) {
-	if (sectionHasPolarisSectionBackground(attributes)) {
+	if (sectionHasCustomBackground(attributes)) {
 		return true;
 	}
 
@@ -64,3 +64,6 @@ export function sectionHasDividerBackground(attributes = {}) {
 
 	return false;
 }
+
+/** @deprecated Use sectionHasCustomBackground instead. */
+export const sectionHasPolarisSectionBackground = sectionHasCustomBackground;

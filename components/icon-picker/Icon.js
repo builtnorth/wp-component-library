@@ -39,7 +39,7 @@ const IconDisplay = forwardRef(function IconDisplay(
 	return (
 		<div
 			ref={ref}
-			className={`polaris-icon${className ? ` ${className}` : ""}`}
+			className={`wpcl-icon${className ? ` ${className}` : ""}`}
 			// eslint-disable-next-line react/no-danger
 			dangerouslySetInnerHTML={{ __html: svgSource }}
 			style={style}

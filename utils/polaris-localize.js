@@ -1,5 +1,9 @@
 /**
  * Resolve polaris_localize across nested editor iframes (canvas vs shell).
+ *
+ * NOTE: window.polaris_localize, window.polarisLocalizeAdmin, and
+ * window.polarisLocalizeShared are PHP-injected globals — their names are
+ * controlled by the host plugin and cannot be changed here.
  */
 export const SKIN_CHANGED_EVENT = "themeSkinSwitcherChanged";
 
@@ -33,7 +37,7 @@ function getEditorWindowChain() {
  * @param {string} patternSlug Optional active pattern slug for best-match lookup.
  * @return {Window}
  */
-export function getPolarisLocalizeWindow(patternSlug = "") {
+export function getLocalizeWindow(patternSlug = "") {
 	const chain = getEditorWindowChain();
 
 	if (patternSlug) {
@@ -70,8 +74,8 @@ export function getPolarisLocalizeWindow(patternSlug = "") {
  * @param {string} patternSlug
  * @return {object|undefined}
  */
-export function getPolarisLocalize(patternSlug = "") {
-	return getPolarisLocalizeWindow(patternSlug).polaris_localize;
+export function getLocalize(patternSlug = "") {
+	return getLocalizeWindow(patternSlug).polaris_localize;
 }
 
 /**
@@ -79,7 +83,7 @@ export function getPolarisLocalize(patternSlug = "") {
  * @return {object|undefined}
  */
 export function getEditorExperiencePatterns(patternSlug = "") {
-	return getPolarisLocalize(patternSlug)?.blocks?.editor_experience?.patterns;
+	return getLocalize(patternSlug)?.blocks?.editor_experience?.patterns;
 }
 
 /**
@@ -99,3 +103,9 @@ export function getEditorExperienceSectionDivider() {
 
 	return undefined;
 }
+
+// Backwards-compat aliases for the renamed functions.
+/** @deprecated Use getLocalizeWindow instead. */
+export const getPolarisLocalizeWindow = getLocalizeWindow;
+/** @deprecated Use getLocalize instead. */
+export const getPolarisLocalize = getLocalize;

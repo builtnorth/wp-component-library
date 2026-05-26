@@ -164,7 +164,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 
 	const setOptions = useMemo(
 		() => [
-			{ label: __("All Libraries", "polaris-blocks"), value: "" },
+			{ label: __("All Libraries", "wp-component-library"), value: "" },
 			...groups.map((g) => ({ label: g.label, value: g.name })),
 		],
 		[groups],
@@ -238,7 +238,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 
 	const headerActions = value?.source ? (
 		<HeaderSelectedInfo>
-			{__("Selected:", "polaris-blocks")}
+			{__("Selected:", "wp-component-library")}
 			{/* eslint-disable-next-line react/no-danger */}
 			<HeaderSelectedSvg
 				dangerouslySetInnerHTML={{
@@ -252,11 +252,11 @@ export function IconPickerModal({ value, onChange, onClose }) {
 		<>
 			<Global styles={modalGlobalStyles} />
 			<Modal
-				title={__("Choose Icon", "polaris-blocks")}
+				title={__("Choose Icon", "wp-component-library")}
 				headerActions={headerActions}
 				size="large"
 				onRequestClose={onClose}
-				className="polaris-icon-picker-modal"
+				className="wpcl-icon-picker-modal"
 			>
 				<ModalInner>
 					<SearchAndFilter>
@@ -266,7 +266,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 							onChange={setSearch}
 							placeholder={__(
 								"Search icons\u2026",
-								"polaris-blocks",
+								"wp-component-library",
 							)}
 						/>
 						{groups.length > 1 && (
@@ -278,7 +278,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 									onChange={setSelectedSet}
 									aria-label={__(
 										"Filter by icon library",
-										"polaris-blocks",
+										"wp-component-library",
 									)}
 								/>
 							</SetSelectorWrap>
@@ -289,10 +289,10 @@ export function IconPickerModal({ value, onChange, onClose }) {
 						{totalIcons > 0
 							? sprintf(
 									/* translators: %d = number of icons found */
-									__("%d icon(s) found", "polaris-blocks"),
+									__("%d icon(s) found", "wp-component-library"),
 									totalIcons,
 								)
-							: __("No icons found.", "polaris-blocks")}
+							: __("No icons found.", "wp-component-library")}
 					</IconCount>
 
 					{rows.length > 0 ? (
@@ -303,7 +303,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 								itemSize={getItemSize}
 								itemData={listData}
 								width="100%"
-								className="polaris-icon-picker-modal__list"
+								className="wpcl-icon-picker-modal__list"
 							>
 								{RowRenderer}
 							</VariableSizeList>
@@ -313,11 +313,11 @@ export function IconPickerModal({ value, onChange, onClose }) {
 							{groups.length === 0
 								? __(
 										"No icon sets registered.",
-										"polaris-blocks",
+										"wp-component-library",
 									)
 								: __(
 										"No icons match your search.",
-										"polaris-blocks",
+										"wp-component-library",
 									)}
 						</EmptyState>
 					)}

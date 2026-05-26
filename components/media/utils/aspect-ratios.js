@@ -13,6 +13,7 @@ const DEFAULT_CORE_ASPECT_RATIOS = [
 	{ name: "Classic", ratio: "3/2" },
 	{ name: "Classic Portrait", ratio: "2/3" },
 	{ name: "Wide", ratio: "16/9" },
+	{ name: "Extra Wide", ratio: "21/9" },
 	{ name: "Tall", ratio: "9/16" },
 ];
 
@@ -66,7 +67,7 @@ export function useAspectRatioOptions() {
 
 	return useMemo(() => {
 		const originalOption = {
-			label: __("Original", "polaris-blocks"),
+			label: __("Original", "wp-component-library"),
 			value: "original",
 		};
 
@@ -96,15 +97,14 @@ export function useAspectRatioOptions() {
 
 		if (presets.length === 0 && defaultAspectRatiosEnabled !== false) {
 			presets = DEFAULT_CORE_ASPECT_RATIOS.map((ratio) => ({
-				name: __(ratio.name, "polaris-blocks"),
+				name: __(ratio.name, "wp-component-library"),
 				ratio: ratio.ratio,
 			}));
 		}
 
 		const ratioOptions = presets
 			.filter(
-				(ratio) =>
-					ratio.ratio !== "original" && ratio.ratio !== "auto",
+				(ratio) => ratio.ratio !== "original" && ratio.ratio !== "auto",
 			)
 			.map((ratio) => ({
 				label: ratio.name,

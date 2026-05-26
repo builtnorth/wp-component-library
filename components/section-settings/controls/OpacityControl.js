@@ -17,14 +17,14 @@ const OpacityControl = ({
     return (
         <ToolsPanelItem
             hasValue={() => opacity !== defaultOpacity}
-            label={__("Media Opacity", "polaris-blocks")}
+            label={__("Media Opacity", "wp-component-library")}
             onDeselect={() => onChange(defaultOpacity)}
             isShownByDefault={isShownByDefault}
         >
             <RangeControl
                 __nextHasNoMarginBottom={true}
                 __next40pxDefaultSize
-                label={__("Media Opacity", "polaris-blocks")}
+                label={__("Media Opacity", "wp-component-library")}
                 value={opacity || 15}
                 onChange={onChange}
                 min={0}

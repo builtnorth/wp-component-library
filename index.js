@@ -55,7 +55,8 @@ export {
 export {
 	SectionDividerSettings,
 	sectionHasDividerBackground,
-	sectionHasPolarisSectionBackground,
+	sectionHasCustomBackground,
+	sectionHasPolarisSectionBackground, // @deprecated — use sectionHasCustomBackground
 } from "./components/section-divider";
 export {
 	SectionPattern,
@@ -91,7 +92,13 @@ export {
 } from "./components/ai";
 // Content extraction utilities removed - use AI type configs instead
 
-export { getEditorExperienceSectionDivider } from "./utils/polaris-localize";
+export {
+	getEditorExperienceSectionDivider,
+	getLocalize,
+	getLocalizeWindow,
+	getPolarisLocalize, // @deprecated — use getLocalize
+	getPolarisLocalizeWindow, // @deprecated — use getLocalizeWindow
+} from "./utils/polaris-localize";
 export { isAiEnabled, isAiPolicyEnabled, isAiFullyConfigured, isAiSetupRequired } from "./utils/ai-gate";
 
 // Icon Picker & Registry

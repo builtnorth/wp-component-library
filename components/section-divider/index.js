@@ -8,5 +8,6 @@
 export { SectionDividerSettings } from "./SectionDividerSettings";
 export {
 	sectionHasDividerBackground,
-	sectionHasPolarisSectionBackground,
+	sectionHasCustomBackground,
+	sectionHasPolarisSectionBackground, // @deprecated alias — use sectionHasCustomBackground
 } from "./sectionHasDividerBackground";

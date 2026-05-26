@@ -12,14 +12,14 @@ npm install @builtnorth/wp-component-library
 
 ### Icons
 
-A full icon registry and picker system. Includes a WordPress data store (`polaris/icons`), a modal-based picker UI with fuzzy search, library grouping, and virtualized rendering.
+A full icon registry and picker system. Includes a WordPress data store (`wpcl/icons`), a modal-based picker UI with fuzzy search, library grouping, and virtualized rendering.
 
 | Export | Description |
 |---|---|
 | `registerIconSet(id, options)` | Register a named icon library |
 | `removeIconSet(id)` | Remove a registered library |
 | `registerIcons(icons)` | Legacy alias — backwards compatible with theme bundles using `window.registerIcons` |
-| `iconStore` / `ICON_STORE_NAME` | The underlying `@wordpress/data` store |
+| `iconStore` / `ICON_STORE_NAME` | The underlying `@wordpress/data` store (`wpcl/icons`) |
 | `useIconSets()` | Hook — returns all registered icon sets |
 | `useAllIcons()` | Hook — returns every icon across all sets |
 | `useIcons(setId)` | Hook — returns icons for a specific set |
@@ -143,7 +143,8 @@ Controls for full-width section blocks with backgrounds, dividers, and patterns.
 | `StyleControl` | Style variant selector |
 | `SectionDividerSettings` | Top/bottom decorative divider shape picker |
 | `sectionHasDividerBackground()` | Utility — returns true when a divider background color is set |
-| `sectionHasPolarisSectionBackground()` | Utility — returns true when polaris section background is active |
+| `sectionHasCustomBackground()` | Utility — returns true when a custom section background (image or pattern) is active |
+| `sectionHasPolarisSectionBackground()` | Deprecated alias of `sectionHasCustomBackground()` |
 | `SectionPattern` | SVG background pattern renderer |
 | `SectionPatternSettings` | Pattern picker and position controls |
 
@@ -251,7 +252,7 @@ Customisable appender buttons for inner blocks.
 
 ### AI Framework
 
-A pluggable, provider-agnostic AI content generation system. Works standalone or inside Polaris.
+A pluggable, provider-agnostic AI content generation system. Works standalone or with any host plugin.
 
 | Export | Description |
 |---|---|
@@ -265,7 +266,7 @@ A pluggable, provider-agnostic AI content generation system. Works standalone or
 | `aiCache` | Memory + localStorage response cache (1 hr TTL) |
 | `registerAIShortcuts(options?)` | Registers `Cmd/Ctrl+Alt+G` shortcut |
 | `AIShortcutHandler` | Component that mounts the shortcut listener |
-| `isAiEnabled()` | Gate — true when Polaris AI policy is on |
+| `isAiEnabled()` | Gate — true when the AI policy is enabled |
 | `isAiPolicyEnabled()` | Alias of `isAiEnabled()` |
 | `isAiFullyConfigured()` | Gate — policy on AND provider key configured |
 | `isAiSetupRequired()` | Gate — policy on but no provider yet |
@@ -274,26 +275,26 @@ A pluggable, provider-agnostic AI content generation system. Works standalone or
 
 `Cmd/Ctrl + Alt + G` — opens `AIPopover` over the selected `core/paragraph` or `core/heading` block. Only fires when a paragraph/heading is selected.
 
-#### Using outside Polaris
+#### Standalone usage
 
-Every component that has a gate accepts an explicit `enabled` prop so you can bypass the Polaris `polaris_localize` flags entirely. Point `useAI` at your own endpoint with `customEndpoint` or `buildRequest`.
+Every component that has a gate accepts an explicit `enabled` prop so you can bypass the default gate check entirely. Point `useAI` at your own endpoint with `customEndpoint` or `buildRequest`.
 
 ```jsx
 import { AIField, useAI, registerAIShortcuts } from "@builtnorth/wp-component-library";
 import { TextControl } from "@wordpress/components";
 
-// Register the shortcut without Polaris gate
+// Register the shortcut with an explicit enabled flag
 registerAIShortcuts({ enabled: true });
 
 function MyTitleField({ value, onChange }) {
     return (
         <AIField
-            enabled={ true }                          // bypass Polaris gate
+            enabled={ true }                          // bypass gate check
             type="my-plugin/title"
             value={ value }
             onChange={ onChange }
             aiOptions={{
-                customEndpoint: "/my-plugin/v1/ai/generate",
+                customEndpoint: "/your-plugin/v1/ai/generate",
                 // or: buildRequest: (typeId, ctx) => ({ path: '...', method: 'POST', data: ctx })
             }}
         >
@@ -307,7 +308,7 @@ function MyTitleField({ value, onChange }) {
 
 | Option | Type | Description |
 |---|---|---|
-| `customEndpoint` | `string` | REST path to use instead of `/polaris-ai/v1/generate` |
+| `customEndpoint` | `string` | REST path to use for generation requests |
 | `buildRequest` | `(typeId, context) => apiFetchOptions` | Fully custom request builder |
 | `context` | `Object` | Static context merged into every request |
 | `onChange` | `Function` | Called with the generated value |

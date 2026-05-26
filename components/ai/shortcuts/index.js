@@ -10,9 +10,7 @@ import { isAiEnabled } from '../../../utils/ai-gate';
  * Register AI keyboard shortcuts. No-ops when AI is not enabled.
  *
  * @param {Object}  [options]
- * @param {boolean} [options.enabled]  Override the Polaris gate. Pass an explicit
- *                                     boolean to use outside Polaris. Defaults to
- *                                     isAiEnabled().
+ * @param {boolean} [options.enabled]  Override the gate check. Defaults to isAiEnabled().
  */
 export function registerAIShortcuts({ enabled } = {}) {
     const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
@@ -23,9 +21,9 @@ export function registerAIShortcuts({ enabled } = {}) {
     const { registerShortcut } = wp.data.dispatch(keyboardShortcutsStore);
     
     registerShortcut({
-        name: 'polaris/ai-generate',
+        name: 'wpcl/ai-generate',
         category: 'block',
-        description: __('Open AI content generator', 'polaris'),
+        description: __('Open AI content generator', 'wp-component-library'),
         keyCombination: {
             modifier: 'primaryAlt', // Cmd/Ctrl + Alt
             character: 'g', // G for Generate
@@ -60,7 +58,7 @@ function AIShortcutHandlerInner() {
     
     // Use the shortcut hook
     useShortcut(
-        'polaris/ai-generate',
+        'wpcl/ai-generate',
         (event) => {
             if (event) {
                 event.preventDefault();
@@ -98,8 +96,8 @@ function AIShortcutHandlerInner() {
     
     // Determine AI type based on block
     const aiType = selectedBlock.name === 'core/paragraph' 
-        ? 'polaris-blocks/paragraph' 
-        : 'polaris-blocks/heading';
+        ? 'paragraph' 
+        : 'heading';
     
     return (
         <AIPopover
@@ -176,12 +174,12 @@ function AIShortcutHandlerInner() {
             onClose={() => setShowPopover(false)}
             anchorRef={anchorElement}
             promptLabel={selectedBlock.name === 'core/paragraph' 
-                ? __('What should this paragraph be about?', 'polaris')
-                : __('What should this heading say?', 'polaris')
+                ? __('What should this paragraph be about?', 'wp-component-library')
+                : __('What should this heading say?', 'wp-component-library')
             }
             promptPlaceholder={selectedBlock.name === 'core/paragraph'
-                ? __('e.g., Explain the benefits of solar energy...', 'polaris')
-                : __('e.g., A heading about pricing options...', 'polaris')
+                ? __('e.g., Explain the benefits of solar energy...', 'wp-component-library')
+                : __('e.g., A heading about pricing options...', 'wp-component-library')
             }
         />
     );
@@ -194,8 +192,7 @@ function AIShortcutHandlerInner() {
  * stable by never mounting the inner component when AI is off.
  *
  * @param {Object}  [props]
- * @param {boolean} [props.enabled]  Override the Polaris gate. Defaults to
- *                                   isAiEnabled().
+ * @param {boolean} [props.enabled]  Override the gate check. Defaults to isAiEnabled().
  */
 export function AIShortcutHandler({ enabled } = {}) {
     const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
@@ -205,8 +202,8 @@ export function AIShortcutHandler({ enabled } = {}) {
     return <AIShortcutHandlerInner />;
 }
 
-// Auto-initialize when loaded in a Polaris context.
-// Third-party consumers should call registerAIShortcuts({ enabled: true }) manually.
+// Auto-initialize using the built-in AI gate.
+// Third-party consumers can call registerAIShortcuts({ enabled: true }) to override.
 if (typeof window !== 'undefined' && window.wp) {
     wp.domReady(() => {
         registerAIShortcuts();

@@ -10,7 +10,7 @@ import styled from "@emotion/styled";
 // ─── Modal container overrides ────────────────────────────────────────────────
 
 export const modalGlobalStyles = css`
-	.polaris-icon-picker-modal {
+	.wpcl-icon-picker-modal {
 		.components-modal__content {
 			padding: 0;
 		}
@@ -89,10 +89,10 @@ export const GroupHeader = styled.div`
 
 export const VirtualListWrap = styled.div`
 	/* Scrollbar for the react-window outer div */
-	.polaris-icon-picker-modal__list::-webkit-scrollbar {
+	.wpcl-icon-picker-modal__list::-webkit-scrollbar {
 		width: 6px;
 	}
-	.polaris-icon-picker-modal__list::-webkit-scrollbar-thumb {
+	.wpcl-icon-picker-modal__list::-webkit-scrollbar-thumb {
 		background: #c7c7c7;
 		border-radius: 3px;
 	}

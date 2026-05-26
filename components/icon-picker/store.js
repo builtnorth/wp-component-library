@@ -2,18 +2,18 @@
  * Icon Registry Store
  *
  * WordPress data store for managing icon sets and icons.
- * Replaces the 10up `tenup/icons` store with our own `polaris/icons` store.
+ * Replaces the 10up `tenup/icons` store with the `wpcl/icons` store.
  *
  * Filters available via @wordpress/hooks:
- *   - polaris.icons.iconSet    — modify an icon set on registration
- *   - polaris.icons.iconSets   — modify the full sorted list of icon sets
- *   - polaris.icons.icon       — filter individual icons (return false to exclude)
+ *   - wpcl.icons.iconSet    — modify an icon set on registration
+ *   - wpcl.icons.iconSets   — modify the full sorted list of icon sets
+ *   - wpcl.icons.icon       — filter individual icons (return false to exclude)
  */
 
 import { createReduxStore, register, select } from "@wordpress/data";
 import { applyFilters } from "@wordpress/hooks";
 
-export const STORE_NAME = "polaris/icons";
+export const STORE_NAME = "wpcl/icons";
 
 const DEFAULT_STATE = {
 	iconSets: {},
@@ -22,7 +22,7 @@ const DEFAULT_STATE = {
 const storeSelectors = {
 	/**
 	 * Get all icon sets, sorted by priority descending (highest first).
-	 * Applies the polaris.icons.iconSets filter.
+	 * Applies the wpcl.icons.iconSets filter.
 	 */
 	getIconSets(state) {
 		const sets = Object.values(state.iconSets);
@@ -34,7 +34,7 @@ const storeSelectors = {
 			return a.name.localeCompare(b.name);
 		});
 
-		return applyFilters("polaris.icons.iconSets", sorted);
+		return applyFilters("wpcl.icons.iconSets", sorted);
 	},
 
 	/**
@@ -45,14 +45,14 @@ const storeSelectors = {
 	},
 
 	/**
-	 * Get all icons for a given set, with per-icon polaris.icons.icon filter applied.
+	 * Get all icons for a given set, with per-icon wpcl.icons.icon filter applied.
 	 */
 	getIcons(state, name) {
 		const set = state.iconSets[name];
 		if (!set) return [];
 
 		return set.icons.reduce((acc, icon) => {
-			const filtered = applyFilters("polaris.icons.icon", icon, set);
+			const filtered = applyFilters("wpcl.icons.icon", icon, set);
 			if (filtered !== false) {
 				acc.push(filtered);
 			}
@@ -84,7 +84,7 @@ function reducer(state = DEFAULT_STATE, action) {
 		case "REGISTER_ICON_SET": {
 			// Apply iconSet filter at registration time
 			const iconSet = applyFilters(
-				"polaris.icons.iconSet",
+				"wpcl.icons.iconSet",
 				action.iconSet,
 			);
 			return {

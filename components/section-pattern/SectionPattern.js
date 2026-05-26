@@ -6,23 +6,23 @@ import classnames from "classnames";
 
 import {
 	getEditorExperiencePatterns,
-	getPolarisLocalize,
+	getLocalize,
 	SKIN_CHANGED_EVENT,
 } from "../../utils/polaris-localize";
 
 /**
  * @param {string} pattern
  * @param {object|undefined} patternConfig
- * @param {object|undefined} polarisLocalize
+ * @param {object|undefined} localizeData
  * @return {string}
  */
-function resolvePatternAssetUrl(pattern, patternConfig, polarisLocalize) {
+function resolvePatternAssetUrl(pattern, patternConfig, localizeData) {
 	if (patternConfig?.pattern_urls?.[pattern]) {
 		return patternConfig.pattern_urls[pattern];
 	}
 
 	const themeUrl =
-		polarisLocalize?.theme_url || window.polarisLocalizeShared?.theme_url;
+		localizeData?.theme_url || window.polarisLocalizeShared?.theme_url;
 
 	if (!themeUrl) {
 		return "";
@@ -64,11 +64,11 @@ const SectionPattern = ({
 		}
 
 		const patternConfig = getEditorExperiencePatterns(pattern);
-		const polarisLocalize = getPolarisLocalize(pattern);
+		const localizeData = getLocalize(pattern);
 		const patternUrls = resolvePatternAssetUrl(
 			pattern,
 			patternConfig,
-			polarisLocalize,
+			localizeData,
 		);
 		const urlsToTry = Array.isArray(patternUrls)
 			? patternUrls
@@ -77,7 +77,7 @@ const SectionPattern = ({
 				: [];
 
 		if (urlsToTry.length === 0) {
-			const isChildTheme = polarisLocalize?.theme_urls?.is_child_theme;
+			const isChildTheme = localizeData?.theme_urls?.is_child_theme;
 
 			if (
 				!patternConfig?.enabled ||

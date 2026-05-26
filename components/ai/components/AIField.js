@@ -15,8 +15,8 @@ import { isAiEnabled } from '../../../utils/ai-gate';
  * Wraps any form field with an AI generate button.
  *
  * @param {boolean}  [enabled]         Whether AI is available. Defaults to
- *                                     isAiEnabled() (Polaris gate). Pass an
- *                                     explicit boolean to use outside Polaris.
+ *                                     isAiEnabled(). Pass an explicit boolean
+ *                                     to override the gate check.
  * @param {*}        children          The field component to wrap.
  * @param {string}   type              AI ability identifier passed to useAI.
  * @param {string}   value             Current field value.
@@ -69,7 +69,7 @@ export function AIField({
         }
     };
 
-    // Resolve gate: caller can pass explicit boolean or rely on Polaris localize.
+    // Resolve gate: caller can pass explicit boolean or rely on the localize gate.
     const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
 
     // When AI is not enabled, render children without the AI button.

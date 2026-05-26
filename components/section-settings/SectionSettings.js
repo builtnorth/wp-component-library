@@ -41,7 +41,7 @@ const SectionSettings = ({
 	enableShowCaption = false,
 
 	// Panel configuration
-	panelTitle = __("Background Media", "polaris-blocks"),
+	panelTitle = __("Background Media", "wp-component-library"),
 	group = "styles",
 	className = "built-inspector-section-settings",
 }) => {

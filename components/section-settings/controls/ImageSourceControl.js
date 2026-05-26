@@ -21,25 +21,25 @@ const ImageSourceControl = ({
 				(useFeaturedImage ? "featured" : "upload") !==
 				defaultImageSource
 			}
-			label={__("Image Source", "polaris-blocks")}
+			label={__("Image Source", "wp-component-library")}
 			onDeselect={() => onToggle(false)}
 			isShownByDefault={isShownByDefault}
 		>
 			<ToggleGroupControl
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize={true}
-				label={__("Image Source", "polaris-blocks")}
+				label={__("Image Source", "wp-component-library")}
 				value={useFeaturedImage ? "featured" : "upload"}
 				onChange={(value) => onToggle(value === "featured")}
 				isBlock
 			>
 				<ToggleGroupControlOption
 					value="upload"
-					label={__("Select Image", "polaris-blocks")}
+					label={__("Select Image", "wp-component-library")}
 				/>
 				<ToggleGroupControlOption
 					value="featured"
-					label={__("Featured Image", "polaris-blocks")}
+					label={__("Featured Image", "wp-component-library")}
 				/>
 			</ToggleGroupControl>
 		</ToolsPanelItem>

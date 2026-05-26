@@ -69,8 +69,8 @@ export function InlineIconPicker({ value, onChange, className = "" }) {
 				onKeyDown={handleKeyDown}
 				aria-label={
 					hasIcon
-						? __("Change icon", "polaris-blocks")
-						: __("Choose icon", "polaris-blocks")
+						? __("Change icon", "wp-component-library")
+						: __("Choose icon", "wp-component-library")
 				}
 				dangerouslySetInnerHTML={{ __html: svgContent }}
 			/>

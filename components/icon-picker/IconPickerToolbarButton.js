@@ -27,7 +27,7 @@ const PLACEHOLDER_SVG =
 export function IconPickerToolbarButton({
 	value,
 	onChange,
-	buttonLabel = __("Select Icon", "polaris-blocks"),
+	buttonLabel = __("Select Icon", "wp-component-library"),
 }) {
 	const [isOpen, setIsOpen] = useState(false);
 

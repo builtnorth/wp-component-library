@@ -1,5 +1,5 @@
 /**
- * Polaris Icon Picker
+ * Icon Picker
  *
  * Registry + UI components for icon selection in the block editor.
  * Replaces @10up/block-components icon APIs.

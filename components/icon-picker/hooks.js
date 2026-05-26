@@ -1,7 +1,7 @@
 /**
  * Icon Registry Hooks
  *
- * React hooks for reading icon data from the polaris/icons store.
+ * React hooks for reading icon data from the icon registry store.
  */
 
 import { useSelect } from "@wordpress/data";

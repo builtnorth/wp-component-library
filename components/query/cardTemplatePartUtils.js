@@ -1,8 +1,8 @@
 /**
  * Resolve card template part options for a post type.
  *
- * Override via editor_experience.card_templates[postType] in theme config
- * (localized to window.polaris_localize.blocks.editor_experience).
+ * Override via editor_experience.card_templates[postType] in the host plugin's
+ * localize config (window.polaris_localize.blocks.editor_experience).
  *
  * @param {string} postType Post type slug.
  * @returns {string[]} Slug prefixes — a part matches if slug equals prefix or starts with prefix + '-'.

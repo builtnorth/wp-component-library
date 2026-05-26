@@ -65,7 +65,7 @@ export function registerBlockExtension(
 
 	// Build a stable namespace segment for hook IDs.
 	const ns = isArray ? blockName.join("-") : blockName;
-	const prefix = `polaris/${ns}/${extensionName}`;
+	const prefix = `wpcl/${ns}/${extensionName}`;
 
 	// ── 1. Attributes ────────────────────────────────────────────────────────
 
@@ -197,7 +197,7 @@ export function unregisterBlockExtension(blockName, extensionName) {
 
 	const isArray = Array.isArray(blockName);
 	const ns = isArray ? blockName.join("-") : blockName;
-	const prefix = `polaris/${ns}/${extensionName}`;
+	const prefix = `wpcl/${ns}/${extensionName}`;
 
 	removeFilter("blocks.registerBlockType", `${prefix}/addAttributesToBlock`);
 	removeFilter("editor.BlockEdit", `${prefix}/addSettingsToBlock`);

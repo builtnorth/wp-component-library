@@ -1,7 +1,7 @@
 /**
  * AI Feature Gate — JS utility
  *
- * Reads the AI gate flags that Polaris PHP localizes into the block editor
+ * Reads the AI gate flags injected by the host plugin into the block editor
  * (window.polaris_localize.blocks.editor_experience.ai) and the admin
  * (window.polarisLocalizeAdmin.ai).
  *
@@ -32,7 +32,7 @@ function getAiGateData() {
         // wp.data may not be available in non-editor contexts — continue below.
     }
 
-    // 2. polaris_localize (inline script on wp-blocks, main admin document).
+    // 2. polaris_localize (PHP-injected inline script on wp-blocks, main admin document).
     //    Also check window.parent in case we are inside an iframe canvas.
     const editorAi =
         window.polaris_localize?.blocks?.editor_experience?.ai ||
@@ -41,7 +41,7 @@ function getAiGateData() {
         return editorAi;
     }
 
-    // 3. Admin context: polarisLocalizeAdmin.ai (LocalizationManager).
+    // 3. Admin context: polarisLocalizeAdmin.ai (PHP-injected, host plugin).
     const adminAi =
         window.polarisLocalizeAdmin?.ai ||
         window.parent?.polarisLocalizeAdmin?.ai;

@@ -15,9 +15,8 @@ import { isAiEnabled } from '../../../utils/ai-gate';
  * AIPopover Component - Popover interface for AI generation with prompt.
  * Designed for toolbar integration.
  *
- * @param {boolean}  [enabled]  Whether AI is available. Defaults to isAiEnabled()
- *                              (Polaris gate). Pass an explicit boolean to use
- *                              outside Polaris.
+ * @param {boolean}  [enabled]  Whether AI is available. Defaults to isAiEnabled().
+ *                              Pass an explicit boolean to override the gate check.
  */
 export function AIPopover({ 
     enabled,

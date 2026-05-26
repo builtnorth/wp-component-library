@@ -40,7 +40,7 @@ function ToolbarMediaUpload({
                 render={({ open }) => (
                     <ToolbarButton
                         icon={edit}
-                        label={__("Edit/Replace Media", "polaris-blocks")}
+                        label={__("Edit/Replace Media", "wp-component-library")}
                         onClick={open}
                     />
                 )}

@@ -15,17 +15,17 @@ const ShowCaptionControl = ({
     return (
         <ToolsPanelItem
             hasValue={() => showCaption}
-            label={__("Show Caption", "polaris-blocks")}
+            label={__("Show Caption", "wp-component-library")}
             onDeselect={() => onChange(false)}
             isShownByDefault={isShownByDefault}
         >
             <ToggleControl
-                label={__("Show Image Caption", "polaris-blocks")}
+                label={__("Show Image Caption", "wp-component-library")}
                 checked={showCaption}
                 onChange={onChange}
                 help={__(
                     "Display the image caption below the image.",
-                    "polaris-blocks",
+                    "wp-component-library",
                 )}
             />
         </ToolsPanelItem>

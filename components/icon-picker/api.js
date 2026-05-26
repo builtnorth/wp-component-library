@@ -73,9 +73,6 @@ export function registerIconSet(iconSet) {
 			icons: icons ?? previous?.icons ?? [],
 			loadStatus: "idle",
 		});
-
-		// Picker may have mounted before this set existed — load immediately.
-		loadIconSet(rest.name).catch(() => {});
 		return;
 	}
 

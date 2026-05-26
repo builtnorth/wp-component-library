@@ -16,6 +16,7 @@ export {
 	loadIconSet,
 	loadAllIconSets,
 } from "./api";
+export { registerConfigIconSets } from "./config-bootstrap";
 
 // React hooks
 export {

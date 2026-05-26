@@ -107,6 +107,7 @@ export {
 	ICON_STORE_NAME,
 	registerIconSet,
 	registerIcons,
+	registerConfigIconSets,
 	removeIconSet,
 	loadIconSet,
 	loadAllIconSets,

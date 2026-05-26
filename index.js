@@ -86,6 +86,7 @@ export {
 	AIFieldWrapper,
 	AIInline,
 	AIModal,
+	configureAI,
 	useAI,
 } from "./components/ai";
 // Content extraction utilities removed - use AI type configs instead

@@ -1,6 +1,7 @@
-import { useState, useCallback, useReducer } from '@wordpress/element';
+import { useCallback, useReducer } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { aiCache } from '../services/AICache';
+import { getAIEndpoint } from '../config';
 
 // Reducer for managing AI generation state
 const aiReducer = (state, action) => {
@@ -109,9 +110,15 @@ export function useAI(typeId, options = {}) {
                 force_variety: shouldSkipCache || overrides.force_variety
             };
             
-            // Allow custom endpoint configuration via options
-            const endpoint = options.customEndpoint || '/polaris-ai/v1/generate';
+            // Resolve endpoint: per-call option → global config → warn
+            const endpoint = options.customEndpoint || getAIEndpoint();
             const customRequestBuilder = options.buildRequest;
+
+            if (!endpoint && !customRequestBuilder) {
+                const msg = 'useAI: no endpoint configured. Call configureAI({ endpoint }) at your plugin entry point, or pass customEndpoint / buildRequest to useAI().';
+                console.error(msg);
+                throw new Error(msg);
+            }
             
             let response;
 

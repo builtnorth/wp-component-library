@@ -4,8 +4,8 @@
  * Global overrides (WordPress Modal internals, scrollbar) are applied via
  * the `Global` component from @emotion/react — imported where the modal renders.
  */
-import styled from "@emotion/styled";
 import { css } from "@emotion/react";
+import styled from "@emotion/styled";
 
 // ─── Modal container overrides ────────────────────────────────────────────────
 
@@ -79,58 +79,49 @@ export const GroupHeader = styled.div`
 	color: #757575;
 	border-bottom: 1px solid #f0f0f0;
 	box-sizing: border-box;
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.5rem;
+	margin-top: 1rem;
 `;
 
-// ─── Scrollable icon list container ──────────────────────────────────────────
+// ─── Virtualized list wrapper ─────────────────────────────────────────────────
+// react-window VariableSizeList — scrollbar styled via className.
 
-export const ScrollList = styled.div`
-	overflow-y: auto;
-	max-height: 520px;
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-
-	&::-webkit-scrollbar {
+export const VirtualListWrap = styled.div`
+	/* Scrollbar for the react-window outer div */
+	.polaris-icon-picker-modal__list::-webkit-scrollbar {
 		width: 6px;
 	}
-	&::-webkit-scrollbar-thumb {
+	.polaris-icon-picker-modal__list::-webkit-scrollbar-thumb {
 		background: #c7c7c7;
 		border-radius: 3px;
 	}
 `;
 
-// ─── Group section ────────────────────────────────────────────────────────────
-
-export const GroupSection = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-`;
-
-// ─── Icon grid ────────────────────────────────────────────────────────────────
+// ─── Icon grid row (used inside each virtualized row slot) ────────────────────
 // Column count must match the COLUMNS constant in IconPickerModal.js.
-// align-items: stretch makes every cell in a row the same height as the tallest.
 
-export const IconGrid = styled.div`
+export const IconRow = styled.div`
 	display: grid;
 	grid-template-columns: repeat(8, 1fr);
 	gap: 8px;
+	padding: 4px 0;
+	box-sizing: border-box;
 	align-items: stretch;
 `;
 
 // ─── Icon cell ────────────────────────────────────────────────────────────────
-// Width is controlled by the grid (equal 1fr columns).
-// Height adapts naturally — all cells in the same row stretch to match the tallest.
-// Selected state uses .is-selected class to avoid passing custom props to DOM.
+// Fixed height (accommodates up to 4 lines of name text) keeps all virtualized
+// rows a uniform, predictable size. Width is controlled by the grid (1fr cols).
 
 export const CellButton = styled.button`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	gap: 6px;
-	padding: 10px 6px 8px;
-	min-height: 72px;
+	padding: 14px 6px 8px;
+	height: 108px;
 	background: #fff;
 	border: 1px solid #e0e0e0;
 	border-radius: 6px;
@@ -190,12 +181,16 @@ export const CellSvg = styled.span`
 	}
 `;
 
-// Wraps naturally — the CSS grid row stretches all sibling cells to match height.
+// Clamps at 4 lines — the fixed cell height fits exactly 4 × 14.3px lines.
 export const CellName = styled.span`
 	font-size: 11px;
 	line-height: 1.3;
 	text-align: center;
 	width: 100%;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 4;
+	overflow: hidden;
 	color: #757575;
 `;
 
@@ -218,21 +213,24 @@ export const HeaderSelectedInfo = styled.div`
 	color: #757575;
 	white-space: nowrap;
 	margin-right: 8px;
+	padding: 0.25rem 0.5rem;
+	background: #f0f0f0;
+	border-radius: 3px;
 `;
 
 export const HeaderSelectedSvg = styled.span`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 16px;
-	height: 16px;
+	width: 20px;
+	height: 20px;
 	overflow: hidden;
 	flex-shrink: 0;
 	color: #1e1e1e;
 
 	svg {
-		width: 16px;
-		height: 16px;
+		width: 20px;
+		height: 20px;
 		fill: currentColor;
 		display: block;
 	}

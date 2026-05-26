@@ -8,9 +8,15 @@ import { isAiEnabled } from '../../../utils/ai-gate';
 
 /**
  * Register AI keyboard shortcuts. No-ops when AI is not enabled.
+ *
+ * @param {Object}  [options]
+ * @param {boolean} [options.enabled]  Override the Polaris gate. Pass an explicit
+ *                                     boolean to use outside Polaris. Defaults to
+ *                                     isAiEnabled().
  */
-export function registerAIShortcuts() {
-    if (!isAiEnabled()) {
+export function registerAIShortcuts({ enabled } = {}) {
+    const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
+    if (!isEnabled) {
         return;
     }
 
@@ -182,21 +188,26 @@ function AIShortcutHandlerInner() {
 }
 
 /**
- * AI Shortcut Handler Component
+ * AI Shortcut Handler Component.
  * Listens for keyboard shortcuts and opens the AI popover.
  * Renders nothing when AI is not enabled — this wrapper keeps hook call order
  * stable by never mounting the inner component when AI is off.
+ *
+ * @param {Object}  [props]
+ * @param {boolean} [props.enabled]  Override the Polaris gate. Defaults to
+ *                                   isAiEnabled().
  */
-export function AIShortcutHandler() {
-    if (!isAiEnabled()) {
+export function AIShortcutHandler({ enabled } = {}) {
+    const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
+    if (!isEnabled) {
         return null;
     }
     return <AIShortcutHandlerInner />;
 }
 
-// Auto-initialize when loaded
+// Auto-initialize when loaded in a Polaris context.
+// Third-party consumers should call registerAIShortcuts({ enabled: true }) manually.
 if (typeof window !== 'undefined' && window.wp) {
-    // Wait for editor to be ready
     wp.domReady(() => {
         registerAIShortcuts();
     });

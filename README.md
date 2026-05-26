@@ -251,21 +251,68 @@ Customisable appender buttons for inner blocks.
 
 ### AI Framework
 
-A pluggable AI content generation system.
+A pluggable, provider-agnostic AI content generation system. Works standalone or inside Polaris.
 
 | Export | Description |
 |---|---|
-| `AIButton` | Trigger button for AI generation |
-| `AIField` | AI-enhanced input field |
-| `AIFieldWrapper` | Layout wrapper for AI fields |
-| `AIInline` | Inline AI generation UI |
-| `AIModal` | Full-screen AI generation modal |
-| `aiCache` | Request deduplication / response cache |
-| `useAI()` | Core AI hook |
-| `isAiEnabled()` | Gate — returns true when AI is configured |
-| `isAiPolicyEnabled()` | Gate — returns true when AI policy is accepted |
-| `isAiFullyConfigured()` | Gate — both enabled and policy accepted |
-| `isAiSetupRequired()` | Gate — setup is needed |
+| `useAI(typeId, options)` | Core hook — calls the generation endpoint and manages state |
+| `AIField` | Wraps a form field with an AI generate button |
+| `AIButton` | Bare generate button |
+| `AIInline` | Inline generation UI inside a block |
+| `AIModal` | Full-modal generation UI |
+| `AIPopover` | Floating popover with a prompt textarea |
+| `AIFieldWrapper` | Alias of `AIField` (backwards compat) |
+| `aiCache` | Memory + localStorage response cache (1 hr TTL) |
+| `registerAIShortcuts(options?)` | Registers `Cmd/Ctrl+Alt+G` shortcut |
+| `AIShortcutHandler` | Component that mounts the shortcut listener |
+| `isAiEnabled()` | Gate — true when Polaris AI policy is on |
+| `isAiPolicyEnabled()` | Alias of `isAiEnabled()` |
+| `isAiFullyConfigured()` | Gate — policy on AND provider key configured |
+| `isAiSetupRequired()` | Gate — policy on but no provider yet |
+
+#### Keyboard shortcut
+
+`Cmd/Ctrl + Alt + G` — opens `AIPopover` over the selected `core/paragraph` or `core/heading` block. Only fires when a paragraph/heading is selected.
+
+#### Using outside Polaris
+
+Every component that has a gate accepts an explicit `enabled` prop so you can bypass the Polaris `polaris_localize` flags entirely. Point `useAI` at your own endpoint with `customEndpoint` or `buildRequest`.
+
+```jsx
+import { AIField, useAI, registerAIShortcuts } from "@builtnorth/wp-component-library";
+import { TextControl } from "@wordpress/components";
+
+// Register the shortcut without Polaris gate
+registerAIShortcuts({ enabled: true });
+
+function MyTitleField({ value, onChange }) {
+    return (
+        <AIField
+            enabled={ true }                          // bypass Polaris gate
+            type="my-plugin/title"
+            value={ value }
+            onChange={ onChange }
+            aiOptions={{
+                customEndpoint: "/my-plugin/v1/ai/generate",
+                // or: buildRequest: (typeId, ctx) => ({ path: '...', method: 'POST', data: ctx })
+            }}
+        >
+            <TextControl label="Page Title" value={ value } onChange={ onChange } />
+        </AIField>
+    );
+}
+```
+
+`useAI` options:
+
+| Option | Type | Description |
+|---|---|---|
+| `customEndpoint` | `string` | REST path to use instead of `/polaris-ai/v1/generate` |
+| `buildRequest` | `(typeId, context) => apiFetchOptions` | Fully custom request builder |
+| `context` | `Object` | Static context merged into every request |
+| `onChange` | `Function` | Called with the generated value |
+| `skipCache` | `boolean` | Skip cache on every request |
+| `cacheTimeout` | `number` | Cache TTL in ms (default: 3 600 000 = 1 hr) |
 
 ---
 

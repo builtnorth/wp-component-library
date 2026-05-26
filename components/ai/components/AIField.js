@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect, cloneElement, isValidElement } from '@wordpress/element';
 import { 
     Button, 
     Flex, 
@@ -10,158 +10,127 @@ import { aiSparkle } from '../utils/icons';
 import { isAiEnabled } from '../../../utils/ai-gate';
 
 /**
- * AIField Component - Clean wrapper for AI generation
- * UI configuration comes from props, not backend config
+ * AIField Component - Clean wrapper for AI generation.
+ *
+ * Wraps any form field with an AI generate button.
+ *
+ * @param {boolean}  [enabled]         Whether AI is available. Defaults to
+ *                                     isAiEnabled() (Polaris gate). Pass an
+ *                                     explicit boolean to use outside Polaris.
+ * @param {*}        children          The field component to wrap.
+ * @param {string}   type              AI ability identifier passed to useAI.
+ * @param {string}   value             Current field value.
+ * @param {Function} onChange          Called with the generated value.
+ * @param {Object}   [context]         Static context forwarded to the API.
+ * @param {Function} [getContext]      Called at generation time for fresh context.
+ * @param {Object}   [aiOptions]       Extra useAI options (customEndpoint, buildRequest, …).
+ * @param {string}   [buttonText]      Button label. Default: 'AI'.
+ * @param {string}   [buttonSize]      'small' | 'compact' | 'medium' | 'large'.
+ * @param {string}   [buttonVariant]   WordPress Button variant.
+ * @param {string}   [generatingText]  Label while generating.
+ * @param {string}   [position]        'label' | 'before' | 'after'.
+ * @param {*}        [buttonIcon]      Icon element for the button.
  */
 export function AIField({ 
+    enabled,
     children, 
     type, 
     value, 
     onChange,
-    context = {}, // Additional context to pass to AI generation
-    getContext, // Optional function to get fresh context at generation time
-    aiOptions = {}, // Custom AI options (buildRequest, etc.)
+    context = {},
+    getContext,
+    aiOptions = {},
     buttonText = 'AI',
     buttonSize = 'small',
     buttonVariant = 'secondary',
     generatingText = 'Generating...',
     position = 'label',
-    buttonIcon = aiSparkle  // Default to our AI sparkle icon
+    buttonIcon = aiSparkle,
 }) {
-    // Hooks must run unconditionally — check isAiEnabled() after them.
-    // Use a ref to always have the latest context
+    // Hooks must run unconditionally — gate check happens after them.
     const contextRef = useRef(context);
-    
-    // Update the ref whenever context changes
+
     useEffect(() => {
         contextRef.current = context;
     }, [context]);
-    
-    // Use the AI hook - backend handles all generation logic
-    const { generate, isGenerating, lastProvider, error } = useAI(type, {
+
+    const { generate, isGenerating } = useAI(type, {
         initialValue: value,
         onChange,
-        ...aiOptions, // Spread custom AI options (buildRequest, etc.)
-        // Don't pass stale context here - we'll pass it at generation time
+        ...aiOptions,
     });
-    
+
     const handleGenerate = async () => {
         try {
-            // Get the freshest possible context
-            // Priority: getContext function > ref > prop
             const freshContext = getContext ? getContext() : contextRef.current;
-            
-            // Log the size of what we're sending to debug prompt length issues
-            const contextString = JSON.stringify(freshContext);
-            console.log('AIField - Context size:', contextString.length, 'characters');
-            if (contextString.length > 3000) {
-                console.warn('AIField - Context may be too large. Consider reducing content size.');
-            }
-            
-            // Pass the fresh context at generation time
-            await generate({ 
-                _skipCache: true,
-                ...freshContext // Spread fresh context as overrides
-            });
+            await generate({ _skipCache: true, ...freshContext });
         } catch (err) {
-            // Error is already handled by the hook
-            console.error('Generation failed:', err);
+            // Error is already held in useAI state.
         }
     };
-    
+
+    // Resolve gate: caller can pass explicit boolean or rely on Polaris localize.
+    const isEnabled = enabled !== undefined ? enabled : isAiEnabled();
+
     // When AI is not enabled, render children without the AI button.
-    // This check must come after all hooks above.
-    if (!isAiEnabled()) {
-        return <>{children}</>;
+    if (!isEnabled) {
+        return <>{ children }</>;
     }
 
-    // Button size styles
     const buttonStyles = {
-        small: {
-            minWidth: 'auto',
-            padding: '2px 8px',
-            height: '24px',
-            fontSize: '11px'
-        },
-        compact: {
-            minWidth: 'auto',
-            padding: '4px 10px',
-            height: '28px',
-            fontSize: '12px'
-        },
-        medium: {
-            minWidth: 'auto',
-            padding: '4px 12px',
-            height: '32px',
-            fontSize: '13px'
-        },
-        large: {
-            minWidth: 'auto',
-            padding: '6px 16px',
-            height: '40px',
-            fontSize: '14px'
-        }
+        small:   { minWidth: 'auto', padding: '2px 8px',   height: '24px', fontSize: '11px' },
+        compact: { minWidth: 'auto', padding: '4px 10px',  height: '28px', fontSize: '12px' },
+        medium:  { minWidth: 'auto', padding: '4px 12px',  height: '32px', fontSize: '13px' },
+        large:   { minWidth: 'auto', padding: '6px 16px',  height: '40px', fontSize: '14px' },
     };
-    
-    // Icon sizes based on button size
-    const iconSizes = {
-        small: 12,
-        compact: 14,
-        medium: 16,
-        large: 18
-    };
-    
-    // Create the AI button - use native iconSize prop
+
+    const iconSizes = { small: 12, compact: 14, medium: 16, large: 18 };
+
     const aiButton = (
         <Button
-            size={buttonSize}
-            variant={buttonVariant}
-            icon={buttonIcon}
-            iconSize={iconSizes[buttonSize] || 16}
-            onClick={handleGenerate}
-            isBusy={isGenerating}
-            disabled={isGenerating}
+            size={ buttonSize }
+            variant={ buttonVariant }
+            icon={ buttonIcon }
+            iconSize={ iconSizes[ buttonSize ] || 16 }
+            onClick={ handleGenerate }
+            isBusy={ isGenerating }
+            disabled={ isGenerating }
             className="ai-field-button"
-            style={buttonStyles[buttonSize] || buttonStyles.small}
+            style={ buttonStyles[ buttonSize ] || buttonStyles.small }
         >
-            {isGenerating ? generatingText : buttonText}
+            { isGenerating ? generatingText : buttonText }
         </Button>
     );
-    
-    // If position is 'label', inject button into child's label
-    if (position === 'label' && React.isValidElement(children)) {
-        const enhancedChild = React.cloneElement(children, {
+
+    if (position === 'label' && isValidElement(children)) {
+        return cloneElement(children, {
             ...children.props,
             label: children.props.label ? (
-                <Flex align="center" justify="space-between" gap={2}>
-                    <FlexBlock>{children.props.label}</FlexBlock>
-                    <FlexItem>{aiButton}</FlexItem>
+                <Flex align="center" justify="space-between" gap={ 2 }>
+                    <FlexBlock>{ children.props.label }</FlexBlock>
+                    <FlexItem>{ aiButton }</FlexItem>
                 </Flex>
-            ) : undefined
+            ) : undefined,
         });
-        
-        return enhancedChild;
     }
-    
-    // For other positions, wrap the child
+
     if (position === 'before') {
         return (
             <div className="ai-field-wrapper">
-                {aiButton}
-                {children}
+                { aiButton }
+                { children }
             </div>
         );
     }
-    
+
     if (position === 'after') {
         return (
             <div className="ai-field-wrapper">
-                {children}
-                {aiButton}
+                { children }
+                { aiButton }
             </div>
         );
     }
-    
-    // Default: just return the child with button in label
+
     return children;
 }

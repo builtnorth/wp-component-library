@@ -128,22 +128,6 @@ import { InspectorMediaUpload } from "@builtnorth/wp-component-library";
 
 ---
 
-### Layout & Structure
-
-Flexbox layout controls that map to CSS classes and block wrapper props.
-
-| Export | Description |
-|---|---|
-| `LayoutPanel` | Combined panel with orientation, alignment, and justification |
-| `AlignmentSettings` / `AlignmentToolbar` | Vertical alignment |
-| `ContentAlignmentSettings` / `ContentAlignmentToolbar` | Content-level alignment |
-| `JustificationSettings` / `JustificationToolbar` | Horizontal justification |
-| `OrientationSettings` / `OrientationToolbar` | Row vs. column direction |
-| `LayoutWidthControl` | Width / max-width selector |
-| `AllowWrapSettings` | Flex-wrap toggle |
-
----
-
 ### Section Components
 
 Controls for full-width section blocks with backgrounds, dividers, and patterns.

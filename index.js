@@ -17,19 +17,6 @@ export {
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
 export {
-	AlignmentSettings,
-	AlignmentToolbar,
-	AllowWrapSettings,
-	ContentAlignmentSettings,
-	ContentAlignmentToolbar,
-	JustificationSettings,
-	JustificationToolbar,
-	LayoutPanel,
-	LayoutWidthControl,
-	OrientationSettings,
-	OrientationToolbar,
-} from "./components/layout";
-export {
 	EditorMediaUpload,
 	InspectorMediaUpload,
 	SettingsMediaUpload,

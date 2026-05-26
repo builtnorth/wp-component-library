@@ -8,6 +8,7 @@
 
 import { forwardRef } from "@wordpress/element";
 import { useIcon } from "./hooks";
+import { safeSvgSource } from "./utils";
 
 const IconDisplay = forwardRef(function IconDisplay(
 	{ name, iconSet, source, onClick, className = "", style, ...rest },
@@ -16,7 +17,7 @@ const IconDisplay = forwardRef(function IconDisplay(
 	// Prefer the directly-passed source (from saved attributes) for reliability.
 	// Fall back to registry lookup for display-only usage (e.g. rendering by name).
 	const registryIcon = useIcon(iconSet, name);
-	const svgSource = source || registryIcon?.source;
+	const svgSource = safeSvgSource(source || registryIcon?.source || "");
 
 	if (!svgSource) {
 		return null;

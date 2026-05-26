@@ -7,6 +7,18 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
+/** Supports Phosphor (fill) and Lucide (stroke) SVG sources. */
+const iconSvgColorStyles = css`
+	svg[fill="none"] {
+		fill: none;
+		stroke: currentColor;
+	}
+
+	svg:not([fill="none"]) {
+		fill: currentColor;
+	}
+`;
+
 // ─── Modal container overrides ────────────────────────────────────────────────
 
 export const modalGlobalStyles = css`
@@ -67,6 +79,12 @@ export const IconCount = styled.p`
 `;
 
 // ─── Group header ─────────────────────────────────────────────────────────────
+
+// react-window positioning slot — must not have margins (see GroupHeader).
+export const GroupHeaderRow = styled.div`
+	box-sizing: border-box;
+	height: 100%;
+`;
 
 export const GroupHeader = styled.div`
 	display: flex;
@@ -177,8 +195,9 @@ export const CellSvg = styled.span`
 		min-width: 24px;
 		min-height: 24px;
 		display: block;
-		fill: currentColor;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 // Clamps at 4 lines — the fixed cell height fits exactly 4 × 14.3px lines.
@@ -231,9 +250,10 @@ export const HeaderSelectedSvg = styled.span`
 	svg {
 		width: 20px;
 		height: 20px;
-		fill: currentColor;
 		display: block;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 // ─── Inspector panel picker ───────────────────────────────────────────────────
@@ -251,9 +271,10 @@ export const PickerPreview = styled.span`
 	svg {
 		width: 20px;
 		height: 20px;
-		fill: currentColor;
 		display: block;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 export const PickerName = styled.span`
@@ -268,16 +289,23 @@ export const ToolbarIconWrap = styled.span`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 20px;
-	height: 20px;
+	width: 24px;
+	height: 24px;
 	overflow: hidden;
+	flex-shrink: 0;
 
+	/* Match wp-blocks toolbar rules; overrides SVG width/height attributes. */
 	svg {
-		width: 20px;
-		height: 20px;
-		fill: currentColor;
 		display: block;
+		width: 24px !important;
+		height: 24px !important;
+		min-width: 0;
+		min-height: 0;
+		max-width: 24px;
+		max-height: 24px;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 // ─── Inline (canvas) picker ───────────────────────────────────────────────────
@@ -290,7 +318,8 @@ export const InlinePickerWrap = styled.div`
 	cursor: pointer;
 
 	svg {
-		fill: currentColor;
 		display: block;
 	}
+
+	${iconSvgColorStyles}
 `;

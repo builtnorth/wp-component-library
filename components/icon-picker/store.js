@@ -8,12 +8,17 @@
  *   - wpcl.icons.iconSet    — modify an icon set on registration
  *   - wpcl.icons.iconSets   — modify the full sorted list of icon sets
  *   - wpcl.icons.icon       — filter individual icons (return false to exclude)
+ *
+ * Icon sets may register with a lazy `load` function via registerIconSet() in api.js.
+ * Until loaded, placeholder icons (e.g. essential defaults) remain available.
  */
 
 import { createReduxStore, register, select } from "@wordpress/data";
 import { applyFilters } from "@wordpress/hooks";
 
 export const STORE_NAME = "wpcl/icons";
+
+/** @typedef {'idle'|'loading'|'loaded'|'error'} IconSetLoadStatus */
 
 const DEFAULT_STATE = {
 	iconSets: {},
@@ -42,6 +47,24 @@ const storeSelectors = {
 	 */
 	getIconSet(state, name) {
 		return state.iconSets[name] ?? null;
+	},
+
+	/**
+	 * True when any registered set is still loading.
+	 */
+	isIconSetsLoading(state) {
+		return Object.values(state.iconSets).some(
+			(set) => set.loadStatus === "loading",
+		);
+	},
+
+	/**
+	 * True when any set is registered but not yet loaded (idle or loading).
+	 */
+	hasPendingIconSets(state) {
+		return Object.values(state.iconSets).some(
+			(set) => set.loadStatus === "idle" || set.loadStatus === "loading",
+		);
 	},
 
 	/**
@@ -74,6 +97,15 @@ const storeActions = {
 	registerIconSet(iconSet) {
 		return { type: "REGISTER_ICON_SET", iconSet };
 	},
+	setIconSetLoading(name) {
+		return { type: "SET_ICON_SET_LOADING", name };
+	},
+	setIconSetIcons(name, icons) {
+		return { type: "SET_ICON_SET_ICONS", name, icons };
+	},
+	setIconSetError(name, message) {
+		return { type: "SET_ICON_SET_ERROR", name, message };
+	},
 	removeIconSet(name) {
 		return { type: "REMOVE_ICON_SET", name };
 	},
@@ -82,16 +114,74 @@ const storeActions = {
 function reducer(state = DEFAULT_STATE, action) {
 	switch (action.type) {
 		case "REGISTER_ICON_SET": {
-			// Apply iconSet filter at registration time
 			const iconSet = applyFilters(
 				"wpcl.icons.iconSet",
 				action.iconSet,
 			);
+			const previous = state.iconSets[iconSet.name];
+			const icons =
+				iconSet.icons ??
+				(previous?.icons?.length ? previous.icons : []);
+
 			return {
 				...state,
 				iconSets: {
 					...state.iconSets,
-					[iconSet.name]: iconSet,
+					[iconSet.name]: {
+						...iconSet,
+						icons,
+						loadStatus: iconSet.loadStatus ?? "loaded",
+						loadError: null,
+					},
+				},
+			};
+		}
+
+		case "SET_ICON_SET_LOADING": {
+			const set = state.iconSets[action.name];
+			if (!set) return state;
+			return {
+				...state,
+				iconSets: {
+					...state.iconSets,
+					[action.name]: {
+						...set,
+						loadStatus: "loading",
+						loadError: null,
+					},
+				},
+			};
+		}
+
+		case "SET_ICON_SET_ICONS": {
+			const set = state.iconSets[action.name];
+			if (!set) return state;
+			return {
+				...state,
+				iconSets: {
+					...state.iconSets,
+					[action.name]: {
+						...set,
+						icons: action.icons,
+						loadStatus: "loaded",
+						loadError: null,
+					},
+				},
+			};
+		}
+
+		case "SET_ICON_SET_ERROR": {
+			const set = state.iconSets[action.name];
+			if (!set) return state;
+			return {
+				...state,
+				iconSets: {
+					...state.iconSets,
+					[action.name]: {
+						...set,
+						loadStatus: "error",
+						loadError: action.message,
+					},
 				},
 			};
 		}

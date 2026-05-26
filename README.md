@@ -16,9 +16,11 @@ A full icon registry and picker system. Includes a WordPress data store (`wpcl/i
 
 | Export | Description |
 |---|---|
-| `registerIconSet(id, options)` | Register a named icon library |
+| `registerIconSet(set)` | Register a named icon library (eager `icons` or lazy `load`) |
 | `removeIconSet(id)` | Remove a registered library |
-| `registerIcons(icons)` | Legacy alias — backwards compatible with theme bundles using `window.registerIcons` |
+| `loadIconSet(name)` | Load one lazy library on demand |
+| `loadAllIconSets()` | Load every pending lazy library (picker calls this) |
+| `registerIcons(set)` | Legacy alias — prefer `registerIconSet` |
 | `iconStore` / `ICON_STORE_NAME` | The underlying `@wordpress/data` store (`wpcl/icons`) |
 | `useIconSets()` | Hook — returns all registered icon sets |
 | `useAllIcons()` | Hook — returns every icon across all sets |
@@ -34,21 +36,25 @@ A full icon registry and picker system. Includes a WordPress data store (`wpcl/i
 ```jsx
 import { registerIconSet, IconPicker } from "@builtnorth/wp-component-library";
 
-// Register a custom library
-registerIconSet("my-icons", {
+// Eager library
+registerIconSet({
+    name: "my-icons",
     label: "My Icons",
     priority: 10,
-    icons: [
-        { name: "star", label: "Star", source: "<svg>...</svg>" },
-    ],
+    icons: [{ name: "star", label: "Star", source: "<svg>...</svg>" }],
 });
 
-// Use in block edit
-<IconPicker
-    value={attributes.icon}
-    onChange={(icon) => setAttributes({ icon })}
-/>
+// Lazy library (code-split — loads when the picker opens)
+registerIconSet({
+    name: "home-services",
+    label: "Home Services",
+    priority: 120,
+    load: () => import("./home-services.js").then((m) => m.homeServicesIcons),
+});
 ```
+
+Theme editor bundles (separate webpack builds) should use `window.wpcl.icons.registerIconSet`
+from the wp-blocks bootstrap — not a direct import — so the store is not duplicated.
 
 ---
 

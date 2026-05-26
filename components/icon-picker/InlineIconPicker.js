@@ -18,22 +18,10 @@ import { __ } from "@wordpress/i18n";
 
 import { IconPickerModal } from "./IconPickerModal";
 import { InlinePickerWrap } from "./styles";
+import { safeSvgSource } from "./utils";
 
 const PLACEHOLDER_SVG =
 	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM48,48H208V208H48ZM96,80a16,16,0,1,1,16,16A16,16,0,0,1,96,80Zm32,96H80a8,8,0,0,1,0-16h48a8,8,0,0,1,0,16Zm64-32-32-16-32,16V80l32-16,32,16Z"/></svg>';
-
-/**
- * Minimal guard: confirm the string is SVG before rendering.
- *
- * @param {string} source
- * @returns {string}
- */
-function safeSvgSource(source) {
-	if (typeof source === "string" && source.trimStart().startsWith("<svg")) {
-		return source;
-	}
-	return PLACEHOLDER_SVG;
-}
 
 /**
  * @param {Object}   props
@@ -55,7 +43,9 @@ export function InlineIconPicker({ value, onChange, className = "" }) {
 	}, []);
 
 	const hasIcon = value?.source;
-	const svgContent = hasIcon ? safeSvgSource(value.source) : PLACEHOLDER_SVG;
+	const svgContent = hasIcon
+		? safeSvgSource(value.source) || PLACEHOLDER_SVG
+		: PLACEHOLDER_SVG;
 
 	return (
 		<>

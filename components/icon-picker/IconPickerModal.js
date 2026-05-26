@@ -19,13 +19,14 @@ import { memo, useCallback, useMemo, useState } from "@wordpress/element";
 import { __, sprintf } from "@wordpress/i18n";
 import { VariableSizeList } from "react-window";
 
-import { useGroupedIcons } from "./hooks";
+import { useIconPickerGroups } from "./hooks";
 import {
 	CellButton,
 	CellName,
 	CellSvg,
 	EmptyState,
 	GroupHeader,
+	GroupHeaderRow,
 	HeaderSelectedInfo,
 	HeaderSelectedSvg,
 	IconCount,
@@ -36,6 +37,7 @@ import {
 	SetSelectorWrap,
 	VirtualListWrap,
 } from "./styles";
+import { safeSvgSource } from "./utils";
 
 // Fuzzy search instance (created once, stateless and reusable)
 const fuzzy = new UFuzzy();
@@ -45,21 +47,9 @@ const fuzzy = new UFuzzy();
 // This fixed height lets VariableSizeList virtualize without per-row measurement.
 const COLUMNS = 8; // must match grid-template-columns in styles.js
 const ICON_ROW_HEIGHT = 116; // px: cell (108) + top/bottom padding (4+4)
-const HEADER_ROW_HEIGHT = 36; // px for group label rows
+// Fits GroupHeader margins + padding + label (margin-top/bottom are 1rem / 0.5rem).
+const HEADER_ROW_HEIGHT = 48;
 const LIST_HEIGHT = 520; // px — visible scroll viewport
-
-/**
- * Minimal guard before rendering icon SVG strings.
- *
- * @param {string} source
- * @returns {string}
- */
-function safeSvgSource(source) {
-	if (typeof source === "string" && source.trimStart().startsWith("<svg")) {
-		return source;
-	}
-	return "";
-}
 
 /**
  * Build a flat array of rows for VariableSizeList.
@@ -128,7 +118,11 @@ const RowRenderer = memo(function RowRenderer({ index, style, data }) {
 	const row = rows[index];
 
 	if (row.type === "header") {
-		return <GroupHeader style={style}>{row.label}</GroupHeader>;
+		return (
+			<GroupHeaderRow style={style}>
+				<GroupHeader>{row.label}</GroupHeader>
+			</GroupHeaderRow>
+		);
 	}
 
 	return (
@@ -160,7 +154,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 	const [search, setSearch] = useState("");
 	const [selectedSet, setSelectedSet] = useState("");
 
-	const groups = useGroupedIcons();
+	const { groups, isLoading, isInitialLoad } = useIconPickerGroups();
 
 	const setOptions = useMemo(
 		() => [
@@ -286,16 +280,34 @@ export function IconPickerModal({ value, onChange, onClose }) {
 					</SearchAndFilter>
 
 					<IconCount>
-						{totalIcons > 0
+						{isLoading && totalIcons > 0
 							? sprintf(
-									/* translators: %d = number of icons found */
-									__("%d icon(s) found", "wp-component-library"),
+									/* translators: %d = number of icons loaded so far */
+									__(
+										"%d icon(s) loaded — loading more…",
+										"wp-component-library",
+									),
 									totalIcons,
 								)
-							: __("No icons found.", "wp-component-library")}
+							: totalIcons > 0
+								? sprintf(
+										/* translators: %d = number of icons found */
+										__(
+											"%d icon(s) found",
+											"wp-component-library",
+										),
+										totalIcons,
+									)
+								: isInitialLoad
+									? __("Loading icons…", "wp-component-library")
+									: __("No icons found.", "wp-component-library")}
 					</IconCount>
 
-					{rows.length > 0 ? (
+					{isInitialLoad ? (
+						<EmptyState>
+							{__("Loading icons…", "wp-component-library")}
+						</EmptyState>
+					) : rows.length > 0 ? (
 						<VirtualListWrap>
 							<VariableSizeList
 								height={LIST_HEIGHT}

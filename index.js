@@ -6,6 +6,10 @@
 
 export { AttachmentImage } from "./components/attachment-image";
 export {
+	registerBlockExtension,
+	unregisterBlockExtension,
+} from "./components/block-extension";
+export {
 	CustomBlockAppender,
 	CustomColumnAppender,
 	CustomInlineAppender,

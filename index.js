@@ -101,3 +101,22 @@ export {
 
 export { getEditorExperienceSectionDivider } from "./utils/polaris-localize";
 export { isAiEnabled, isAiPolicyEnabled, isAiFullyConfigured, isAiSetupRequired } from "./utils/ai-gate";
+
+// Icon Picker & Registry
+export {
+	iconStore,
+	ICON_STORE_NAME,
+	registerIconSet,
+	registerIcons,
+	removeIconSet,
+	useIconSets,
+	useGroupedIcons,
+	useAllIcons,
+	useIcons,
+	useIcon,
+	Icon,
+	IconPicker,
+	IconPickerModal,
+	IconPickerToolbarButton,
+	InlineIconPicker,
+} from "./components/icon-picker";

@@ -54,10 +54,39 @@ function CardTemplatePartSelect({
 		[area],
 	);
 
-	const options = useMemo(
-		() => buildCardTemplatePartOptions(templateParts, postType, slugFilter),
-		[templateParts, postType, slugFilter],
-	);
+	const options = useMemo(() => {
+		const filtered = buildCardTemplatePartOptions(
+			templateParts,
+			postType,
+			slugFilter,
+		);
+
+		if (
+			!templatePartSlug ||
+			filtered.some((option) => option.value === templatePartSlug)
+		) {
+			return filtered;
+		}
+
+		const savedPart = templateParts?.find(
+			(part) => part.slug === templatePartSlug,
+		);
+
+		if (!savedPart) {
+			return filtered;
+		}
+
+		return [
+			{
+				label:
+					savedPart.title?.rendered ||
+					savedPart.title ||
+					savedPart.slug,
+				value: savedPart.slug,
+			},
+			...filtered,
+		];
+	}, [templateParts, postType, slugFilter, templatePartSlug]);
 
 	const selectValue = usePersistedSlugOnly
 		? templatePartSlug

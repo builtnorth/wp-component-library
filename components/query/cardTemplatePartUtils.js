@@ -32,6 +32,7 @@ export function getCardSlugPrefixesForPostType(postType) {
 		polaris_review: ["polaris_review-card", "card-review"],
 		post: ["post-card", "card-post"],
 		page: ["page-card", "card-page"],
+		search: ["search-result-card", "card-search"],
 	};
 
 	if (knownPrefixes[postType]) {

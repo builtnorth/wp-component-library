@@ -128,13 +128,15 @@ export const GroupHeader = styled.div`
 	margin-top: 1rem;
 `;
 
-// ─── Virtualized list wrapper ─────────────────────────────────────────────────
-// react-window VariableSizeList — scrollbar styled via className.
+// ─── Icon grid body (list, loading, or empty) ─────────────────────────────────
+// Fixed min-height keeps the modal from shrinking when search has no matches.
 
-export const VirtualListWrap = styled.div`
+export const PickerBody = styled.div`
 	flex: 1;
-	min-height: 200px;
+	min-height: 520px;
 	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 
 	/* Scrollbar for the react-window outer div */
 	.wpcl-icon-picker-modal__list::-webkit-scrollbar {
@@ -248,6 +250,10 @@ export const CellName = styled.span`
 // ─── Empty state ──────────────────────────────────────────────────────────────
 
 export const EmptyState = styled.div`
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	padding: 32px 16px;
 	text-align: center;
 	color: #757575;

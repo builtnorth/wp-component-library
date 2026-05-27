@@ -41,10 +41,10 @@ import {
 	IconRow,
 	modalGlobalStyles,
 	ModalInner,
+	PickerBody,
 	PickerControls,
 	SearchAndFilter,
 	SetSelectorWrap,
-	VirtualListWrap,
 } from "./styles";
 import { safeSvgSource } from "./utils";
 
@@ -391,12 +391,12 @@ export function IconPickerModal({ value, onChange, onClose }) {
 						</IconCount>
 					</PickerControls>
 
-					{isInitialLoad ? (
-						<EmptyState>
-							{__("Loading icons…", "wp-component-library")}
-						</EmptyState>
-					) : rows.length > 0 ? (
-						<VirtualListWrap ref={listWrapRef}>
+					<PickerBody ref={listWrapRef}>
+						{isInitialLoad ? (
+							<EmptyState>
+								{__("Loading icons…", "wp-component-library")}
+							</EmptyState>
+						) : rows.length > 0 ? (
 							<VariableSizeList
 								key={virtualListKey}
 								ref={listRef}
@@ -410,20 +410,20 @@ export function IconPickerModal({ value, onChange, onClose }) {
 							>
 								{RowRenderer}
 							</VariableSizeList>
-						</VirtualListWrap>
-					) : (
-						<EmptyState>
-							{groups.length === 0
-								? __(
-										"No icon sets registered.",
-										"wp-component-library",
-									)
-								: __(
-										"No icons match your search.",
-										"wp-component-library",
-									)}
-						</EmptyState>
-					)}
+						) : (
+							<EmptyState>
+								{groups.length === 0
+									? __(
+											"No icon sets registered.",
+											"wp-component-library",
+										)
+									: __(
+											"No icons match your search.",
+											"wp-component-library",
+										)}
+							</EmptyState>
+						)}
+					</PickerBody>
 				</ModalInner>
 			</Modal>
 		</>

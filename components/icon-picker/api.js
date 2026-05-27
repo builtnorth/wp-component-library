@@ -66,12 +66,21 @@ export function registerIconSet(iconSet) {
 		setIconSetLoader(rest.name, load);
 
 		const previous = select(STORE_NAME)?.getIconSet?.(rest.name);
+		const libraryUrl = rest.libraryUrl ?? "";
+		const sameLibrary =
+			previous?.libraryUrl === libraryUrl && libraryUrl !== "";
 
 		dispatch(STORE_NAME).registerIconSet({
 			...rest,
+			libraryUrl,
 			priority: rest.priority ?? 0,
-			icons: icons ?? previous?.icons ?? [],
-			loadStatus: "idle",
+			icons:
+				icons ??
+				(sameLibrary && previous?.icons?.length ? previous.icons : []),
+			loadStatus:
+				sameLibrary && previous?.loadStatus === "loaded"
+					? "loaded"
+					: "idle",
 		});
 		return;
 	}

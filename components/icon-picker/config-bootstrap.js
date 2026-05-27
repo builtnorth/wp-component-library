@@ -92,12 +92,15 @@ export function registerConfigIconSets(iconConfig) {
 			return;
 		}
 
+		const libraryUrl = set.library_url;
+
 		registerIconSet({
 			name: set.name,
 			label: set.label ?? set.name,
 			priority: set.priority ?? 0,
+			libraryUrl,
 			load: () =>
-				loadIconsFromLibraryUrl(set.library_url, set.name).then(
+				loadIconsFromLibraryUrl(libraryUrl, set.name).then(
 					(icons) => normalizeLoaderResult(icons),
 				),
 		});

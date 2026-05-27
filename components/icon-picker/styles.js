@@ -23,12 +23,23 @@ const iconSvgColorStyles = css`
 
 export const modalGlobalStyles = css`
 	.wpcl-icon-picker-modal {
+		display: flex;
+		flex-direction: column;
+		max-height: 85vh;
+
 		.components-modal__content {
 			padding: 0;
+			/* Single scroll container (the icon grid). Avoid nested scroll with search. */
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			min-height: 0;
 		}
 		.components-modal__header {
 			padding: 8px 16px;
 			border-bottom: 1px solid #e0e0e0;
+			flex-shrink: 0;
 		}
 	}
 `;
@@ -40,6 +51,21 @@ export const ModalInner = styled.div`
 	flex-direction: column;
 	gap: 8px;
 	padding: 12px 16px 16px;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+`;
+
+/** Search, filter, and count — never scrolls away from the modal viewport. */
+export const PickerControls = styled.div`
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	background: #fff;
 `;
 
 // Search + set filter side-by-side with matched heights
@@ -106,6 +132,10 @@ export const GroupHeader = styled.div`
 // react-window VariableSizeList — scrollbar styled via className.
 
 export const VirtualListWrap = styled.div`
+	flex: 1;
+	min-height: 200px;
+	overflow: hidden;
+
 	/* Scrollbar for the react-window outer div */
 	.wpcl-icon-picker-modal__list::-webkit-scrollbar {
 		width: 6px;
@@ -126,6 +156,8 @@ export const IconRow = styled.div`
 	padding: 4px 0;
 	box-sizing: border-box;
 	align-items: stretch;
+	height: 100%;
+	overflow: hidden;
 `;
 
 // ─── Icon cell ────────────────────────────────────────────────────────────────

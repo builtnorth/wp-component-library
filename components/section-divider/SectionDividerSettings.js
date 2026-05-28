@@ -19,6 +19,7 @@ const ALL_POSITIONS = [
 	{ value: "top", label: __("Top", "wp-component-library") },
 	{ value: "bottom", label: __("Bottom", "wp-component-library") },
 	{ value: "both", label: __("Both", "wp-component-library") },
+	{ value: "none", label: __("None", "wp-component-library") },
 ];
 
 const SectionDividerSettings = ({
@@ -33,8 +34,8 @@ const SectionDividerSettings = ({
 	panelTitle = __("Section Divider", "wp-component-library"),
 	group = "styles",
 	className = "built-inspector-section-divider-settings",
-	/** @type {('top'|'bottom'|'both')[]} Which positions to show (default: all three). */
-	positions = ["top", "bottom", "both"],
+	/** @type {('top'|'bottom'|'both'|'none')[]} Which positions to show (default: all four). */
+	positions = ["top", "bottom", "both", "none"],
 }) => {
 	const dividerConfig = getEditorExperienceSectionDivider();
 
@@ -95,14 +96,14 @@ const SectionDividerSettings = ({
 					hasValue={() => hasDivider}
 					label={__("Divider", "wp-component-library")}
 					onDeselect={() => onDividerChange("none")}
-					isShownByDefault={hasDivider}
+					isShownByDefault
 				>
 					<ToggleGroupControl
 						label={__("Divider", "wp-component-library")}
 						help={
 							showDividerControls
 								? __(
-										"Wave edge at the top, bottom, or both sides of the section.",
+										"Wave edge at the top, bottom, both sides, or none.",
 										"wp-component-library",
 									)
 								: __(
@@ -110,7 +111,7 @@ const SectionDividerSettings = ({
 										"wp-component-library",
 									)
 						}
-						value={hasDivider ? divider : undefined}
+						value={divider || "none"}
 						onChange={onDividerChange}
 						isBlock
 						disabled={!showDividerControls}

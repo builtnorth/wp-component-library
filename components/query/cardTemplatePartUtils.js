@@ -27,7 +27,8 @@ export function getCardSlugPrefixesForPostType(postType) {
 	const knownPrefixes = {
 		polaris_service: ["card-service"],
 		polaris_team: ["card-team"],
-		polaris_coupon: ["card-coupon"],
+		polaris_promotion: ["card-promotion"],
+		polaris_coupon: ["card-promotion"],
 		polaris_listing: ["polaris_listing-card", "card-listing"],
 		polaris_review: ["polaris_review-card", "card-review"],
 		post: ["post-card", "card-post"],

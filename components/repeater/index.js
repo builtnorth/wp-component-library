@@ -81,12 +81,18 @@ const StyledSortableItem = styled.div`
 			flex-grow: 1;
 		}
 
-		/* Drag handle and remove button should not grow */
+		/* Drag handle, row actions, and remove button should not grow */
 		.built-repeater__drag-handle,
-		.built-repeater__remove-item {
+		.built-repeater__remove-item,
+		.built-repeater__item-action {
 			flex-grow: 0;
 			flex-shrink: 0;
 			margin-top: 26px;
+		}
+
+		.built-repeater__item-action.components-button {
+			width: auto;
+			min-width: 36px;
 		}
 	}
 

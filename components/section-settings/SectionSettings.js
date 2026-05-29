@@ -7,6 +7,7 @@ import {
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
+import { store as coreStore } from "@wordpress/core-data";
 import { Fragment } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
@@ -53,41 +54,57 @@ const SectionSettings = ({
 	panelTitle = __("Background Media", "wp-component-library"),
 	group = "styles",
 	className = "built-inspector-section-settings",
+	contextPostId = null,
+	contextPostType = null,
 }) => {
 	const limitEditorSettings =
 		window.polaris_localize?.limit_editor_settings || false;
 
-	const { imageUrl, featuredImageUrl } = useSelect(
+	const displayImageUrl = useSelect(
 		(select) => {
-			const { getEntityRecord } = select("core");
-			const { getCurrentPostId, getCurrentPostType } = select("core/editor") || {};
-			const postId = getCurrentPostId?.();
-			const postType = getCurrentPostType?.() || "post";
+			const { getEntityRecord, getEditedEntityRecord } = select(coreStore);
+			const editor = select("core/editor");
+			const editorPostId = editor?.getCurrentPostId?.() ?? null;
+			const editorPostType = editor?.getCurrentPostType?.() ?? "post";
+			const resolvedPostId = contextPostId ?? editorPostId;
+			const resolvedPostType = contextPostType ?? editorPostType;
 
-			let featuredImageData = null;
-			if (postId) {
-				const post = getEntityRecord("postType", postType, postId);
-				if (post?.featured_media) {
-					featuredImageData = getEntityRecord(
+			let featuredMediaId = null;
+			if (useFeaturedImage && resolvedPostId && resolvedPostType) {
+				const post =
+					getEditedEntityRecord(
 						"postType",
-						"attachment",
-						post.featured_media,
+						resolvedPostType,
+						resolvedPostId,
+					) ??
+					getEntityRecord(
+						"postType",
+						resolvedPostType,
+						resolvedPostId,
 					);
-				}
+				featuredMediaId = post?.featured_media || null;
 			}
 
-			return {
-				imageUrl: backgroundImage
-					? getEntityRecord("postType", "attachment", backgroundImage)
-							?.source_url
-					: null,
-				featuredImageUrl: featuredImageData?.source_url,
-			};
-		},
-		[backgroundImage],
-	);
+			const effectiveImageId = useFeaturedImage
+				? featuredMediaId || backgroundImage
+				: backgroundImage;
 
-	const displayImageUrl = useFeaturedImage ? featuredImageUrl : imageUrl;
+			if (!effectiveImageId) {
+				return null;
+			}
+
+			return (
+				getEntityRecord("postType", "attachment", effectiveImageId)
+					?.source_url ?? null
+			);
+		},
+		[
+			backgroundImage,
+			useFeaturedImage,
+			contextPostId,
+			contextPostType,
+		],
+	);
 
 	// Reset function for ToolsPanel
 	const resetAll = () => {

@@ -20,7 +20,6 @@ function EditorMediaUpload({
     multiple,
     buttonTitle,
     style,
-    useFeaturedImage = false,
 }) {
     // Handle both ID and object formats for mediaIDs
     const getMediaId = (mediaData) => {
@@ -31,16 +30,6 @@ function EditorMediaUpload({
     };
 
     const mediaId = getMediaId(mediaIDs);
-
-    if (useFeaturedImage) {
-        return (
-            <Placeholder
-                style={style}
-                withIllustration={true}
-                className="placeholder-image placeholder-image--built"
-            />
-        );
-    }
 
     return (
         <Placeholder

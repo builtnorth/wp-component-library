@@ -74,6 +74,18 @@ export function cardTemplatePartMatchesPostType(slug, postType, customFilter) {
  * @returns {string}
  */
 export function getDefaultCardSlugForPostType(postType) {
+	const defaults = {
+		polaris_service: "card-service-001",
+		polaris_team: "card-team-001",
+		polaris_promotion: "card-promotion-001",
+		polaris_coupon: "card-promotion-001",
+		polaris_location: "card-location-001",
+	};
+
+	if (defaults[postType]) {
+		return defaults[postType];
+	}
+
 	const prefixes = getCardSlugPrefixesForPostType(postType);
 
 	return prefixes[0] || `${postType}-card`;

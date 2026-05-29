@@ -68,6 +68,8 @@ export {
 	ImageSourceControl,
 	MediaSelectControl,
 	OpacityControl,
+	SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
+	SECTION_BACKGROUND_DEFAULT_OPACITY,
 	SectionBackground,
 	SectionSettings,
 	StyleControl,

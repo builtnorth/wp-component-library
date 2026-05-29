@@ -84,7 +84,7 @@ const SectionPatternSettings = ({
 					hasValue={() => hasPattern}
 					label={__("Pattern", "wp-component-library")}
 					onDeselect={() => onPatternChange("")}
-					isShownByDefault
+					isShownByDefault={false}
 				>
 					<SelectControl
 						__next40pxDefaultSize
@@ -99,12 +99,12 @@ const SectionPatternSettings = ({
 						options={patternOptions}
 					/>
 				</ToolsPanelItem>
-				{onPatternAlignChange && (
+				{onPatternAlignChange && hasPattern && (
 					<ToolsPanelItem
 						hasValue={() => hasPatternAlign}
 						label={__("Pattern Position", "wp-component-library")}
 						onDeselect={() => onPatternAlignChange("center center")}
-						isShownByDefault={hasPattern}
+						isShownByDefault={true}
 					>
 						<BaseControl
 							label={__(

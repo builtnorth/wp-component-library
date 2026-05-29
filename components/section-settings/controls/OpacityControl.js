@@ -7,12 +7,16 @@ import {
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
+import {
+	SECTION_BACKGROUND_DEFAULT_OPACITY,
+} from "../constants";
+
 const OpacityControl = ({
-    opacity = 15,
+    opacity = SECTION_BACKGROUND_DEFAULT_OPACITY,
     onChange,
     isShownByDefault = false,
 }) => {
-    const defaultOpacity = 15;
+    const defaultOpacity = SECTION_BACKGROUND_DEFAULT_OPACITY;
 
     return (
         <ToolsPanelItem
@@ -25,11 +29,11 @@ const OpacityControl = ({
                 __nextHasNoMarginBottom={true}
                 __next40pxDefaultSize
                 label={__("Media Opacity", "wp-component-library")}
-                value={opacity || 15}
+                value={opacity ?? SECTION_BACKGROUND_DEFAULT_OPACITY}
                 onChange={onChange}
                 min={0}
                 max={100}
-                initialPosition={15}
+                initialPosition={SECTION_BACKGROUND_DEFAULT_OPACITY}
             />
         </ToolsPanelItem>
     );

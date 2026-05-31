@@ -24,6 +24,11 @@ export {
 } from "./components/media";
 export { ImageControls } from "./components/media/image-controls";
 export { MetaAdvanced } from "./components/meta/MetaAdvanced";
+export {
+	isMetaValueEmpty,
+	isTemplateEditorSurface,
+	useMetaGatedEditorVisibility,
+} from "./components/meta/meta-gated-editor";
 export { MetaPanel } from "./components/meta/MetaPanel";
 export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
 // Query Controls - Individual ToolsPanelItems that can be composed together

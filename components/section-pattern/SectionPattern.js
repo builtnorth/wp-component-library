@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from "@wordpress/element";
 import classnames from "classnames";
+import DOMPurify from "dompurify";
 
 import {
 	getEditorExperiencePatterns,
@@ -119,7 +120,11 @@ const SectionPattern = ({
 				})
 				.then((svg) => {
 					if (!cancelled) {
-						setSvgContent(svg);
+						setSvgContent(
+							DOMPurify.sanitize(svg, {
+								USE_PROFILES: { svg: true, svgFilters: true },
+							}),
+						);
 					}
 				})
 				.catch(() => {

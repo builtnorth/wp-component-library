@@ -37,6 +37,16 @@ export {
 	useAttributes,
 } from "./components/attributes-panel";
 export { Badge } from "./components/badge";
+export {
+	STATUS_COLOR_FALLBACKS,
+	statusVar,
+	getStatusSurfaceColors,
+	getScoreStatusTier,
+	getScoreSurfaceColors,
+	getScoreChartColors,
+	getBadgeIntentColors,
+	defaultChartStatusColors,
+} from "./constants/statusColors";
 export { CaptchaPlaceholder } from "./components/captcha-placeholder";
 export { useAspectRatioOptions } from "./components/media/utils/aspect-ratios";
 export {

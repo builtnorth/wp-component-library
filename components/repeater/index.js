@@ -94,6 +94,48 @@ const StyledSortableItem = styled.div`
 			width: auto;
 			min-width: 36px;
 		}
+
+		/* Inline toggles beside labeled TextControl / SelectControl rows. */
+		.built-repeater__inline-toggle {
+			flex-grow: 0;
+			flex-shrink: 0;
+			align-self: flex-end;
+
+			.components-toggle-control {
+				margin-bottom: 0;
+			}
+
+			&.built-repeater__inline-toggle--category-selected
+				.components-base-control__help {
+				visibility: hidden;
+			}
+		}
+
+		/* Read-only summary rows — keep name, badges, and actions inline. */
+		&:has(.built-repeater__summary-name) {
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+
+			> * {
+				flex-grow: 0;
+			}
+
+			.built-repeater__summary-name {
+				flex-shrink: 1;
+				min-width: 0;
+				font-weight: 500;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.built-repeater__drag-handle,
+			.built-repeater__remove-item,
+			.built-repeater__item-action {
+				margin-top: 0;
+			}
+		}
 	}
 
 	.built-repeater__item-handle {

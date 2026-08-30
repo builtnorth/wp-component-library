@@ -31,5 +31,8 @@
 		"@leeoniya/ufuzzy": "^1.0.14",
 		"dompurify": "^3.4.7",
 		"react-window": "^1.8.11"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^34.2.0"
 	}
 }

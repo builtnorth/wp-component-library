@@ -29,6 +29,7 @@
 		"@dnd-kit/sortable": "^10.0.0",
 		"@dnd-kit/utilities": "^3.2.2",
 		"@leeoniya/ufuzzy": "^1.0.14",
+		"classnames": "^2.5.1",
 		"dompurify": "^3.4.7",
 		"react-window": "^1.8.11"
 	},

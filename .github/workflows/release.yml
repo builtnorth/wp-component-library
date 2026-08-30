@@ -28,7 +28,7 @@ jobs:
             package-name: "wp-component-library"
             node-version: "22"
             publish-to-npm: false
-            publish-to-github: true
+            publish-to-github: false
             use-workspace: false
         secrets:
             POLARIS_PLUGIN_GITHUB_TOKEN: ${{ secrets.POLARIS_PLUGIN_GITHUB_TOKEN }}

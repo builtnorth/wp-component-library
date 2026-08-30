@@ -9,7 +9,7 @@
 
 import styled from "@emotion/styled";
 import { Icon } from "@wordpress/components";
-import { check, warning, info, caution } from "@wordpress/icons";
+import { check, info, caution } from "@wordpress/icons";
 import { getBadgeIntentColors } from "../../constants/statusColors";
 
 // Badge container with intent-based styling - matches Gutenberg exactly

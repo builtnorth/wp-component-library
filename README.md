@@ -222,8 +222,10 @@ import { Repeater } from "@builtnorth/wp-component-library";
 
 | Export | Description |
 |---|---|
-| `MetaPanel` | Renders a post meta field in the block inspector |
-| `MetaAdvanced` | Advanced meta field controls |
+| `MetaPanel` | Document sidebar modal for editing post meta |
+| `useMetaGatedEditorVisibility` | Hide meta-gated blocks in loop previews when meta is empty |
+| `isMetaValueEmpty` | Shared empty check for meta-gated visibility |
+| `isTemplateEditorSurface` | Detect template / template-part editor context |
 
 ---
 

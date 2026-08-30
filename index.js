@@ -23,7 +23,6 @@ export {
 	ToolbarMediaUpload,
 } from "./components/media";
 export { ImageControls } from "./components/media/image-controls";
-export { MetaAdvanced } from "./components/meta/MetaAdvanced";
 export {
 	isMetaValueEmpty,
 	isTemplateEditorSurface,

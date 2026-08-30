@@ -111,14 +111,30 @@ const StyledSortableItem = styled.div`
 			}
 		}
 
-		/* Read-only summary rows — keep name, badges, and actions inline. */
-		&:has(.built-repeater__summary-name) {
+		/* Read-only summary rows — meta left, actions right. */
+		&:has(.built-repeater__summary) {
 			align-items: center;
-			flex-wrap: wrap;
-			gap: 0.75rem;
+			justify-content: space-between;
+			gap: 1rem;
 
 			> * {
 				flex-grow: 0;
+			}
+
+			.built-repeater__summary {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				flex: 1 1 auto;
+				min-width: 0;
+			}
+
+			.built-repeater__summary-actions {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				flex-shrink: 0;
 			}
 
 			.built-repeater__summary-name {

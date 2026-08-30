@@ -6,7 +6,7 @@
 
 export { FocalPointControl } from "./FocalPointControl";
 export { ImageCaptionControl } from "./ImageCaptionControl";
-export { ImageSourceControl } from "./ImageSourceControl";
+export { ImageSourceControl, ImageSourceToggle } from "./ImageSourceControl";
 export { MediaSelectControl } from "./MediaSelectControl";
 export { OpacityControl } from "./OpacityControl";
 export { ShowCaptionControl } from "./ShowCaptionControl";

@@ -16,9 +16,10 @@ import { getEditorExperienceSectionDivider } from "../../utils/polaris-localize"
 import { sectionHasDividerBackground } from "./sectionHasDividerBackground";
 
 const ALL_POSITIONS = [
-	{ value: "none", label: __("None", "wp-component-library") },
 	{ value: "top", label: __("Top", "wp-component-library") },
 	{ value: "bottom", label: __("Bottom", "wp-component-library") },
+	{ value: "both", label: __("Both", "wp-component-library") },
+	{ value: "none", label: __("None", "wp-component-library") },
 ];
 
 const SectionDividerSettings = ({
@@ -33,8 +34,8 @@ const SectionDividerSettings = ({
 	panelTitle = __("Section Divider", "wp-component-library"),
 	group = "styles",
 	className = "built-inspector-section-divider-settings",
-	/** @type {('none'|'top'|'bottom')[]} Which positions to show (default: all three). */
-	positions = ["none", "top", "bottom"],
+	/** @type {('top'|'bottom'|'both'|'none')[]} Which positions to show (default: all four). */
+	positions = ["top", "bottom", "both", "none"],
 }) => {
 	const dividerConfig = getEditorExperienceSectionDivider();
 
@@ -57,7 +58,6 @@ const SectionDividerSettings = ({
 		storeAttributes ?? attributesProp ?? {},
 	);
 
-	// Hide the panel until the section has a clip surface (color, image, or pattern).
 	const showDividerControls = requiresBackground
 		? resolvedHasBackground
 		: true;
@@ -78,10 +78,6 @@ const SectionDividerSettings = ({
 		onDividerChange,
 	]);
 
-	if (!showDividerControls) {
-		return null;
-	}
-
 	const hasDivider = divider && divider !== "none";
 
 	const handleReset = () => {
@@ -100,16 +96,25 @@ const SectionDividerSettings = ({
 					hasValue={() => hasDivider}
 					label={__("Divider", "wp-component-library")}
 					onDeselect={() => onDividerChange("none")}
+					isShownByDefault
 				>
 					<ToggleGroupControl
 						label={__("Divider", "wp-component-library")}
-						help={__(
-							"Requires a section background (image, pattern, or background color).",
-							"wp-component-library",
-						)}
+						help={
+							showDividerControls
+								? __(
+										"Wave edge at the top, bottom, both sides, or none.",
+										"wp-component-library",
+									)
+								: __(
+										"Requires a section background (image, pattern, or background color).",
+										"wp-component-library",
+									)
+						}
 						value={divider || "none"}
 						onChange={onDividerChange}
 						isBlock
+						disabled={!showDividerControls}
 					>
 						{ALL_POSITIONS.filter((option) =>
 							positions.includes(option.value),

@@ -9,12 +9,20 @@
 export { iconStore, STORE_NAME as ICON_STORE_NAME } from "./store";
 
 // Registration API
-export { registerIconSet, registerIcons, removeIconSet } from "./api";
+export {
+	registerIconSet,
+	registerIcons,
+	removeIconSet,
+	loadIconSet,
+	loadAllIconSets,
+} from "./api";
+export { registerConfigIconSets } from "./config-bootstrap";
 
 // React hooks
 export {
 	useIconSets,
 	useGroupedIcons,
+	useIconPickerGroups,
 	useAllIcons,
 	useIcons,
 	useIcon,

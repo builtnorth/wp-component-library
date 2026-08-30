@@ -81,12 +81,76 @@ const StyledSortableItem = styled.div`
 			flex-grow: 1;
 		}
 
-		/* Drag handle and remove button should not grow */
+		/* Drag handle, row actions, and remove button should not grow */
 		.built-repeater__drag-handle,
-		.built-repeater__remove-item {
+		.built-repeater__remove-item,
+		.built-repeater__item-action {
 			flex-grow: 0;
 			flex-shrink: 0;
 			margin-top: 26px;
+		}
+
+		.built-repeater__item-action.components-button {
+			width: auto;
+			min-width: 36px;
+		}
+
+		/* Inline toggles beside labeled TextControl / SelectControl rows. */
+		.built-repeater__inline-toggle {
+			flex-grow: 0;
+			flex-shrink: 0;
+			align-self: flex-end;
+
+			.components-toggle-control {
+				margin-bottom: 0;
+			}
+
+			&.built-repeater__inline-toggle--category-selected
+				.components-base-control__help {
+				visibility: hidden;
+			}
+		}
+
+		/* Read-only summary rows — meta left, actions right. */
+		&:has(.built-repeater__summary) {
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+
+			> * {
+				flex-grow: 0;
+			}
+
+			.built-repeater__summary {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				flex: 1 1 auto;
+				min-width: 0;
+			}
+
+			.built-repeater__summary-actions {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				flex-shrink: 0;
+			}
+
+			.built-repeater__summary-name {
+				flex-shrink: 1;
+				min-width: 0;
+				font-weight: 500;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.built-repeater__drag-handle,
+			.built-repeater__remove-item,
+			.built-repeater__item-action {
+				margin-top: 0;
+			}
 		}
 	}
 

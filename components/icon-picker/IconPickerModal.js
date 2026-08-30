@@ -15,27 +15,38 @@
 import { Global } from "@emotion/react";
 import UFuzzy from "@leeoniya/ufuzzy";
 import { Modal, SearchControl, SelectControl } from "@wordpress/components";
-import { memo, useCallback, useMemo, useState } from "@wordpress/element";
+import {
+	memo,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "@wordpress/element";
 import { __, sprintf } from "@wordpress/i18n";
 import { VariableSizeList } from "react-window";
 
-import { useGroupedIcons } from "./hooks";
+import { useIconPickerGroups } from "./hooks";
 import {
 	CellButton,
 	CellName,
 	CellSvg,
 	EmptyState,
 	GroupHeader,
+	GroupHeaderRow,
 	HeaderSelectedInfo,
 	HeaderSelectedSvg,
 	IconCount,
 	IconRow,
 	modalGlobalStyles,
 	ModalInner,
+	PickerBody,
+	PickerControls,
 	SearchAndFilter,
 	SetSelectorWrap,
-	VirtualListWrap,
 } from "./styles";
+import { safeSvgSource } from "./utils";
 
 // Fuzzy search instance (created once, stateless and reusable)
 const fuzzy = new UFuzzy();
@@ -45,21 +56,10 @@ const fuzzy = new UFuzzy();
 // This fixed height lets VariableSizeList virtualize without per-row measurement.
 const COLUMNS = 8; // must match grid-template-columns in styles.js
 const ICON_ROW_HEIGHT = 116; // px: cell (108) + top/bottom padding (4+4)
-const HEADER_ROW_HEIGHT = 36; // px for group label rows
-const LIST_HEIGHT = 520; // px — visible scroll viewport
-
-/**
- * Minimal guard before rendering icon SVG strings.
- *
- * @param {string} source
- * @returns {string}
- */
-function safeSvgSource(source) {
-	if (typeof source === "string" && source.trimStart().startsWith("<svg")) {
-		return source;
-	}
-	return "";
-}
+// Fits GroupHeader margins + padding + label (margin-top/bottom are 1rem / 0.5rem).
+const HEADER_ROW_HEIGHT = 48;
+const DEFAULT_LIST_HEIGHT = 520; // px — fallback before ResizeObserver measures
+const MIN_LIST_HEIGHT = 200;
 
 /**
  * Build a flat array of rows for VariableSizeList.
@@ -128,7 +128,11 @@ const RowRenderer = memo(function RowRenderer({ index, style, data }) {
 	const row = rows[index];
 
 	if (row.type === "header") {
-		return <GroupHeader style={style}>{row.label}</GroupHeader>;
+		return (
+			<GroupHeaderRow style={style}>
+				<GroupHeader>{row.label}</GroupHeader>
+			</GroupHeaderRow>
+		);
 	}
 
 	return (
@@ -160,7 +164,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 	const [search, setSearch] = useState("");
 	const [selectedSet, setSelectedSet] = useState("");
 
-	const groups = useGroupedIcons();
+	const { groups, isLoading, isInitialLoad } = useIconPickerGroups();
 
 	const setOptions = useMemo(
 		() => [
@@ -203,6 +207,76 @@ export function IconPickerModal({ value, onChange, onClose }) {
 	}, [search, selectedSet, groups, allIcons, haystack]);
 
 	const rows = useMemo(() => buildRows(filteredGroups), [filteredGroups]);
+
+	// Remount the virtual list when filter/search changes so react-window does not
+	// reuse row slots with stale absolute positioning (overlapping icons).
+	const virtualListKey = useMemo(
+		() =>
+			`${selectedSet}\0${search.trim()}\0${rows
+				.map((row) =>
+					row.type === "header"
+						? `h:${row.label}`
+						: `i:${row.items.map((icon) => icon.name).join(",")}`,
+				)
+				.join("\n")}`,
+		[selectedSet, search, rows],
+	);
+
+	const listRef = useRef(null);
+	const listWrapRef = useRef(null);
+	const [listHeight, setListHeight] = useState(DEFAULT_LIST_HEIGHT);
+
+	useLayoutEffect(() => {
+		const el = listWrapRef.current;
+		if (!el) {
+			return undefined;
+		}
+
+		const updateHeight = () => {
+			const next = Math.floor(el.getBoundingClientRect().height);
+			if (next >= MIN_LIST_HEIGHT) {
+				setListHeight(next);
+			}
+		};
+
+		updateHeight();
+
+		const observer = new ResizeObserver(updateHeight);
+		observer.observe(el);
+
+		return () => observer.disconnect();
+	}, []);
+
+	const resetScrollPositions = useCallback(() => {
+		listRef.current?.scrollTo(0);
+
+		let parent = listWrapRef.current?.parentElement;
+		while (parent) {
+			const { overflowY } = window.getComputedStyle(parent);
+			if (overflowY === "auto" || overflowY === "scroll") {
+				parent.scrollTop = 0;
+			}
+			parent = parent.parentElement;
+		}
+	}, []);
+
+	useEffect(() => {
+		resetScrollPositions();
+	}, [virtualListKey, resetScrollPositions]);
+
+	const getRowKey = useCallback((index) => {
+		const row = rows[index];
+
+		if (!row) {
+			return `row-${index}`;
+		}
+
+		if (row.type === "header") {
+			return `header:${row.label}`;
+		}
+
+		return `icons:${row.items.map((icon) => `${icon.iconSet}::${icon.name}`).join("|")}`;
+	}, [rows]);
 
 	// All icon rows share one fixed height; only headers differ.
 	const getItemSize = useCallback(
@@ -259,68 +333,97 @@ export function IconPickerModal({ value, onChange, onClose }) {
 				className="wpcl-icon-picker-modal"
 			>
 				<ModalInner>
-					<SearchAndFilter>
-						<SearchControl
-							__nextHasNoMarginBottom
-							value={search}
-							onChange={setSearch}
-							placeholder={__(
-								"Search icons\u2026",
-								"wp-component-library",
+					<PickerControls>
+						<SearchAndFilter>
+							<SearchControl
+								__nextHasNoMarginBottom
+								value={search}
+								onChange={setSearch}
+								placeholder={__(
+									"Search icons\u2026",
+									"wp-component-library",
+								)}
+							/>
+							{groups.length > 1 && (
+								<SetSelectorWrap>
+									<SelectControl
+										__nextHasNoMarginBottom
+										value={selectedSet}
+										options={setOptions}
+										onChange={setSelectedSet}
+										aria-label={__(
+											"Filter by icon library",
+											"wp-component-library",
+										)}
+									/>
+								</SetSelectorWrap>
 							)}
-						/>
-						{groups.length > 1 && (
-							<SetSelectorWrap>
-								<SelectControl
-									__nextHasNoMarginBottom
-									value={selectedSet}
-									options={setOptions}
-									onChange={setSelectedSet}
-									aria-label={__(
-										"Filter by icon library",
-										"wp-component-library",
-									)}
-								/>
-							</SetSelectorWrap>
-						)}
-					</SearchAndFilter>
+						</SearchAndFilter>
 
-					<IconCount>
-						{totalIcons > 0
-							? sprintf(
-									/* translators: %d = number of icons found */
-									__("%d icon(s) found", "wp-component-library"),
-									totalIcons,
-								)
-							: __("No icons found.", "wp-component-library")}
-					</IconCount>
+						<IconCount>
+							{isLoading && totalIcons > 0
+								? sprintf(
+										/* translators: %d = number of icons loaded so far */
+										__(
+											"%d icon(s) loaded — loading more…",
+											"wp-component-library",
+										),
+										totalIcons,
+									)
+								: totalIcons > 0
+									? sprintf(
+											/* translators: %d = number of icons found */
+											__(
+												"%d icon(s) found",
+												"wp-component-library",
+											),
+											totalIcons,
+										)
+									: isInitialLoad
+										? __(
+												"Loading icons…",
+												"wp-component-library",
+											)
+										: __(
+												"No icons found.",
+												"wp-component-library",
+											)}
+						</IconCount>
+					</PickerControls>
 
-					{rows.length > 0 ? (
-						<VirtualListWrap>
+					<PickerBody ref={listWrapRef}>
+						{isInitialLoad ? (
+							<EmptyState>
+								{__("Loading icons…", "wp-component-library")}
+							</EmptyState>
+						) : rows.length > 0 ? (
 							<VariableSizeList
-								height={LIST_HEIGHT}
+								key={virtualListKey}
+								ref={listRef}
+								height={listHeight}
 								itemCount={rows.length}
 								itemSize={getItemSize}
 								itemData={listData}
+								itemKey={getRowKey}
 								width="100%"
 								className="wpcl-icon-picker-modal__list"
 							>
 								{RowRenderer}
 							</VariableSizeList>
-						</VirtualListWrap>
-					) : (
-						<EmptyState>
-							{groups.length === 0
-								? __(
-										"No icon sets registered.",
-										"wp-component-library",
-									)
-								: __(
-										"No icons match your search.",
-										"wp-component-library",
-									)}
-						</EmptyState>
-					)}
+						) : (
+							<EmptyState>
+								{groups.length === 0
+									? __(
+											"No icon sets registered.",
+											"wp-component-library",
+										)
+									: __(
+											"No icons match your search.",
+											"wp-component-library",
+										)}
+							</EmptyState>
+						)}
+					</PickerBody>
 				</ModalInner>
 			</Modal>
 		</>

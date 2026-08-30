@@ -4,7 +4,7 @@
 import { MediaUpload, MediaUploadCheck } from "@wordpress/block-editor";
 import { ToolbarButton } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { edit } from "@wordpress/icons";
+import { pencil } from "@wordpress/icons";
 
 const ALLOWED_MEDIA_TYPES = ["image"];
 
@@ -39,7 +39,7 @@ function ToolbarMediaUpload({
                 value={mediaId}
                 render={({ open }) => (
                     <ToolbarButton
-                        icon={edit}
+                        icon={pencil}
                         label={__("Edit/Replace Media", "wp-component-library")}
                         onClick={open}
                     />

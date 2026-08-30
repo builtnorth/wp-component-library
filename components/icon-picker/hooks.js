@@ -5,6 +5,9 @@
  */
 
 import { useSelect } from "@wordpress/data";
+import { useEffect } from "@wordpress/element";
+
+import { loadAllIconSets } from "./api";
 import { STORE_NAME } from "./store";
 
 /**
@@ -93,4 +96,57 @@ export function useIcon(iconSetName, iconName) {
 		(select) => select(STORE_NAME).getIcon(iconSetName, iconName),
 		[iconSetName, iconName],
 	);
+}
+
+/**
+ * Grouped icons for the picker modal — triggers lazy loading on mount.
+ *
+ * @returns {{ groups: Array, isLoading: boolean, isInitialLoad: boolean, hasPending: boolean }}
+ */
+export function useIconPickerGroups() {
+	const { groups, isLoading, hasPending, pendingKey } = useSelect((select) => {
+		const store = select(STORE_NAME);
+		const iconSets = store.getIconSets();
+
+		return {
+			groups: iconSets.map((set) => ({
+				...set,
+				icons: store.getIcons(set.name).map((icon) => ({
+					...icon,
+					iconSet: set.name,
+				})),
+			})),
+			isLoading: store.isIconSetsLoading(),
+			hasPending: store.hasPendingIconSets(),
+			pendingKey: iconSets
+				.filter(
+					(set) =>
+						set.loadStatus === "idle" || set.loadStatus === "loading",
+				)
+				.map((set) => set.name)
+				.join("\0"),
+		};
+	}, []);
+
+	useEffect(() => {
+		if (!pendingKey) {
+			return;
+		}
+
+		loadAllIconSets().catch(() => {
+			// Errors are stored on the set; picker shows empty/error state.
+		});
+	}, [pendingKey]);
+
+	const iconCount = groups.reduce(
+		(count, group) => count + group.icons.length,
+		0,
+	);
+
+	return {
+		groups,
+		isLoading: hasPending || isLoading,
+		isInitialLoad: (hasPending || isLoading) && iconCount === 0,
+		hasPending,
+	};
 }

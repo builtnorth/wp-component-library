@@ -7,16 +7,39 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
+/** Supports Phosphor (fill) and Lucide (stroke) SVG sources. */
+const iconSvgColorStyles = css`
+	svg[fill="none"] {
+		fill: none;
+		stroke: currentColor;
+	}
+
+	svg:not([fill="none"]) {
+		fill: currentColor;
+	}
+`;
+
 // ─── Modal container overrides ────────────────────────────────────────────────
 
 export const modalGlobalStyles = css`
 	.wpcl-icon-picker-modal {
+		display: flex;
+		flex-direction: column;
+		max-height: 85vh;
+
 		.components-modal__content {
 			padding: 0;
+			/* Single scroll container (the icon grid). Avoid nested scroll with search. */
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			min-height: 0;
 		}
 		.components-modal__header {
 			padding: 8px 16px;
 			border-bottom: 1px solid #e0e0e0;
+			flex-shrink: 0;
 		}
 	}
 `;
@@ -28,6 +51,21 @@ export const ModalInner = styled.div`
 	flex-direction: column;
 	gap: 8px;
 	padding: 12px 16px 16px;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+`;
+
+/** Search, filter, and count — never scrolls away from the modal viewport. */
+export const PickerControls = styled.div`
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	background: #fff;
 `;
 
 // Search + set filter side-by-side with matched heights
@@ -68,6 +106,12 @@ export const IconCount = styled.p`
 
 // ─── Group header ─────────────────────────────────────────────────────────────
 
+// react-window positioning slot — must not have margins (see GroupHeader).
+export const GroupHeaderRow = styled.div`
+	box-sizing: border-box;
+	height: 100%;
+`;
+
 export const GroupHeader = styled.div`
 	display: flex;
 	align-items: center;
@@ -84,10 +128,16 @@ export const GroupHeader = styled.div`
 	margin-top: 1rem;
 `;
 
-// ─── Virtualized list wrapper ─────────────────────────────────────────────────
-// react-window VariableSizeList — scrollbar styled via className.
+// ─── Icon grid body (list, loading, or empty) ─────────────────────────────────
+// Fixed min-height keeps the modal from shrinking when search has no matches.
 
-export const VirtualListWrap = styled.div`
+export const PickerBody = styled.div`
+	flex: 1;
+	min-height: 520px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+
 	/* Scrollbar for the react-window outer div */
 	.wpcl-icon-picker-modal__list::-webkit-scrollbar {
 		width: 6px;
@@ -108,6 +158,8 @@ export const IconRow = styled.div`
 	padding: 4px 0;
 	box-sizing: border-box;
 	align-items: stretch;
+	height: 100%;
+	overflow: hidden;
 `;
 
 // ─── Icon cell ────────────────────────────────────────────────────────────────
@@ -177,8 +229,9 @@ export const CellSvg = styled.span`
 		min-width: 24px;
 		min-height: 24px;
 		display: block;
-		fill: currentColor;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 // Clamps at 4 lines — the fixed cell height fits exactly 4 × 14.3px lines.
@@ -197,6 +250,10 @@ export const CellName = styled.span`
 // ─── Empty state ──────────────────────────────────────────────────────────────
 
 export const EmptyState = styled.div`
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	padding: 32px 16px;
 	text-align: center;
 	color: #757575;
@@ -231,9 +288,10 @@ export const HeaderSelectedSvg = styled.span`
 	svg {
 		width: 20px;
 		height: 20px;
-		fill: currentColor;
 		display: block;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 // ─── Inspector panel picker ───────────────────────────────────────────────────
@@ -251,9 +309,10 @@ export const PickerPreview = styled.span`
 	svg {
 		width: 20px;
 		height: 20px;
-		fill: currentColor;
 		display: block;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 export const PickerName = styled.span`
@@ -268,16 +327,23 @@ export const ToolbarIconWrap = styled.span`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 20px;
-	height: 20px;
+	width: 24px;
+	height: 24px;
 	overflow: hidden;
+	flex-shrink: 0;
 
+	/* Match wp-blocks toolbar rules; overrides SVG width/height attributes. */
 	svg {
-		width: 20px;
-		height: 20px;
-		fill: currentColor;
 		display: block;
+		width: 24px !important;
+		height: 24px !important;
+		min-width: 0;
+		min-height: 0;
+		max-width: 24px;
+		max-height: 24px;
 	}
+
+	${iconSvgColorStyles}
 `;
 
 // ─── Inline (canvas) picker ───────────────────────────────────────────────────
@@ -290,7 +356,8 @@ export const InlinePickerWrap = styled.div`
 	cursor: pointer;
 
 	svg {
-		fill: currentColor;
 		display: block;
 	}
+
+	${iconSvgColorStyles}
 `;

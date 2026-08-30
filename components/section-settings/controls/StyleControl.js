@@ -7,12 +7,16 @@ import {
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
+import {
+	SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
+} from "../constants";
+
 const StyleControl = ({
-    imageStyle = "none",
+    imageStyle = SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
     onChange,
     isShownByDefault = false,
 }) => {
-    const defaultImageStyle = "none";
+    const defaultImageStyle = SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE;
 
     return (
         <ToolsPanelItem
@@ -25,7 +29,7 @@ const StyleControl = ({
                 __nextHasNoMarginBottom={true}
                 __next40pxDefaultSize
                 label={__("Media Style", "wp-component-library")}
-                value={imageStyle || "none"}
+                value={imageStyle || SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE}
                 options={[
                     {
                         label: __("None", "wp-component-library"),

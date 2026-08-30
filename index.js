@@ -23,7 +23,11 @@ export {
 	ToolbarMediaUpload,
 } from "./components/media";
 export { ImageControls } from "./components/media/image-controls";
-export { MetaAdvanced } from "./components/meta/MetaAdvanced";
+export {
+	isMetaValueEmpty,
+	isTemplateEditorSurface,
+	useMetaGatedEditorVisibility,
+} from "./components/meta/meta-gated-editor";
 export { MetaPanel } from "./components/meta/MetaPanel";
 export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
 // Query Controls - Individual ToolsPanelItems that can be composed together
@@ -32,6 +36,16 @@ export {
 	useAttributes,
 } from "./components/attributes-panel";
 export { Badge } from "./components/badge";
+export {
+	STATUS_COLOR_FALLBACKS,
+	statusVar,
+	getStatusSurfaceColors,
+	getScoreStatusTier,
+	getScoreSurfaceColors,
+	getScoreChartColors,
+	getBadgeIntentColors,
+	defaultChartStatusColors,
+} from "./constants/statusColors";
 export { CaptchaPlaceholder } from "./components/captcha-placeholder";
 export { useAspectRatioOptions } from "./components/media/utils/aspect-ratios";
 export {
@@ -68,6 +82,8 @@ export {
 	ImageSourceControl,
 	MediaSelectControl,
 	OpacityControl,
+	SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
+	SECTION_BACKGROUND_DEFAULT_OPACITY,
 	SectionBackground,
 	SectionSettings,
 	StyleControl,
@@ -107,9 +123,13 @@ export {
 	ICON_STORE_NAME,
 	registerIconSet,
 	registerIcons,
+	registerConfigIconSets,
 	removeIconSet,
+	loadIconSet,
+	loadAllIconSets,
 	useIconSets,
 	useGroupedIcons,
+	useIconPickerGroups,
 	useAllIcons,
 	useIcons,
 	useIcon,

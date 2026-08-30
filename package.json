@@ -4,6 +4,7 @@
 	"description": "Library of components for use in the WordPress block editor.",
 	"main": "build/index.js",
 	"module": "build/index.js",
+	"sideEffects": false,
 	"scripts": {
 		"start": "wp-scripts start",
 		"build": "wp-scripts build",
@@ -28,6 +29,7 @@
 		"@dnd-kit/sortable": "^10.0.0",
 		"@dnd-kit/utilities": "^3.2.2",
 		"@leeoniya/ufuzzy": "^1.0.14",
+		"dompurify": "^3.4.7",
 		"react-window": "^1.8.11"
 	}
 }

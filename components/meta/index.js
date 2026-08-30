@@ -1,4 +1,6 @@
-export { MetaAdvanced } from './MetaAdvanced';
-export { MetaFieldSelector } from './MetaFieldSelector';
+export {
+	isMetaValueEmpty,
+	isTemplateEditorSurface,
+	useMetaGatedEditorVisibility,
+} from './meta-gated-editor';
 export { MetaPanel } from './MetaPanel';
-export { useMetaFields } from './useMetaFields';

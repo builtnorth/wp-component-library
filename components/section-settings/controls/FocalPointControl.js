@@ -31,6 +31,7 @@ const FocalPointControl = ({
             isShownByDefault={true}
         >
             <FocalPointPicker
+                key={imageUrl}
                 __nextHasNoMarginBottom
                 hideLabelFromVision={true}
                 label={__("Media Focal Point", "wp-component-library")}

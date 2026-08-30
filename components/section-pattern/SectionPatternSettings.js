@@ -51,7 +51,6 @@ const SectionPatternSettings = ({
 }) => {
 	const patternConfig = usePatternConfig();
 
-	// Don't render if patterns are disabled
 	if (!patternConfig?.enabled) {
 		return null;
 	}
@@ -66,7 +65,6 @@ const SectionPatternSettings = ({
 		if (resetAll) resetAll();
 	};
 
-	// Build options for SelectControl
 	const patternOptions = [
 		{ label: __("None", "wp-component-library"), value: "" },
 		...Object.entries(availablePatterns).map(([value, label]) => ({
@@ -86,6 +84,7 @@ const SectionPatternSettings = ({
 					hasValue={() => hasPattern}
 					label={__("Pattern", "wp-component-library")}
 					onDeselect={() => onPatternChange("")}
+					isShownByDefault={false}
 				>
 					<SelectControl
 						__next40pxDefaultSize
@@ -100,11 +99,12 @@ const SectionPatternSettings = ({
 						options={patternOptions}
 					/>
 				</ToolsPanelItem>
-				{hasPattern && onPatternAlignChange && (
+				{onPatternAlignChange && hasPattern && (
 					<ToolsPanelItem
 						hasValue={() => hasPatternAlign}
 						label={__("Pattern Position", "wp-component-library")}
 						onDeselect={() => onPatternAlignChange("center center")}
+						isShownByDefault={true}
 					>
 						<BaseControl
 							label={__(
@@ -119,6 +119,7 @@ const SectionPatternSettings = ({
 							<AlignmentMatrixControl
 								value={patternAlign}
 								onChange={onPatternAlignChange}
+								disabled={!hasPattern}
 							/>
 						</BaseControl>
 					</ToolsPanelItem>

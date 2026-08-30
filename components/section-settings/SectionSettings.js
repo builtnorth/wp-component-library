@@ -2,26 +2,36 @@
  * WordPress dependencies
  */
 import { InspectorControls } from "@wordpress/block-editor";
-import { __experimentalToolsPanel as ToolsPanel } from "@wordpress/components";
+import {
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
+} from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
+import { store as coreStore } from "@wordpress/core-data";
 import { Fragment } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
+import { InspectorMediaUpload } from "../media";
 import {
 	FocalPointControl,
-	ImageSourceControl,
+	ImageSourceToggle,
 	MediaSelectControl,
 	OpacityControl,
 	ShowCaptionControl,
 	StyleControl,
 } from "./controls";
 
+import {
+	SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
+	SECTION_BACKGROUND_DEFAULT_OPACITY,
+} from "./constants";
+
 const SectionSettings = ({
 	// Current values
 	backgroundImage = null,
 	focalPoint = null,
-	opacity = 15,
-	imageStyle = "none",
+	opacity = SECTION_BACKGROUND_DEFAULT_OPACITY,
+	imageStyle = SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
 	useFeaturedImage = false,
 	showCaption = false,
 
@@ -44,41 +54,57 @@ const SectionSettings = ({
 	panelTitle = __("Background Media", "wp-component-library"),
 	group = "styles",
 	className = "built-inspector-section-settings",
+	contextPostId = null,
+	contextPostType = null,
 }) => {
 	const limitEditorSettings =
 		window.polaris_localize?.limit_editor_settings || false;
 
-	const { imageUrl, featuredImageUrl } = useSelect(
+	const displayImageUrl = useSelect(
 		(select) => {
-			const { getEntityRecord } = select("core");
-			const { getCurrentPostId, getCurrentPostType } = select("core/editor") || {};
-			const postId = getCurrentPostId?.();
-			const postType = getCurrentPostType?.() || "post";
+			const { getEntityRecord, getEditedEntityRecord } = select(coreStore);
+			const editor = select("core/editor");
+			const editorPostId = editor?.getCurrentPostId?.() ?? null;
+			const editorPostType = editor?.getCurrentPostType?.() ?? "post";
+			const resolvedPostId = contextPostId ?? editorPostId;
+			const resolvedPostType = contextPostType ?? editorPostType;
 
-			let featuredImageData = null;
-			if (postId) {
-				const post = getEntityRecord("postType", postType, postId);
-				if (post?.featured_media) {
-					featuredImageData = getEntityRecord(
+			let featuredMediaId = null;
+			if (useFeaturedImage && resolvedPostId && resolvedPostType) {
+				const post =
+					getEditedEntityRecord(
 						"postType",
-						"attachment",
-						post.featured_media,
+						resolvedPostType,
+						resolvedPostId,
+					) ??
+					getEntityRecord(
+						"postType",
+						resolvedPostType,
+						resolvedPostId,
 					);
-				}
+				featuredMediaId = post?.featured_media || null;
 			}
 
-			return {
-				imageUrl: backgroundImage
-					? getEntityRecord("postType", "attachment", backgroundImage)
-							?.source_url
-					: null,
-				featuredImageUrl: featuredImageData?.source_url,
-			};
-		},
-		[backgroundImage],
-	);
+			const effectiveImageId = useFeaturedImage
+				? featuredMediaId || backgroundImage
+				: backgroundImage;
 
-	const displayImageUrl = useFeaturedImage ? featuredImageUrl : imageUrl;
+			if (!effectiveImageId) {
+				return null;
+			}
+
+			return (
+				getEntityRecord("postType", "attachment", effectiveImageId)
+					?.source_url ?? null
+			);
+		},
+		[
+			backgroundImage,
+			useFeaturedImage,
+			contextPostId,
+			contextPostType,
+		],
+	);
 
 	// Reset function for ToolsPanel
 	const resetAll = () => {
@@ -89,10 +115,10 @@ const SectionSettings = ({
 			onFocalPointChange({ x: 0.5, y: 0.5 });
 		}
 		if (enableMediaOpacity && onOpacityChange) {
-			onOpacityChange(15);
+			onOpacityChange(SECTION_BACKGROUND_DEFAULT_OPACITY);
 		}
 		if (enableMediaStyle && onImageStyleChange) {
-			onImageStyleChange("none");
+			onImageStyleChange(SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE);
 		}
 		if (enableShowCaption && onShowCaptionChange) {
 			onShowCaptionChange(false);
@@ -110,12 +136,49 @@ const SectionSettings = ({
 					resetAll={resetAll}
 					className={className}
 				>
-					{enableFeaturedImage && onFeaturedImageToggle && (
-						<ImageSourceControl
-							useFeaturedImage={useFeaturedImage}
-							onToggle={onFeaturedImageToggle}
-						/>
-					)}
+					{enableFeaturedImage && onFeaturedImageToggle ? (
+						<ToolsPanelItem
+							hasValue={() =>
+								useFeaturedImage || !!backgroundImage
+							}
+							label={__("Image Source", "wp-component-library")}
+							onDeselect={() => {
+								onFeaturedImageToggle(false);
+								if (onImageRemove) {
+									onImageRemove();
+								}
+							}}
+							isShownByDefault={false}
+						>
+							<ImageSourceToggle
+								useFeaturedImage={useFeaturedImage}
+								onToggle={onFeaturedImageToggle}
+							/>
+							{!useFeaturedImage &&
+								onImageSelect &&
+								onImageRemove && (
+									<InspectorMediaUpload
+										buttonTitle={
+											backgroundImage
+												? __(
+														"Replace Media",
+														"wp-component-library",
+													)
+												: __(
+														"Select or Upload Media",
+														"wp-component-library",
+													)
+										}
+										gallery={false}
+										multiple={false}
+										mediaIDs={backgroundImage}
+										onSelect={onImageSelect}
+										onRemove={onImageRemove}
+										showImagePlaceholder={false}
+									/>
+								)}
+						</ToolsPanelItem>
+					) : null}
 
 					{(useFeaturedImage || backgroundImage) && (
 						<Fragment>
@@ -155,14 +218,17 @@ const SectionSettings = ({
 						</Fragment>
 					)}
 
-					{!useFeaturedImage && onImageSelect && onImageRemove && (
-						<MediaSelectControl
-							backgroundImage={backgroundImage}
-							onSelect={onImageSelect}
-							onRemove={onImageRemove}
-							isShownByDefault={false}
-						/>
-					)}
+					{!enableFeaturedImage &&
+						!useFeaturedImage &&
+						onImageSelect &&
+						onImageRemove && (
+							<MediaSelectControl
+								backgroundImage={backgroundImage}
+								onSelect={onImageSelect}
+								onRemove={onImageRemove}
+								isShownByDefault={true}
+							/>
+						)}
 				</ToolsPanel>
 			</InspectorControls>
 		</Fragment>

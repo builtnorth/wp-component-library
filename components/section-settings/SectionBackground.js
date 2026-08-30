@@ -1,31 +1,69 @@
 /**
  * WordPress dependencies
  */
+import { useBlockEditContext } from "@wordpress/block-editor";
 import { useSelect } from "@wordpress/data";
+import { store as coreStore } from "@wordpress/core-data";
 import classnames from "classnames";
 
 import { AttachmentImage } from "../attachment-image";
+import {
+	SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
+	SECTION_BACKGROUND_DEFAULT_OPACITY,
+} from "./constants";
 
 const SectionBackground = ({
     backgroundImage = null,
     focalPoint = null,
-    opacity = 15,
-    imageStyle = "none",
+    opacity = SECTION_BACKGROUND_DEFAULT_OPACITY,
+    imageStyle = SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
     useFeaturedImage = false,
     className = "",
     imageSize = "wide_large",
+    contextPostId = null,
+    contextPostType = null,
 }) => {
-    const { featuredImageId, postId, currentPost } = useSelect(
+    const blockEditContext = useBlockEditContext()?.context ?? {};
+
+    const effectivePostId =
+        contextPostId ?? blockEditContext.postId ?? null;
+    const effectivePostType =
+        contextPostType ?? blockEditContext.postType ?? null;
+
+    const { featuredImageId } = useSelect(
         (select) => {
-            const postId = select("core/editor")?.getCurrentPostId();
-            const currentPost = select("core/editor")?.getCurrentPost();
+            const editor = select("core/editor");
+            const editorPostId = editor?.getCurrentPostId?.() ?? null;
+            const editorPostType = editor?.getCurrentPostType?.() ?? null;
+            const resolvedPostId = effectivePostId || editorPostId;
+            const resolvedPostType = effectivePostType || editorPostType;
+
             let featuredImageId = null;
-            if (useFeaturedImage && currentPost && currentPost.featured_media) {
-                featuredImageId = currentPost.featured_media;
+
+            if (!useFeaturedImage || !resolvedPostId || !resolvedPostType) {
+                return { featuredImageId };
             }
-            return { featuredImageId, postId, currentPost };
+
+            const loadFromEntity =
+                effectivePostId &&
+                (editorPostId === null ||
+                    Number(effectivePostId) !== Number(editorPostId));
+
+            if (loadFromEntity) {
+                const record = select(coreStore).getEntityRecord(
+                    "postType",
+                    resolvedPostType,
+                    resolvedPostId,
+                );
+                featuredImageId = record?.featured_media || null;
+            } else {
+                const currentPost = editor?.getCurrentPost?.();
+                featuredImageId = currentPost?.featured_media || null;
+            }
+
+            return { featuredImageId };
         },
-        [useFeaturedImage],
+        [useFeaturedImage, effectivePostId, effectivePostType],
     );
 
     const backgroundStyle = {
@@ -40,18 +78,13 @@ const SectionBackground = ({
         [`has-${imageStyle}`]: imageStyle && imageStyle !== "none",
     });
 
-    const imageId = useFeaturedImage ? featuredImageId : backgroundImage;
+    const imageId = useFeaturedImage
+        ? featuredImageId || backgroundImage
+        : backgroundImage;
 
-    // Early returns for loading states
-    if (useFeaturedImage && !postId) {
-        console.log("[SectionBackground] Waiting for postId...");
+    if (!imageId) {
         return null;
     }
-    if (useFeaturedImage && postId && !currentPost) {
-        console.log("[SectionBackground] Waiting for currentPost data...");
-        return null;
-    }
-    if (!imageId) return null;
 
     return (
         <div className="background">

@@ -9,6 +9,7 @@ import {
 	__experimentalToolsPanelItem as ToolsPanelItem,
 	__experimentalUnitControl as UnitControl,
 } from "@wordpress/components";
+import { useSelect } from "@wordpress/data";
 import { __ } from "@wordpress/i18n";
 
 import { useAspectRatioOptions } from "./utils/aspect-ratios";
@@ -34,10 +35,20 @@ const ImageControls = ({
 	height = "auto",
 	showCaption = false,
 	scale = "cover",
+	imageSize = "",
 	setAttributes,
 }) => {
 	// Get aspect ratio options from theme.json
 	const aspectRatioOptions = useAspectRatioOptions();
+
+	// Build resolution options from registered image sizes
+	const imageSizeOptions = useSelect((select) => {
+		const sizes = select("core/block-editor").getSettings().imageSizes || [];
+		return [
+			{ value: "", label: __("Auto", "wp-component-library") },
+			...sizes.map(({ name, slug }) => ({ value: slug, label: name })),
+		];
+	}, []);
 
 	const resetAllFilter = (newAttributes) => {
 		return {
@@ -47,6 +58,7 @@ const ImageControls = ({
 			height: "auto",
 			showCaption: false,
 			scale: "cover",
+			imageSize: "",
 		};
 	};
 
@@ -156,6 +168,25 @@ const ImageControls = ({
 					label={__("Show Caption", "wp-component-library")}
 					checked={showCaption}
 					onChange={(value) => setAttributes({ showCaption: value })}
+				/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				hasValue={() => !!imageSize}
+				label={__("Resolution", "wp-component-library")}
+				onDeselect={() => setAttributes({ imageSize: "" })}
+				resetAllFilter={resetAllFilter}
+				isShownByDefault={false}
+				panelId="image-settings"
+			>
+				<SelectControl
+					__nextHasNoMarginBottom={true}
+					__next40pxDefaultSize
+					label={__("Resolution", "wp-component-library")}
+					value={imageSize}
+					options={imageSizeOptions}
+					onChange={(value) => setAttributes({ imageSize: value })}
+					help={__("Override the default image resolution. Leave as Auto for smart sizing.", "wp-component-library")}
 				/>
 			</ToolsPanelItem>
 		</ToolsPanel>

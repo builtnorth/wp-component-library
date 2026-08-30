@@ -5,6 +5,11 @@
  * Components can be used independently or together as needed.
  */
 
+export {
+	SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
+	SECTION_BACKGROUND_DEFAULT_OPACITY,
+} from "./constants";
+
 // Main components
 export { SectionBackground } from "./SectionBackground";
 export { SectionSettings } from "./SectionSettings";

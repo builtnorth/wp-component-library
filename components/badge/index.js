@@ -9,7 +9,8 @@
 
 import styled from "@emotion/styled";
 import { Icon } from "@wordpress/components";
-import { check, warning, info, caution } from "@wordpress/icons";
+import { check, info, caution } from "@wordpress/icons";
+import { getBadgeIntentColors } from "../../constants/statusColors";
 
 // Badge container with intent-based styling - matches Gutenberg exactly
 const BadgeContainer = styled.span`
@@ -26,37 +27,12 @@ const BadgeContainer = styled.span`
 
 	// Intent-based color schemes matching Gutenberg Badge
 	${(props) => {
-		switch (props.intent) {
-			case "error":
-			case "critical":
-				return `
-					background-color: var(--color--error-light, #fcebea);
-					color: var(--color--error, #cc1818);
-				`;
-			case "warning":
-				return `
-					background-color: var(--color--warning-light, #fef8e6);
-					color: var(--color--warning-dark, #b26200);
-				`;
-			case "info":
-			case "suggestion":
-				return `
-					background-color: var(--color--info-light, #e6f2ff);
-					color: var(--color--info-dark, #005cb8);
-				`;
-			case "success":
-			case "passed":
-				return `
-					background-color: var(--color--success-light, #edfaef);
-					color: var(--color--success-dark, #007017);
-				`;
-			case "default":
-			default:
-				return `
-					background-color: #f0f0f0;
-					color: #1e1e1e;
-				`;
-		}
+		const { background, color } = getBadgeIntentColors(props.intent);
+
+		return `
+			background-color: ${background};
+			color: ${color};
+		`;
 	}}
 
 	// Icon styling to match text color

@@ -11,22 +11,36 @@ import {
 	SKIN_CHANGED_EVENT,
 } from "../../utils/polaris-localize";
 
+const PATTERN_EXTENSIONS = ["svg", "png", "jpg", "jpeg", "webp"];
+
+/**
+ * @param {string} url
+ * @return {string}
+ */
+function getExtensionFromUrl(url) {
+	const match = String(url).match(/\.([a-z0-9]+)(?:\?|#|$)/i);
+
+	return match ? match[1].toLowerCase() : "svg";
+}
+
 /**
  * @param {string} pattern
  * @param {object|undefined} patternConfig
  * @param {object|undefined} localizeData
- * @return {string}
+ * @return {{ url: string, ext: string }[]}
  */
-function resolvePatternAssetUrl(pattern, patternConfig, localizeData) {
+function resolvePatternAssetCandidates(pattern, patternConfig, localizeData) {
 	if (patternConfig?.pattern_urls?.[pattern]) {
-		return patternConfig.pattern_urls[pattern];
+		const url = patternConfig.pattern_urls[pattern];
+
+		return [{ url, ext: getExtensionFromUrl(url) }];
 	}
 
 	const themeUrl =
 		localizeData?.theme_url || window.polarisLocalizeShared?.theme_url;
 
 	if (!themeUrl) {
-		return "";
+		return [];
 	}
 
 	const directories = [
@@ -35,9 +49,20 @@ function resolvePatternAssetUrl(pattern, patternConfig, localizeData) {
 		"build/assets/background-patterns",
 	].filter(Boolean);
 
-	return directories.map(
-		(dir) => `${themeUrl}/${String(dir).replace(/^\/+|\/+$/g, "")}/${pattern}.svg`,
-	);
+	const candidates = [];
+
+	directories.forEach((dir) => {
+		const normalizedDir = String(dir).replace(/^\/+|\/+$/g, "");
+
+		PATTERN_EXTENSIONS.forEach((ext) => {
+			candidates.push({
+				url: `${themeUrl}/${normalizedDir}/${pattern}.${ext}`,
+				ext,
+			});
+		});
+	});
+
+	return candidates;
 }
 
 const SectionPattern = ({
@@ -46,6 +71,7 @@ const SectionPattern = ({
 	className = "",
 }) => {
 	const [svgContent, setSvgContent] = useState("");
+	const [rasterUrl, setRasterUrl] = useState("");
 	const [configTick, setConfigTick] = useState(0);
 
 	useEffect(() => {
@@ -61,23 +87,19 @@ const SectionPattern = ({
 	useEffect(() => {
 		if (!pattern) {
 			setSvgContent("");
+			setRasterUrl("");
 			return;
 		}
 
 		const patternConfig = getEditorExperiencePatterns(pattern);
 		const localizeData = getLocalize(pattern);
-		const patternUrls = resolvePatternAssetUrl(
+		const candidates = resolvePatternAssetCandidates(
 			pattern,
 			patternConfig,
 			localizeData,
 		);
-		const urlsToTry = Array.isArray(patternUrls)
-			? patternUrls
-			: patternUrls
-				? [patternUrls]
-				: [];
 
-		if (urlsToTry.length === 0) {
+		if (candidates.length === 0) {
 			const isChildTheme = localizeData?.theme_urls?.is_child_theme;
 
 			if (
@@ -85,6 +107,7 @@ const SectionPattern = ({
 				(!patternConfig?.available_patterns?.[pattern] && !isChildTheme)
 			) {
 				setSvgContent("");
+				setRasterUrl("");
 				return;
 			}
 
@@ -92,23 +115,29 @@ const SectionPattern = ({
 				`Section pattern "${pattern}" has no resolvable asset URL in the editor.`,
 			);
 			setSvgContent("");
+			setRasterUrl("");
 			return;
 		}
 
 		let cancelled = false;
 
+		const resetPatternContent = () => {
+			setSvgContent("");
+			setRasterUrl("");
+		};
+
 		const tryFetch = (index) => {
-			if (cancelled || index >= urlsToTry.length) {
+			if (cancelled || index >= candidates.length) {
 				if (!cancelled) {
 					console.error(
-						`Error loading pattern ${pattern}: no URL succeeded (${urlsToTry.join(", ")})`,
+						`Error loading pattern ${pattern}: no URL succeeded (${candidates.map((candidate) => candidate.url).join(", ")})`,
 					);
-					setSvgContent("");
+					resetPatternContent();
 				}
 				return;
 			}
 
-			const patternUrl = urlsToTry[index];
+			const { url: patternUrl, ext } = candidates[index];
 
 			fetch(patternUrl)
 				.then((response) => {
@@ -116,16 +145,27 @@ const SectionPattern = ({
 						throw new Error(`Failed to load pattern: ${response.statusText}`);
 					}
 
-					return response.text();
-				})
-				.then((svg) => {
-					if (!cancelled) {
-						setSvgContent(
-							DOMPurify.sanitize(svg, {
-								USE_PROFILES: { svg: true, svgFilters: true },
-							}),
-						);
+					if (ext === "svg") {
+						return response.text().then((svg) => {
+							if (cancelled) {
+								return;
+							}
+
+							setRasterUrl("");
+							setSvgContent(
+								DOMPurify.sanitize(svg, {
+									USE_PROFILES: { svg: true, svgFilters: true },
+								}),
+							);
+						});
 					}
+
+					if (cancelled) {
+						return;
+					}
+
+					setSvgContent("");
+					setRasterUrl(patternUrl);
 				})
 				.catch(() => {
 					tryFetch(index + 1);
@@ -139,7 +179,7 @@ const SectionPattern = ({
 		};
 	}, [pattern, configTick]);
 
-	if (!pattern || !svgContent) {
+	if (!pattern || (!svgContent && !rasterUrl)) {
 		return null;
 	}
 
@@ -164,6 +204,14 @@ const SectionPattern = ({
 		[`has-pattern-${pattern}`]: pattern,
 		[`pattern-align--${alignmentToClass(patternAlign)}`]: patternAlign,
 	});
+
+	if (rasterUrl) {
+		return (
+			<div className={patternClasses} aria-hidden="true">
+				<img src={rasterUrl} alt="" loading="lazy" />
+			</div>
+		);
+	}
 
 	return (
 		<div

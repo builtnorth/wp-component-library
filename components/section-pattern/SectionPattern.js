@@ -14,13 +14,30 @@ import {
 const PATTERN_EXTENSIONS = ["svg", "png", "jpg", "jpeg", "webp"];
 
 /**
+ * @param {string} ext
+ * @return {boolean}
+ */
+function isRasterExtension(ext) {
+	return Boolean(ext) && ext !== "svg";
+}
+
+/**
  * @param {string} url
  * @return {string}
  */
 function getExtensionFromUrl(url) {
 	const match = String(url).match(/\.([a-z0-9]+)(?:\?|#|$)/i);
 
-	return match ? match[1].toLowerCase() : "svg";
+	return match ? match[1].toLowerCase() : "";
+}
+
+/**
+ * @param {string} pattern
+ * @param {object|undefined} patternConfig
+ * @return {string}
+ */
+function getConfiguredExtension(pattern, patternConfig) {
+	return patternConfig?.pattern_extensions?.[pattern] || "";
 }
 
 /**
@@ -30,10 +47,18 @@ function getExtensionFromUrl(url) {
  * @return {{ url: string, ext: string }[]}
  */
 function resolvePatternAssetCandidates(pattern, patternConfig, localizeData) {
-	if (patternConfig?.pattern_urls?.[pattern]) {
-		const url = patternConfig.pattern_urls[pattern];
+	const configuredUrl = patternConfig?.pattern_urls?.[pattern];
+	const configuredExt =
+		getConfiguredExtension(pattern, patternConfig) ||
+		(configuredUrl ? getExtensionFromUrl(configuredUrl) : "");
 
-		return [{ url, ext: getExtensionFromUrl(url) }];
+	if (configuredUrl) {
+		return [
+			{
+				url: configuredUrl,
+				ext: configuredExt,
+			},
+		];
 	}
 
 	const themeUrl =
@@ -63,6 +88,18 @@ function resolvePatternAssetCandidates(pattern, patternConfig, localizeData) {
 	});
 
 	return candidates;
+}
+
+/**
+ * @param {string} url
+ * @param {() => void} onLoad
+ * @param {() => void} onError
+ */
+function preloadRasterImage(url, onLoad, onError) {
+	const image = new window.Image();
+	image.onload = onLoad;
+	image.onerror = onError;
+	image.src = url;
 }
 
 const SectionPattern = ({
@@ -126,7 +163,16 @@ const SectionPattern = ({
 			setRasterUrl("");
 		};
 
-		const tryFetch = (index) => {
+		const applyRaster = (url) => {
+			if (cancelled) {
+				return;
+			}
+
+			setSvgContent("");
+			setRasterUrl(url);
+		};
+
+		const tryCandidate = (index) => {
 			if (cancelled || index >= candidates.length) {
 				if (!cancelled) {
 					console.error(
@@ -139,40 +185,47 @@ const SectionPattern = ({
 
 			const { url: patternUrl, ext } = candidates[index];
 
+			if (isRasterExtension(ext)) {
+				preloadRasterImage(
+					patternUrl,
+					() => applyRaster(patternUrl),
+					() => tryCandidate(index + 1),
+				);
+				return;
+			}
+
 			fetch(patternUrl)
 				.then((response) => {
 					if (!response.ok) {
 						throw new Error(`Failed to load pattern: ${response.statusText}`);
 					}
 
-					if (ext === "svg") {
-						return response.text().then((svg) => {
-							if (cancelled) {
-								return;
-							}
+					const contentType = response.headers.get("content-type") || "";
 
-							setRasterUrl("");
-							setSvgContent(
-								DOMPurify.sanitize(svg, {
-									USE_PROFILES: { svg: true, svgFilters: true },
-								}),
-							);
-						});
-					}
-
-					if (cancelled) {
+					if (contentType.includes("image/")) {
+						applyRaster(patternUrl);
 						return;
 					}
 
-					setSvgContent("");
-					setRasterUrl(patternUrl);
+					return response.text().then((svg) => {
+						if (cancelled) {
+							return;
+						}
+
+						setRasterUrl("");
+						setSvgContent(
+							DOMPurify.sanitize(svg, {
+								USE_PROFILES: { svg: true, svgFilters: true },
+							}),
+						);
+					});
 				})
 				.catch(() => {
-					tryFetch(index + 1);
+					tryCandidate(index + 1);
 				});
 		};
 
-		tryFetch(0);
+		tryCandidate(0);
 
 		return () => {
 			cancelled = true;

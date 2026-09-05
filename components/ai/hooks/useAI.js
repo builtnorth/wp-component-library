@@ -1,7 +1,7 @@
 import { useCallback, useReducer } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { aiCache } from '../services/AICache';
-import { getAIEndpoint } from '../config';
+import { buildAbilityRunRequest, getAIEndpoint, getAITransport } from '../config';
 
 // Reducer for managing AI generation state
 const aiReducer = (state, action) => {
@@ -57,8 +57,30 @@ const aiReducer = (state, action) => {
 };
 
 /**
+ * Normalize ability result for field consumers.
+ * Objects like { title: '...' } / { description: '...' } unwrap to the string.
+ *
+ * @param {*} result
+ * @returns {*}
+ */
+function normalizeAbilityResult(result) {
+    if (result && typeof result === 'object' && !Array.isArray(result)) {
+        // Legacy polaris-ai envelope
+        if (Object.prototype.hasOwnProperty.call(result, 'data') && Object.prototype.hasOwnProperty.call(result, 'success')) {
+            return normalizeAbilityResult(result.data);
+        }
+        const keys = Object.keys(result);
+        // Single string field wrappers: { title: '...' }, { description: '...' }
+        if (keys.length === 1 && typeof result[keys[0]] === 'string') {
+            return result[keys[0]];
+        }
+    }
+    return result;
+}
+
+/**
  * Main AI generation hook
- * Completely type-driven - the backend handles everything based on the type config
+ * Completely type-driven - the backend handles everything based on the ability
  */
 export function useAI(typeId, options = {}) {
     const initialState = {
@@ -110,25 +132,25 @@ export function useAI(typeId, options = {}) {
                 force_variety: shouldSkipCache || overrides.force_variety
             };
             
-            // Resolve endpoint: per-call option → global config → warn
+            const transport = options.transport || getAITransport();
             const endpoint = options.customEndpoint || getAIEndpoint();
             const customRequestBuilder = options.buildRequest;
 
-            if (!endpoint && !customRequestBuilder) {
-                const msg = 'useAI: no endpoint configured. Call configureAI({ endpoint }) at your plugin entry point, or pass customEndpoint / buildRequest to useAI().';
+            if (!transport && !endpoint && !customRequestBuilder) {
+                const msg = 'useAI: no transport/endpoint configured. Call configureAI({ transport: \'abilities\' }) at your plugin entry point.';
                 console.error(msg);
                 throw new Error(msg);
             }
             
             let response;
 
-            // If a custom request builder is provided, use it
             if (customRequestBuilder && typeof customRequestBuilder === 'function') {
                 const customRequest = customRequestBuilder(typeId, fullContext, postId);
                 if (customRequest) {
                     response = await apiFetch(customRequest);
+                } else if (transport === 'abilities') {
+                    response = await apiFetch(buildAbilityRunRequest(typeId, fullContext));
                 } else {
-                    // Fallback to standard endpoint if builder returns null
                     response = await apiFetch({
                         path: endpoint,
                         method: 'POST',
@@ -138,8 +160,9 @@ export function useAI(typeId, options = {}) {
                         }
                     });
                 }
+            } else if (transport === 'abilities') {
+                response = await apiFetch(buildAbilityRunRequest(typeId, fullContext));
             } else {
-                // Use standard endpoint
                 response = await apiFetch({
                     path: endpoint,
                     method: 'POST',
@@ -150,8 +173,7 @@ export function useAI(typeId, options = {}) {
                 });
             }
 
-            // Extract the ability result from the response envelope
-            const responseData = response?.data ?? response;
+            const responseData = normalizeAbilityResult(response?.data ?? response);
             
             dispatch({ 
                 type: 'SUCCESS', 

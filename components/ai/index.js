@@ -23,7 +23,7 @@ export { aiSparkle } from './utils/icons';
 export { registerAIShortcuts, AIShortcutHandler } from './shortcuts';
 
 // Configuration
-export { configureAI } from './config';
+export { configureAI, getAIEndpoint, getAITransport, buildAbilityRunRequest } from './config';
 
 // Backward compatibility wrapper for smooth migration
 export { AIField as AIFieldWrapper } from './components/AIField';

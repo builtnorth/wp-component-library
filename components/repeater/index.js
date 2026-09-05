@@ -273,6 +273,7 @@ const SortableItem = ({
 	canRemove,
 	isDragOverlay = false,
 	renderMode = "default",
+	enableReorder = true,
 }) => {
 	const {
 		attributes,
@@ -281,16 +282,18 @@ const SortableItem = ({
 		transform,
 		transition,
 		isDragging,
-	} = useSortable({ id });
+	} = useSortable({ id, disabled: !enableReorder });
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition,
 	};
 
+	const dragProps = enableReorder ? { ...attributes, ...listeners } : {};
+
 	const contextValue = {
-		attributes,
-		listeners,
+		attributes: enableReorder ? attributes : {},
+		listeners: enableReorder ? listeners : {},
 		onRemove,
 		id,
 		canRemove,
@@ -317,20 +320,18 @@ const SortableItem = ({
 			style={style}
 			className={isDragging ? "wpcl-repeater__item--dragging" : ""}
 		>
-			<div
-				className="built-repeater__item-handle"
-				{...attributes}
-				{...listeners}
-			>
-				<Button
-					icon={dragHandle}
-					iconSize={20}
-					label={__("Drag to reorder", "wp-component-library")}
-					variant="tertiary"
-					size="compact"
-					tabIndex={-1}
-				/>
-			</div>
+			{enableReorder && (
+				<div className="built-repeater__item-handle" {...dragProps}>
+					<Button
+						icon={dragHandle}
+						iconSize={20}
+						label={__("Drag to reorder", "wp-component-library")}
+						variant="tertiary"
+						size="compact"
+						tabIndex={-1}
+					/>
+				</div>
+			)}
 			<div className="built-repeater__item-content">{children}</div>
 			{!isDragOverlay && canRemove && (
 				<div className="built-repeater__item-actions">
@@ -364,6 +365,10 @@ const SortableItem = ({
  * @param {number} props.maxItems - Maximum number of items allowed
  * @param {number} props.minItems - Minimum number of items required
  * @param {string} props.renderMode - Control layout mode: "default" or "integrated"
+ * @param {boolean} props.enableReorder - Whether items can be dragged to reorder (default true).
+ *                                        When false, no drag handle renders and items keep
+ *                                        whatever order `items` is in — for lists where order
+ *                                        doesn't matter (e.g. a set of find/replace pairs).
  */
 const Repeater = ({
 	items = [],
@@ -380,6 +385,7 @@ const Repeater = ({
 	maxItems = null,
 	minItems = 0,
 	renderMode = "default",
+	enableReorder = true,
 }) => {
 	const [activeId, setActiveId] = useState(null);
 
@@ -395,10 +401,16 @@ const Repeater = ({
 	);
 
 	const handleDragStart = (event) => {
+		if (!enableReorder) {
+			return;
+		}
 		setActiveId(event.active.id);
 	};
 
 	const handleDragEnd = (event) => {
+		if (!enableReorder) {
+			return;
+		}
 		const { active, over } = event;
 
 		if (active.id !== over.id) {
@@ -451,6 +463,7 @@ const Repeater = ({
 									onRemove={handleRemove}
 									canRemove={canRemoveItem}
 									renderMode={renderMode}
+									enableReorder={enableReorder}
 								>
 									{renderItem(item)}
 								</SortableItem>
@@ -499,13 +512,24 @@ Repeater.propTypes = {
 	renderItem: PropTypes.func.isRequired,
 	onAdd: PropTypes.func.isRequired,
 	onRemove: PropTypes.func.isRequired,
-	onReorder: PropTypes.func.isRequired,
+	onReorder: (props, propName, componentName) => {
+		if (props.enableReorder === false) {
+			return null;
+		}
+		if (typeof props[propName] !== "function") {
+			return new Error(
+				`\`${propName}\` is required in \`${componentName}\` unless \`enableReorder\` is false.`,
+			);
+		}
+		return null;
+	},
 	className: PropTypes.string,
 	addButtonText: PropTypes.string,
 	emptyStateText: PropTypes.string,
 	maxItems: PropTypes.number,
 	minItems: PropTypes.number,
 	renderMode: PropTypes.oneOf(["default", "integrated"]),
+	enableReorder: PropTypes.bool,
 };
 
 export { Repeater };

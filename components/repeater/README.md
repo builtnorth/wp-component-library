@@ -85,6 +85,7 @@ function MyComponent() {
 | `emptyStateText` | `String` | `"No items added yet..."` | Text shown when list is empty |
 | `maxItems` | `Number` | `null` | Maximum number of items allowed |
 | `minItems` | `Number` | `0` | Minimum number of items required |
+| `enableReorder` | `Boolean` | `true` | Whether items can be dragged to reorder. Set to `false` for lists where order doesn't matter (e.g. a set of find/replace pairs) — no drag handle renders, and `onReorder` is not required. |
 
 ## Keyboard Shortcuts
 

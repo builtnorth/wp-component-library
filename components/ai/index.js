@@ -24,6 +24,10 @@ export { AICache, aiCache } from './services/AICache';
 // Icons
 export { aiSparkle } from './utils/icons';
 
+// Agent helpers
+export { getAgentEditorContext } from './utils/agentEditorContext';
+export { notifyAgentOutcome, AGENT_NOTICE_CONTEXT } from './utils/agentNotices';
+
 // Shortcuts
 export { registerAIShortcuts, AIShortcutHandler } from './shortcuts';
 

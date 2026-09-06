@@ -12,9 +12,10 @@ import {
 	Notice,
 	Spinner,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { aiSparkle } from '../utils/icons';
 import { notifyAgentOutcome } from '../utils/agentNotices';
+import { getAgentEditorContext } from '../utils/agentEditorContext';
 import { useAgent } from '../hooks/useAgent';
 
 /**
@@ -40,6 +41,8 @@ export function AgentPanel({
 		return null;
 	}
 
+	const editorContext = getAgentEditorContext();
+
 	const handleClose = () => {
 		reset();
 		setPrompt('');
@@ -48,7 +51,7 @@ export function AgentPanel({
 
 	const handleSend = async () => {
 		try {
-			const result = await run(prompt);
+			const result = await run(prompt, { context: editorContext });
 			notifyAgentOutcome({
 				toolCalls: (result && result.tool_calls) || [],
 				wasHidden:
@@ -59,6 +62,37 @@ export function AgentPanel({
 			// Error held in hook state — no snackbar (modal Notice is enough).
 		}
 	};
+
+	const contextHelp = editorContext.post_id
+		? editorContext.title
+			? sprintf(
+					/* translators: 1: post title, 2: post ID */
+					__(
+						'Using current editor item: “%1$s” (ID %2$d). “This page” refers to it.',
+						'wp-component-library'
+					),
+					editorContext.title,
+					editorContext.post_id
+			  )
+			: sprintf(
+					/* translators: %d: post ID */
+					__(
+						'Using current editor item (ID %d). “This page” refers to it.',
+						'wp-component-library'
+					),
+					editorContext.post_id
+			  )
+		: __(
+				'The assistant can use allowlisted site tools. Prefer a clear, small request.',
+				'wp-component-library'
+		  );
+
+	const placeholder = editorContext.post_id
+		? __('e.g. Shorten the title on this page.', 'wp-component-library')
+		: __(
+				'e.g. List recent posts by title. Do not change anything.',
+				'wp-component-library'
+		  );
 
 	return (
 		<Modal
@@ -71,18 +105,12 @@ export function AgentPanel({
 			<div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 				<TextareaControl
 					label={__('What do you need?', 'wp-component-library')}
-					help={__(
-						'The assistant can use allowlisted site tools. Prefer a clear, small request.',
-						'wp-component-library'
-					)}
+					help={contextHelp}
 					value={prompt}
 					onChange={setPrompt}
 					rows={4}
 					disabled={isRunning}
-					placeholder={__(
-						'e.g. List recent posts by title. Do not change anything.',
-						'wp-component-library'
-					)}
+					placeholder={placeholder}
 				/>
 
 				<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>

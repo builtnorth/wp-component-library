@@ -6,6 +6,7 @@
 
 import { useCallback, useReducer } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
+import { getAgentEditorContext } from '../utils/agentEditorContext';
 
 const initialState = {
 	isRunning: false,
@@ -50,6 +51,9 @@ function agentReducer(state, action) {
 /**
  * Run the Polaris site assistant (`POST /polaris-ai/v1/agent`).
  *
+ * Automatically includes current editor post context when available so prompts
+ * like “edit this page” resolve. Pass `runOptions.context` to override.
+ *
  * @param {Object}   [options]
  * @param {number}   [options.maxRounds=4]
  * @param {string[]} [options.abilities] Optional subset of the allowlist.
@@ -61,7 +65,7 @@ export function useAgent(options = {}) {
 	const abilityKey = JSON.stringify(abilitySubset);
 
 	const run = useCallback(
-		async (prompt) => {
+		async (prompt, runOptions = {}) => {
 			const trimmed = typeof prompt === 'string' ? prompt.trim() : '';
 			if (!trimmed) {
 				const err = 'Prompt is required.';
@@ -79,6 +83,22 @@ export function useAgent(options = {}) {
 				const subset = JSON.parse(abilityKey);
 				if (Array.isArray(subset) && subset.length > 0) {
 					data.abilities = subset;
+				}
+
+				const context =
+					runOptions && runOptions.context
+						? runOptions.context
+						: getAgentEditorContext();
+				if (context && context.post_id) {
+					data.context = {
+						post_id: Number(context.post_id),
+					};
+					if (context.post_type) {
+						data.context.post_type = String(context.post_type);
+					}
+					if (context.title) {
+						data.context.title = String(context.title);
+					}
 				}
 
 				const result = await apiFetch({

@@ -107,6 +107,8 @@ export {
 	configureAI,
 	useAI,
 	useAgent,
+	mountAgentAssistant,
+	bootAgentAssistant,
 } from "./components/ai";
 // Content extraction utilities removed - use AI type configs instead
 

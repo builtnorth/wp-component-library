@@ -15,6 +15,9 @@ export { AIModal } from './components/AIModal';
 export { AIPopover } from './components/AIPopover';
 export { AgentPanel } from './components/AgentPanel';
 
+// Admin Command Palette host (plugins call bootAgentAssistant from a thin entry)
+export { mountAgentAssistant, bootAgentAssistant } from './mountAgentAssistant';
+
 // Services
 export { AICache, aiCache } from './services/AICache';
 

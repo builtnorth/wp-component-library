@@ -22,9 +22,21 @@ import { CSS } from "@dnd-kit/utilities";
 import styled from "@emotion/styled";
 import { Button } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { dragHandle, plusCircle, trash } from "@wordpress/icons";
+import {
+	chevronDown,
+	chevronUp,
+	dragHandle,
+	plusCircle,
+	trash,
+} from "@wordpress/icons";
 import PropTypes from "prop-types";
-import React, { createContext, useContext, useState } from "react";
+import React, {
+	createContext,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 
 // Styled components
 const StyledRepeater = styled.div`
@@ -33,6 +45,10 @@ const StyledRepeater = styled.div`
 		flex-direction: column;
 		gap: 1.5rem;
 		margin-bottom: 3rem;
+	}
+
+	&.wpcl-repeater--collapsible .built-repeater__items {
+		gap: 0.75rem;
 	}
 
 	.built-repeater__empty-state {
@@ -186,6 +202,52 @@ const StyledSortableItem = styled.div`
 	.built-repeater__item-actions {
 		flex-shrink: 0;
 	}
+
+	&.wpcl-repeater__item--collapsible {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+		padding: 0;
+
+		.built-repeater__item-header {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			padding: 0.75rem 1rem;
+		}
+
+		.built-repeater__summary {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+			flex: 1 1 auto;
+			min-width: 0;
+		}
+
+		.built-repeater__summary-name {
+			flex-shrink: 1;
+			min-width: 0;
+			font-weight: 500;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.built-repeater__item-header .components-toggle-control {
+			margin-bottom: 0;
+		}
+
+		.built-repeater__item-toggle,
+		.built-repeater__item-handle,
+		.built-repeater__item-actions {
+			flex-shrink: 0;
+		}
+
+		.built-repeater__item-content {
+			padding: 0 1rem 1rem;
+		}
+	}
 `;
 
 const StyledDragHandle = styled.div`
@@ -263,6 +325,26 @@ export const RemoveButton = ({ label = __("Remove", "wp-component-library"), ...
 	);
 };
 
+const ExpandButton = ({ isExpanded, onToggle }) => (
+	<Button
+		className="built-repeater__item-toggle"
+		icon={isExpanded ? chevronUp : chevronDown}
+		label={
+			isExpanded
+				? __("Collapse", "wp-component-library")
+				: __("Expand", "wp-component-library")
+		}
+		onClick={(event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			onToggle?.();
+		}}
+		variant="tertiary"
+		size="compact"
+		aria-expanded={isExpanded}
+	/>
+);
+
 /**
  * Sortable item component for the repeater
  */
@@ -274,6 +356,10 @@ const SortableItem = ({
 	isDragOverlay = false,
 	renderMode = "default",
 	enableReorder = true,
+	collapsible = false,
+	isExpanded = false,
+	onToggle,
+	summary = null,
 }) => {
 	const {
 		attributes,
@@ -298,6 +384,81 @@ const SortableItem = ({
 		id,
 		canRemove,
 	};
+
+	const itemClassName = [
+		renderMode === "integrated" && !collapsible
+			? "wpcl-repeater__item--integrated"
+			: "",
+		collapsible ? "wpcl-repeater__item--collapsible" : "",
+		collapsible && isExpanded ? "wpcl-repeater__item--expanded" : "",
+		isDragging ? "wpcl-repeater__item--dragging" : "",
+	]
+		.filter(Boolean)
+		.join(" ");
+
+	if (collapsible) {
+		return (
+			<RepeaterItemContext.Provider value={contextValue}>
+				<StyledSortableItem
+					ref={setNodeRef}
+					style={style}
+					className={itemClassName}
+				>
+					<div className="built-repeater__item-header">
+						{enableReorder && (
+							<div
+								className="built-repeater__item-handle"
+								{...dragProps}
+							>
+								<Button
+									icon={dragHandle}
+									iconSize={20}
+									label={__(
+										"Drag to reorder",
+										"wp-component-library",
+									)}
+									variant="tertiary"
+									size="compact"
+									tabIndex={-1}
+								/>
+							</div>
+						)}
+						{summary ? (
+							<div className="built-repeater__summary">
+								{summary}
+							</div>
+						) : (
+							<div className="built-repeater__summary" />
+						)}
+						{!isDragOverlay && (
+							<ExpandButton
+								isExpanded={isExpanded}
+								onToggle={onToggle}
+							/>
+						)}
+						{!isDragOverlay && canRemove && (
+							<div className="built-repeater__item-actions">
+								<Button
+									size="compact"
+									label={__("Remove", "wp-component-library")}
+									icon={trash}
+									iconSize={20}
+									variant="tertiary"
+									isDestructive={true}
+									onClick={() => onRemove(id)}
+								/>
+							</div>
+						)}
+					</div>
+					{isExpanded && children ? (
+						<div className="built-repeater__item-content">
+							{children}
+						</div>
+					) : null}
+				</StyledSortableItem>
+			</RepeaterItemContext.Provider>
+		);
+	}
 
 	if (renderMode === "integrated") {
 		return (
@@ -369,6 +530,11 @@ const SortableItem = ({
  *                                        When false, no drag handle renders and items keep
  *                                        whatever order `items` is in — for lists where order
  *                                        doesn't matter (e.g. a set of find/replace pairs).
+ * @param {boolean} props.collapsible - When true, each item shows a header (optional
+ *                                      `renderSummary` + chevron) and `renderItem` only while expanded.
+ * @param {Function} props.renderSummary - Header content always visible when `collapsible` is true.
+ * @param {boolean} props.defaultExpanded - When `collapsible`, existing items start open (default false).
+ * @param {boolean} props.expandNewItems - When `collapsible`, a newly added item starts open (default true).
  */
 const Repeater = ({
 	items = [],
@@ -386,8 +552,71 @@ const Repeater = ({
 	minItems = 0,
 	renderMode = "default",
 	enableReorder = true,
+	collapsible = false,
+	renderSummary = null,
+	defaultExpanded = false,
+	expandNewItems = true,
 }) => {
 	const [activeId, setActiveId] = useState(null);
+	const [expandedIds, setExpandedIds] = useState(() => {
+		if (!collapsible || !defaultExpanded) {
+			return new Set();
+		}
+		return new Set(items.map((item) => item.id));
+	});
+	const prevIdsRef = useRef(null);
+	const itemIdsKey = items.map((item) => item.id).join("\0");
+
+	useEffect(() => {
+		const currentIds = itemIdsKey ? itemIdsKey.split("\0") : [];
+
+		if (!collapsible) {
+			prevIdsRef.current = currentIds;
+			return;
+		}
+
+		if (prevIdsRef.current === null) {
+			prevIdsRef.current = currentIds;
+			return;
+		}
+
+		const prev = new Set(prevIdsRef.current);
+		const added = currentIds.filter((id) => !prev.has(id));
+		const currentIdSet = new Set(currentIds);
+
+		setExpandedIds((current) => {
+			const next = new Set();
+			current.forEach((id) => {
+				if (currentIdSet.has(id)) {
+					next.add(id);
+				}
+			});
+			if (expandNewItems && added.length === 1) {
+				next.add(added[0]);
+			}
+			if (
+				next.size === current.size &&
+				[...next].every((id) => current.has(id))
+			) {
+				return current;
+			}
+			return next;
+		});
+
+		prevIdsRef.current = currentIds;
+	}, [collapsible, expandNewItems, itemIdsKey]);
+
+	const toggleExpanded = (id) => {
+		setExpandedIds((current) => {
+			const next = new Set(current);
+			if (next.has(id)) {
+				next.delete(id);
+			} else {
+				next.add(id);
+			}
+			return next;
+		});
+	};
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
@@ -436,9 +665,19 @@ const Repeater = ({
 	const activeItem = activeId
 		? items.find((item) => item.id === activeId)
 		: null;
+	const activeIndex = activeItem
+		? items.findIndex((item) => item.id === activeId)
+		: -1;
+
+	const repeaterClassName = [
+		className,
+		collapsible ? "wpcl-repeater--collapsible" : "",
+	]
+		.filter(Boolean)
+		.join(" ");
 
 	return (
-		<StyledRepeater className={className}>
+		<StyledRepeater className={repeaterClassName}>
 			<DndContext
 				sensors={sensors}
 				collisionDetection={closestCenter}
@@ -456,18 +695,33 @@ const Repeater = ({
 						strategy={verticalListSortingStrategy}
 					>
 						<div className="built-repeater__items">
-							{items.map((item) => (
-								<SortableItem
-									key={item.id}
-									id={item.id}
-									onRemove={handleRemove}
-									canRemove={canRemoveItem}
-									renderMode={renderMode}
-									enableReorder={enableReorder}
-								>
-									{renderItem(item)}
-								</SortableItem>
-							))}
+							{items.map((item, index) => {
+								const isExpanded =
+									!collapsible || expandedIds.has(item.id);
+
+								return (
+									<SortableItem
+										key={item.id}
+										id={item.id}
+										onRemove={handleRemove}
+										canRemove={canRemoveItem}
+										renderMode={renderMode}
+										enableReorder={enableReorder}
+										collapsible={collapsible}
+										isExpanded={isExpanded}
+										onToggle={() => toggleExpanded(item.id)}
+										summary={
+											collapsible && renderSummary
+												? renderSummary(item, index)
+												: null
+										}
+									>
+										{isExpanded
+											? renderItem(item, index)
+											: null}
+									</SortableItem>
+								);
+							})}
 						</div>
 					</SortableContext>
 				)}
@@ -480,8 +734,18 @@ const Repeater = ({
 								renderMode={renderMode}
 								canRemove={canRemoveItem}
 								onRemove={handleRemove}
+								enableReorder={enableReorder}
+								collapsible={collapsible}
+								isExpanded={false}
+								summary={
+									collapsible && renderSummary
+										? renderSummary(activeItem, activeIndex)
+										: null
+								}
 							>
-								{renderItem(activeItem)}
+								{collapsible
+									? null
+									: renderItem(activeItem, activeIndex)}
 							</SortableItem>
 						</div>
 					) : null}
@@ -530,6 +794,10 @@ Repeater.propTypes = {
 	minItems: PropTypes.number,
 	renderMode: PropTypes.oneOf(["default", "integrated"]),
 	enableReorder: PropTypes.bool,
+	collapsible: PropTypes.bool,
+	renderSummary: PropTypes.func,
+	defaultExpanded: PropTypes.bool,
+	expandNewItems: PropTypes.bool,
 };
 
 export { Repeater };

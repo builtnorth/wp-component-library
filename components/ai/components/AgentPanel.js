@@ -14,6 +14,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { aiSparkle } from '../utils/icons';
+import { notifyAgentOutcome } from '../utils/agentNotices';
 import { useAgent } from '../hooks/useAgent';
 
 /**
@@ -47,9 +48,15 @@ export function AgentPanel({
 
 	const handleSend = async () => {
 		try {
-			await run(prompt);
+			const result = await run(prompt);
+			notifyAgentOutcome({
+				toolCalls: (result && result.tool_calls) || [],
+				wasHidden:
+					typeof document !== 'undefined' &&
+					document.visibilityState === 'hidden',
+			});
 		} catch {
-			// Error held in hook state.
+			// Error held in hook state — no snackbar (modal Notice is enough).
 		}
 	};
 

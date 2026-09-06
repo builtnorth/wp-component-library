@@ -240,8 +240,11 @@ const StyledSortableItem = styled.div`
 
 		.built-repeater__item-toggle,
 		.built-repeater__item-handle,
-		.built-repeater__item-actions {
+		.built-repeater__item-actions,
+		.built-repeater__drag-handle,
+		.built-repeater__remove-item {
 			flex-shrink: 0;
+			margin-top: 0;
 		}
 
 		.built-repeater__item-content {
@@ -254,6 +257,11 @@ const StyledDragHandle = styled.div`
 	margin-top: 26px;
 	flex-shrink: 0;
 `;
+
+const itemChromeButtonProps = {
+	variant: "secondary",
+	iconSize: 20,
+};
 
 /**
  * Context for repeater item data
@@ -284,10 +292,9 @@ export const DragHandle = ({
 		>
 			<Button
 				icon={dragHandle}
-				iconSize={20}
 				label={label}
-				variant="secondary"
 				tabIndex={-1}
+				{...itemChromeButtonProps}
 				{...props}
 			/>
 		</StyledDragHandle>
@@ -316,10 +323,9 @@ export const RemoveButton = ({ label = __("Remove", "wp-component-library"), ...
 			className="built-repeater__remove-item"
 			label={label}
 			icon={trash}
-			iconSize={20}
-			variant="secondary"
 			isDestructive={true}
 			onClick={() => onRemove(id)}
+			{...itemChromeButtonProps}
 			{...props}
 		/>
 	);
@@ -339,9 +345,8 @@ const ExpandButton = ({ isExpanded, onToggle }) => (
 			event.stopPropagation();
 			onToggle?.();
 		}}
-		variant="tertiary"
-		size="compact"
 		aria-expanded={isExpanded}
+		{...itemChromeButtonProps}
 	/>
 );
 
@@ -405,24 +410,7 @@ const SortableItem = ({
 					className={itemClassName}
 				>
 					<div className="built-repeater__item-header">
-						{enableReorder && (
-							<div
-								className="built-repeater__item-handle"
-								{...dragProps}
-							>
-								<Button
-									icon={dragHandle}
-									iconSize={20}
-									label={__(
-										"Drag to reorder",
-										"wp-component-library",
-									)}
-									variant="tertiary"
-									size="compact"
-									tabIndex={-1}
-								/>
-							</div>
-						)}
+						{enableReorder && <DragHandle />}
 						{summary ? (
 							<div className="built-repeater__summary">
 								{summary}
@@ -436,19 +424,7 @@ const SortableItem = ({
 								onToggle={onToggle}
 							/>
 						)}
-						{!isDragOverlay && canRemove && (
-							<div className="built-repeater__item-actions">
-								<Button
-									size="compact"
-									label={__("Remove", "wp-component-library")}
-									icon={trash}
-									iconSize={20}
-									variant="tertiary"
-									isDestructive={true}
-									onClick={() => onRemove(id)}
-								/>
-							</div>
-						)}
+						{!isDragOverlay && <RemoveButton />}
 					</div>
 					{isExpanded && children ? (
 						<div className="built-repeater__item-content">
@@ -485,11 +461,9 @@ const SortableItem = ({
 				<div className="built-repeater__item-handle" {...dragProps}>
 					<Button
 						icon={dragHandle}
-						iconSize={20}
 						label={__("Drag to reorder", "wp-component-library")}
-						variant="tertiary"
-						size="compact"
 						tabIndex={-1}
+						{...itemChromeButtonProps}
 					/>
 				</div>
 			)}
@@ -497,13 +471,11 @@ const SortableItem = ({
 			{!isDragOverlay && canRemove && (
 				<div className="built-repeater__item-actions">
 					<Button
-						size="compact"
 						label={__("Remove", "wp-component-library")}
 						icon={trash}
-						iconSize={20}
-						variant="tertiary"
 						isDestructive={true}
 						onClick={() => onRemove(id)}
+						{...itemChromeButtonProps}
 					/>
 				</div>
 			)}

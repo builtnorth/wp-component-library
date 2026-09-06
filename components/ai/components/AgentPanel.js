@@ -15,8 +15,13 @@ import {
 import { __, sprintf } from '@wordpress/i18n';
 import { aiSparkle } from '../utils/icons';
 import { notifyAgentOutcome } from '../utils/agentNotices';
+import {
+	applyAgentCanvasWithNotice,
+	isAgentCanvasCapable,
+} from '../utils/agentCanvas';
 import { getAgentEditorContext } from '../utils/agentEditorContext';
 import { useAgent } from '../hooks/useAgent';
+
 
 /**
  * @param {Object}   props
@@ -42,6 +47,9 @@ export function AgentPanel({
 	}
 
 	const editorContext = getAgentEditorContext();
+	if (editorContext.post_id && isAgentCanvasCapable()) {
+		editorContext.canvas_capable = true;
+	}
 
 	const handleClose = () => {
 		reset();
@@ -52,6 +60,9 @@ export function AgentPanel({
 	const handleSend = async () => {
 		try {
 			const result = await run(prompt, { context: editorContext });
+			if (result && result.canvas) {
+				applyAgentCanvasWithNotice(result.canvas);
+			}
 			notifyAgentOutcome({
 				toolCalls: (result && result.tool_calls) || [],
 				wasHidden:
@@ -68,7 +79,7 @@ export function AgentPanel({
 			? sprintf(
 					/* translators: 1: post title, 2: post ID */
 					__(
-						'Using current editor item: “%1$s” (ID %2$d). “This page” refers to it.',
+						'Using current editor item: “%1$s” (ID %2$d). “This page” refers to it — layout asks insert into the open canvas.',
 						'wp-component-library'
 					),
 					editorContext.title,
@@ -77,7 +88,7 @@ export function AgentPanel({
 			: sprintf(
 					/* translators: %d: post ID */
 					__(
-						'Using current editor item (ID %d). “This page” refers to it.',
+						'Using current editor item (ID %d). Layout asks insert into the open canvas.',
 						'wp-component-library'
 					),
 					editorContext.post_id
@@ -88,7 +99,10 @@ export function AgentPanel({
 		  );
 
 	const placeholder = editorContext.post_id
-		? __('e.g. Shorten the title on this page.', 'wp-component-library')
+		? __(
+				'e.g. Rebuild this page with a hero and three feature cards.',
+				'wp-component-library'
+		  )
 		: __(
 				'e.g. List recent posts by title. Do not change anything.',
 				'wp-component-library'

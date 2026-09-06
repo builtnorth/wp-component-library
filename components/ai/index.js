@@ -27,6 +27,11 @@ export { aiSparkle } from './utils/icons';
 // Agent helpers
 export { getAgentEditorContext } from './utils/agentEditorContext';
 export { notifyAgentOutcome, AGENT_NOTICE_CONTEXT } from './utils/agentNotices';
+export {
+	isAgentCanvasCapable,
+	applyAgentCanvas,
+	applyAgentCanvasWithNotice,
+} from './utils/agentCanvas';
 
 // Shortcuts
 export { registerAIShortcuts, AIShortcutHandler } from './shortcuts';

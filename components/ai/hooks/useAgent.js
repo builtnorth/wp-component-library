@@ -7,6 +7,8 @@
 import { useCallback, useReducer } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { getAgentEditorContext } from '../utils/agentEditorContext';
+import { isAgentCanvasCapable } from '../utils/agentCanvas';
+
 
 const initialState = {
 	isRunning: false,
@@ -98,6 +100,12 @@ export function useAgent(options = {}) {
 					}
 					if (context.title) {
 						data.context.title = String(context.title);
+					}
+					if (
+						context.canvas_capable === true ||
+						isAgentCanvasCapable()
+					) {
+						data.context.canvas_capable = true;
 					}
 				}
 

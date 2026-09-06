@@ -216,6 +216,10 @@ const StyledSortableItem = styled.div`
 			padding: 0.75rem 1rem;
 		}
 
+		&.wpcl-repeater__item--expanded .built-repeater__item-header {
+			border-bottom: 1px solid var(--color--border, #e0e0e0);
+		}
+
 		.built-repeater__summary {
 			display: flex;
 			align-items: center;
@@ -248,7 +252,7 @@ const StyledSortableItem = styled.div`
 		}
 
 		.built-repeater__item-content {
-			padding: 0 1rem 1rem;
+			padding: 1rem;
 		}
 	}
 `;

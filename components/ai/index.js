@@ -5,6 +5,7 @@
 
 // Hooks
 export { useAI } from './hooks/useAI';
+export { useAgent } from './hooks/useAgent';
 
 // Components
 export { AIField } from './components/AIField';
@@ -12,6 +13,7 @@ export { AIButton } from './components/AIButton';
 export { AIInline } from './components/AIInline';
 export { AIModal } from './components/AIModal';
 export { AIPopover } from './components/AIPopover';
+export { AgentPanel } from './components/AgentPanel';
 
 // Services
 export { AICache, aiCache } from './services/AICache';

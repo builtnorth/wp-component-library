@@ -56,14 +56,11 @@ export const getStatusSurfaceColors = (status) => ({
 
 /**
  * @param {number} score
- * @returns {'success' | 'info' | 'warning' | 'error'}
+ * @returns {'success' | 'warning' | 'error'}
  */
 export const getScoreStatusTier = (score) => {
 	if (score >= 80) {
 		return "success";
-	}
-	if (score >= 60) {
-		return "info";
 	}
 	if (score >= 40) {
 		return "warning";

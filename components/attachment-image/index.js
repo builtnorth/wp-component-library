@@ -12,6 +12,7 @@ import { useSelect } from "@wordpress/data";
  * @param {boolean} props.includeFigure Optional. Whether to include the figure.
  * @param {string} props.size Optional. The size of the image.
  * @param {string} props.maxWidth Optional. The maximum width of the image.
+ * @param {string} [props.objectFit] Optional CSS object-fit (e.g. "cover").
  * @returns {*} React JSX
  */
 function AttachmentImage({
@@ -24,6 +25,7 @@ function AttachmentImage({
     size = "full",
     maxWidth = "100px",
     aspectRatio = "4/3",
+    objectFit = null,
     caption = null,
     ...overrideProps
 }) {
@@ -51,6 +53,7 @@ function AttachmentImage({
             sizes: `(max-width: ${maxWidth}) 100vw, ${maxWidth}`,
             style: {
                 aspectRatio: aspectRatio,
+                ...(objectFit ? { objectFit } : {}),
             },
         };
 

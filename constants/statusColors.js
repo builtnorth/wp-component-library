@@ -55,14 +55,25 @@ export const getStatusSurfaceColors = (status) => ({
 });
 
 /**
+ * Map a 0–100 score onto the four status intents.
+ *
  * @param {number} score
- * @returns {'success' | 'warning' | 'error'}
+ * @returns {'success' | 'info' | 'warning' | 'error'}
  */
 export const getScoreStatusTier = (score) => {
-	if (score >= 80) {
+	const value = Number(score);
+
+	if (!Number.isFinite(value)) {
+		return "error";
+	}
+
+	if (value >= 90) {
 		return "success";
 	}
-	if (score >= 40) {
+	if (value >= 70) {
+		return "info";
+	}
+	if (value >= 50) {
 		return "warning";
 	}
 

@@ -10,6 +10,22 @@ import { useCallback } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 import { AttachmentImage } from "../attachment-image";
 
+/**
+ * CSS aspect-ratio accepts a number (e.g. 1.91) or a ratio string ("16/9").
+ *
+ * @param {number|string} ratio
+ * @returns {string}
+ */
+function toCssAspectRatio(ratio) {
+	if (typeof ratio === "number" && Number.isFinite(ratio) && ratio > 0) {
+		return String(ratio);
+	}
+	if (typeof ratio === "string" && ratio.trim() !== "") {
+		return ratio.trim();
+	}
+	return String(16 / 9);
+}
+
 // Styled components
 const StyledWrapper = styled.div`
 	max-width: ${(props) =>
@@ -19,13 +35,37 @@ const StyledWrapper = styled.div`
 				: props.maxWidth
 			: "none"};
 
-	img {
+	/* Shared frame so placeholder and selected image occupy the same box. */
+	.built-inspector-media-preview {
 		width: 100%;
-		height: auto;
+		aspect-ratio: ${(props) => props.$aspectRatio};
+		overflow: hidden;
+		box-sizing: border-box;
+		background: #f0f0f0;
+	}
+
+	.built-inspector-media-preview .components-placeholder {
+		width: 100%;
+		height: 100%;
+		min-height: 0 !important;
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	.built-inspector-media-preview img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		display: block;
 	}
 `;
 
 const StyledImageContainer = styled.div`
+	width: 100%;
+	height: 100%;
+
 	.components-flex {
 		height: auto;
 	}
@@ -70,6 +110,8 @@ function useMediaOpen({ onSelect, multiple, allowedTypes }) {
  * @param {object} props
  * @param {number|string|null} [props.maxWidth] Optional max width for the
  *   preview/placeholder (number = px). Default: none (full width).
+ * @param {number|string} [props.aspectRatio=16/9] Locked preview box ratio;
+ *   selected images use object-fit: cover inside the same box as the placeholder.
  * @returns {JSX.Element}
  */
 function InspectorMediaUpload({
@@ -89,10 +131,16 @@ function InspectorMediaUpload({
 	aspectRatio = 16 / 9,
 	maxWidth = null,
 }) {
-	// Handle both ID and object formats for mediaIDs
+	// Handle ID, [id], and attachment object formats for mediaIDs.
 	const getMediaId = (mediaData) => {
 		if (!mediaData) return null;
 		if (typeof mediaData === "number") return mediaData;
+		if (typeof mediaData === "string" && /^\d+$/.test(mediaData)) {
+			return parseInt(mediaData, 10);
+		}
+		if (Array.isArray(mediaData)) {
+			return getMediaId(mediaData[0]);
+		}
 		if (typeof mediaData === "object" && mediaData.id) return mediaData.id;
 		return null;
 	};
@@ -104,6 +152,7 @@ function InspectorMediaUpload({
 		featureImage &&
 		featureImage !== 0
 	);
+	const cssAspectRatio = toCssAspectRatio(aspectRatio);
 
 	// Generate a unique ID for BaseControl
 	const controlId = `inspector-media-upload-${mediaId || "new"}`;
@@ -118,34 +167,40 @@ function InspectorMediaUpload({
 	const imageDisplay = (
 		<>
 			{showImagePlaceholder && !hasImage && !hasFeatureImage && (
-				<Placeholder
-					withIllustration={true}
-					className="built-editor-panel-image placeholder-image placeholder-image--built"
-					style={{ aspectRatio: aspectRatio }}
-				/>
+				<div className="built-inspector-media-preview">
+					<Placeholder
+						withIllustration={true}
+						className="built-editor-panel-image placeholder-image placeholder-image--built"
+					/>
+				</div>
 			)}
 
 			{showImagePlaceholder && hasImage && (
-				<StyledImageContainer className="built-editor-panel-image">
-					<AttachmentImage
-						className="built-editor-panel-image"
-						imageId={mediaId}
-						size="wide_medium"
-						includeFigure={false}
-						aspectRatio={aspectRatio}
-					/>
-				</StyledImageContainer>
+				<div className="built-inspector-media-preview">
+					<StyledImageContainer className="built-editor-panel-image">
+						<AttachmentImage
+							className="built-editor-panel-image"
+							imageId={mediaId}
+							size="wide_medium"
+							includeFigure={false}
+							aspectRatio={cssAspectRatio}
+						/>
+					</StyledImageContainer>
+				</div>
 			)}
 
 			{showImagePlaceholder && hasFeatureImage && !hasImage && (
-				<StyledImageContainer className="built-editor-panel-image">
-					<AttachmentImage
-						className="built-editor-panel-image"
-						imageId={featureImage.id || featureImage}
-						size="wide_medium"
-						aspectRatio={aspectRatio}
-					/>
-				</StyledImageContainer>
+				<div className="built-inspector-media-preview">
+					<StyledImageContainer className="built-editor-panel-image">
+						<AttachmentImage
+							className="built-editor-panel-image"
+							imageId={featureImage.id || featureImage}
+							size="wide_medium"
+							includeFigure={false}
+							aspectRatio={cssAspectRatio}
+						/>
+					</StyledImageContainer>
+				</div>
 			)}
 		</>
 	);
@@ -192,7 +247,7 @@ function InspectorMediaUpload({
 	// If label or help text is provided, wrap in BaseControl
 	if (label || help) {
 		return (
-			<StyledWrapper maxWidth={maxWidth}>
+			<StyledWrapper maxWidth={maxWidth} $aspectRatio={cssAspectRatio}>
 				<BaseControl id={controlId} label={label} help={help}>
 					{imageDisplay}
 				</BaseControl>
@@ -203,7 +258,7 @@ function InspectorMediaUpload({
 
 	// Otherwise, return controls without BaseControl wrapper
 	return (
-		<StyledWrapper maxWidth={maxWidth}>
+		<StyledWrapper maxWidth={maxWidth} $aspectRatio={cssAspectRatio}>
 			<Flex direction="column" expanded={true} style={{ flexGrow: 1 }}>
 				{imageDisplay}
 				{buttons}

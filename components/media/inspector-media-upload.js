@@ -12,6 +12,13 @@ import { AttachmentImage } from "../attachment-image";
 
 // Styled components
 const StyledWrapper = styled.div`
+	max-width: ${(props) =>
+		props.maxWidth != null && props.maxWidth !== ""
+			? typeof props.maxWidth === "number"
+				? `${props.maxWidth}px`
+				: props.maxWidth
+			: "none"};
+
 	img {
 		width: 100%;
 		height: auto;
@@ -22,6 +29,10 @@ const StyledImageContainer = styled.div`
 	.components-flex {
 		height: auto;
 	}
+`;
+
+const StyledActions = styled.div`
+	margin-top: 12px;
 `;
 
 const ALLOWED_MEDIA_TYPES = ["image"];
@@ -57,6 +68,8 @@ function useMediaOpen({ onSelect, multiple, allowedTypes }) {
  * Inspector Media Upload
  *
  * @param {object} props
+ * @param {number|string|null} [props.maxWidth] Optional max width for the
+ *   preview/placeholder (number = px). Default: none (full width).
  * @returns {JSX.Element}
  */
 function InspectorMediaUpload({
@@ -74,6 +87,7 @@ function InspectorMediaUpload({
 	showImagePlaceholder,
 	getImageUrlFromMediaIDs,
 	aspectRatio = 16 / 9,
+	maxWidth = null,
 }) {
 	// Handle both ID and object formats for mediaIDs
 	const getMediaId = (mediaData) => {
@@ -137,7 +151,7 @@ function InspectorMediaUpload({
 	);
 
 	const buttons = (
-		<>
+		<StyledActions>
 			{!hasImage ? (
 				<Button
 					__next40pxDefaultSize
@@ -172,13 +186,13 @@ function InspectorMediaUpload({
 					</Button>
 				</Flex>
 			)}
-		</>
+		</StyledActions>
 	);
 
 	// If label or help text is provided, wrap in BaseControl
 	if (label || help) {
 		return (
-			<StyledWrapper>
+			<StyledWrapper maxWidth={maxWidth}>
 				<BaseControl id={controlId} label={label} help={help}>
 					{imageDisplay}
 				</BaseControl>
@@ -189,7 +203,7 @@ function InspectorMediaUpload({
 
 	// Otherwise, return controls without BaseControl wrapper
 	return (
-		<StyledWrapper>
+		<StyledWrapper maxWidth={maxWidth}>
 			<Flex direction="column" expanded={true} style={{ flexGrow: 1 }}>
 				{imageDisplay}
 				{buttons}

@@ -30,6 +30,4 @@ jobs:
             publish-to-npm: true
             publish-to-github: false
             use-workspace: false
-        secrets:
-            POLARIS_PLUGIN_GITHUB_TOKEN: ${{ secrets.POLARIS_PLUGIN_GITHUB_TOKEN }}
-            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        secrets: inherit

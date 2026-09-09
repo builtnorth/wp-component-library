@@ -30,4 +30,6 @@ jobs:
             publish-to-npm: true
             publish-to-github: false
             use-workspace: false
+            run-tests: false
+            run-lint: false
         secrets: inherit

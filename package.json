@@ -1,9 +1,14 @@
 {
 	"name": "@builtnorth/wp-component-library",
-	"version": "1.1.5",
+	"version": "1.2.5",
 	"description": "Library of components for use in the WordPress block editor.",
 	"main": "build/index.js",
 	"module": "build/index.js",
+	"exports": {
+		".": "./build/index.js",
+		"./components/ai": "./components/ai/index.js",
+		"./utils/ai-gate": "./utils/ai-gate.js"
+	},
 	"sideEffects": false,
 	"scripts": {
 		"start": "wp-scripts start",
@@ -31,7 +36,12 @@
 		"@leeoniya/ufuzzy": "^1.0.14",
 		"classnames": "^2.5.1",
 		"dompurify": "^3.4.7",
+		"prop-types": "^15.8.1",
 		"react-window": "^1.8.11"
+	},
+	"peerDependencies": {
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.1"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^34.2.0"

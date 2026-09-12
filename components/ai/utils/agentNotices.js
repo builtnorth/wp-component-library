@@ -29,7 +29,7 @@ const MUTATION_PATTERNS = [
 ];
 
 /**
- * @param {string} ability Ability name e.g. polaris-blocks/create-page.
+ * @param {string} ability Ability name e.g. polaris/create-page.
  * @return {boolean}
  */
 export function isMutationAbility(ability) {

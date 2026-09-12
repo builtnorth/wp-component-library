@@ -34,7 +34,13 @@ export {
 } from './utils/agentCanvas';
 
 // Shortcuts
-export { registerAIShortcuts, AIShortcutHandler } from './shortcuts';
+/**
+ * Disabled for now — no plugin currently calls registerAIShortcuts()/mounts
+ * AIShortcutHandler, so the Cmd/Ctrl+Alt+G "open AI content generator"
+ * shortcut is not reachable by users. Left in shortcuts/index.js rather
+ * than deleted; uncomment this export (and wire a caller) to re-enable.
+ */
+// export { registerAIShortcuts, AIShortcutHandler } from './shortcuts';
 
 // Configuration
 export { configureAI, getAIEndpoint, getAITransport, buildAbilityRunRequest } from './config';

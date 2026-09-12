@@ -197,6 +197,7 @@ const StyledSortableItem = styled.div`
 	.built-repeater__item-content {
 		flex-grow: 1;
 		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.built-repeater__item-actions {

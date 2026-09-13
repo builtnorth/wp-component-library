@@ -94,6 +94,16 @@ function AgentAssistantApp() {
 		document.head.appendChild(style);
 	}, []);
 
+	// Bridge for triggers outside this component tree (e.g. the admin bar
+	// button, rendered by plain PHP) — same "expose a window function"
+	// pattern as registerAgentCanvasBridge.js's window.__polarisApplyAgentCanvas.
+	useEffect(() => {
+		window.__polarisOpenAgentAssistant = () => setIsOpen(true);
+		return () => {
+			delete window.__polarisOpenAgentAssistant;
+		};
+	}, []);
+
 	return (
 		<>
 			<AgentNotices />

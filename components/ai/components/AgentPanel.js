@@ -113,7 +113,8 @@ export function AgentPanel({
 			title={__('AI Assistant', 'wp-component-library')}
 			onRequestClose={handleClose}
 			className="polaris-ai-agent-panel"
-			style={{ maxWidth: '560px' }}
+			size="medium"
+			focusOnMount="firstContentElement"
 			icon={aiSparkle}
 		>
 			<div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

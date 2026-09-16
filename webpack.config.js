@@ -7,11 +7,12 @@
 
 const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 const path = require('path');
-const { filesystemCache } = require('../../webpack.shared.config');
+const { filesystemCache, sharedWatchOptions } = require('../../webpack.shared.config');
 
 module.exports = {
 	...defaultConfig,
 	cache: filesystemCache(__dirname),
+	watchOptions: sharedWatchOptions(defaultConfig.watchOptions),
 	entry: {
 		index: path.resolve(__dirname, 'index.js'),
 	},

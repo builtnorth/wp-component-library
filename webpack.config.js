@@ -42,26 +42,27 @@ module.exports = {
 				});
 			}
 
-			// Other external dependencies
-			const externals = {
-				'@emotion/styled': '@emotion/styled',
-				'@emotion/react': '@emotion/react',
-				'@dnd-kit/core': '@dnd-kit/core',
-				'@dnd-kit/modifiers': '@dnd-kit/modifiers',
-				'@dnd-kit/sortable': '@dnd-kit/sortable',
-				'@dnd-kit/utilities': '@dnd-kit/utilities',
-				'@dnd-kit/accessibility': '@dnd-kit/accessibility',
+			// Emotion is provided by the consuming plugin as a single shared
+			// instance on window.builtnorthEmotion, so map to that global rather
+			// than a bare package name — nothing registers window['@emotion/react'].
+			const emotionGlobals = {
+				'@emotion/react': ['builtnorthEmotion', 'react'],
+				'@emotion/styled': ['builtnorthEmotion', 'styled'],
 			};
 
-			if (externals[request]) {
+			if (emotionGlobals[request]) {
 				return callback(null, {
 					commonjs: request,
 					commonjs2: request,
 					amd: request,
-					root: externals[request],
+					root: emotionGlobals[request],
 				});
 			}
 
+			// @dnd-kit was externalized to bare global names that nothing ever
+			// registers, so the UMD build threw on load in a browser and could
+			// only ever be consumed by another bundler. Bundle it instead: it is
+			// used by five components and tree-shakes to what they need.
 			callback();
 		},
 	],

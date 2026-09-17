@@ -80,8 +80,12 @@ function AttachmentImage({
         ) : null;
 
     if (includeFigure) {
+        const figureClass = wrapClass
+            ? `${appendToFirstClass(className, "__figure")} ${wrapClass}`
+            : appendToFirstClass(className, "__figure");
+
         return (
-            <figure className={appendToFirstClass(className, "__figure")}>
+            <figure className={figureClass}>
                 {imgElement}
                 {captionElement}
             </figure>

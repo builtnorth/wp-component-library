@@ -134,28 +134,6 @@ import { InspectorMediaUpload } from "@builtnorth/wp-component-library";
 
 ---
 
-### Section Components
-
-Controls for full-width section blocks with backgrounds, dividers, and patterns.
-
-| Export | Description |
-|---|---|
-| `SectionSettings` | Complete section background panel (image, color, gradient, video) |
-| `SectionBackground` | Background source selector sub-control |
-| `FocalPointControl` | Focal point picker for background images |
-| `ImageSourceControl` | Featured image vs. custom image toggle |
-| `MediaSelectControl` | Inline media selection sub-control |
-| `OpacityControl` | Background overlay opacity slider |
-| `StyleControl` | Style variant selector |
-| `SectionDividerSettings` | Top/bottom decorative divider shape picker |
-| `sectionHasDividerBackground()` | Utility — returns true when a divider background color is set |
-| `sectionHasCustomBackground()` | Utility — returns true when a custom section background (image or pattern) is active |
-| `sectionHasPolarisSectionBackground()` | Deprecated alias of `sectionHasCustomBackground()` |
-| `SectionPattern` | SVG background pattern renderer |
-| `SectionPatternSettings` | Pattern picker and position controls |
-
----
-
 ### Data & Query
 
 Post query builder controls that compose into a consistent query panel.

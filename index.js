@@ -67,28 +67,6 @@ export {
 	useOrderedTerms,
 } from "./components/query";
 export {
-	SectionDividerSettings,
-	sectionHasDividerBackground,
-	sectionHasCustomBackground,
-	sectionHasPolarisSectionBackground, // @deprecated — use sectionHasCustomBackground
-} from "./components/section-divider";
-export {
-	SectionPattern,
-	SectionPatternSettings,
-} from "./components/section-pattern";
-export {
-	// Individual control components for custom compositions
-	FocalPointControl,
-	ImageSourceControl,
-	MediaSelectControl,
-	OpacityControl,
-	SECTION_BACKGROUND_DEFAULT_IMAGE_STYLE,
-	SECTION_BACKGROUND_DEFAULT_OPACITY,
-	SectionBackground,
-	SectionSettings,
-	StyleControl,
-} from "./components/section-settings";
-export {
 	default as SortableSelect,
 	tokensToString,
 } from "./components/sortable-select";
@@ -113,11 +91,13 @@ export {
 // Content extraction utilities removed - use AI type configs instead
 
 export {
+	getEditorExperiencePatterns,
 	getEditorExperienceSectionDivider,
 	getLocalize,
 	getLocalizeWindow,
 	getPolarisLocalize, // @deprecated — use getLocalize
 	getPolarisLocalizeWindow, // @deprecated — use getLocalizeWindow
+	SKIN_CHANGED_EVENT,
 } from "./utils/polaris-localize";
 export { isAiEnabled, isAiPolicyEnabled, isAiFullyConfigured, isAiSetupRequired } from "./utils/ai-gate";
 

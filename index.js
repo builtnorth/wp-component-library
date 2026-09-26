@@ -73,22 +73,6 @@ export {
 export { VariableField } from "./components/variable-field";
 export { VariableInserter } from "./components/variable-inserter";
 
-// AI Framework (Clean Architecture)
-export {
-	AIButton,
-	aiCache,
-	AIField,
-	AIFieldWrapper,
-	AIInline,
-	AIModal,
-	AgentPanel,
-	configureAI,
-	useAI,
-	useAgent,
-	mountAgentAssistant,
-	bootAgentAssistant,
-} from "./components/ai";
-// Content extraction utilities removed - use AI type configs instead
 
 export {
 	getEditorExperiencePatterns,
@@ -99,7 +83,6 @@ export {
 	getPolarisLocalizeWindow, // @deprecated — use getLocalizeWindow
 	SKIN_CHANGED_EVENT,
 } from "./utils/polaris-localize";
-export { isAiEnabled, isAiPolicyEnabled, isAiFullyConfigured, isAiSetupRequired } from "./utils/ai-gate";
 
 // Icon Picker & Registry
 export {

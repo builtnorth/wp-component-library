@@ -5,9 +5,7 @@
 	"main": "build/index.js",
 	"module": "build/index.js",
 	"exports": {
-		".": "./build/index.js",
-		"./components/ai": "./components/ai/index.js",
-		"./utils/ai-gate": "./utils/ai-gate.js"
+		".": "./build/index.js"
 	},
 	"sideEffects": false,
 	"scripts": {

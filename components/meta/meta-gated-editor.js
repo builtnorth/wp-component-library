@@ -1,11 +1,15 @@
 /**
- * Editor visibility rules for meta-gated blocks (hideWhenMetaEmpty).
+ * Editor visibility rules for hide-when-empty blocks (hideWhenMetaEmpty).
  *
- * Frontend output is suppressed by wp-utility MetaGatedBlockSupport / render.php.
- * In the editor, blocks stay visible on template surfaces so card layouts remain
- * editable; they hide in query/post-feed loop previews when meta is empty.
+ * Frontend output is suppressed by navas-utility MetaGatedBlockSupport /
+ * render.php. In the editor, blocks stay visible on template surfaces so card
+ * layouts remain editable; they hide in query/post-feed loop previews when
+ * their Block Bindings are empty — the block's own, or for a wrapper with no
+ * bindings of its own, every bound block inside it.
  */
 
+import { getBlockBindingsSource } from "@wordpress/blocks";
+import { store as blockEditorStore } from "@wordpress/block-editor";
 import { store as coreStore } from "@wordpress/core-data";
 import { useSelect } from "@wordpress/data";
 
@@ -47,13 +51,62 @@ export function isMetaValueEmpty(value) {
 }
 
 /**
+ * Bindings of a block, else of its descendants (for wrappers such as a group
+ * around a bound paragraph).
+ *
+ * @param {object|undefined} ownBindings  The block's metadata.bindings.
+ * @param {object[]}         innerBlocks  The block's inner blocks.
+ * @returns {object[]} One bindings object per bound block.
+ */
+function collectBindings(ownBindings, innerBlocks) {
+	if (ownBindings && Object.keys(ownBindings).length > 0) {
+		return [ownBindings];
+	}
+
+	return (innerBlocks || []).flatMap((inner) =>
+		collectBindings(inner.attributes?.metadata?.bindings, inner.innerBlocks),
+	);
+}
+
+/**
+ * Resolve bindings through their registered sources, as the editor does.
+ *
+ * @returns {unknown[]} Bound values.
+ */
+function resolveBoundValues(select, bindingSets, context, clientId) {
+	const values = [];
+
+	for (const bindings of bindingSets) {
+		for (const [attribute, binding] of Object.entries(bindings)) {
+			const source = getBlockBindingsSource(binding?.source);
+
+			if (!source?.getValues) {
+				continue;
+			}
+
+			const result = source.getValues({
+				select,
+				context,
+				bindings: { [attribute]: binding },
+				clientId,
+			});
+			values.push(result?.[attribute]);
+		}
+	}
+
+	return values;
+}
+
+/**
  * @param {object} props
  * @param {object} props.attributes Block attributes.
+ * @param {string} [props.clientId] Block client ID.
  * @param {object} [props.context] Block context (postId, postType).
  * @returns {{ shouldHide: boolean, isTemplateSurface: boolean, isLoopPreview: boolean }}
  */
-export function useMetaGatedEditorVisibility({ attributes, context }) {
-	const { hideWhenMetaEmpty, metaField } = attributes || {};
+export function useMetaGatedEditorVisibility({ attributes, clientId, context }) {
+	const { hideWhenMetaEmpty, metaField, metadata } = attributes || {};
+	const ownBindings = metadata?.bindings;
 	const contextPostId = context?.postId;
 	const contextPostType = context?.postType;
 
@@ -65,7 +118,7 @@ export function useMetaGatedEditorVisibility({ attributes, context }) {
 				isLoopPreview: false,
 			};
 
-			if (!hideWhenMetaEmpty || !metaField) {
+			if (!hideWhenMetaEmpty) {
 				return defaultResult;
 			}
 
@@ -88,12 +141,35 @@ export function useMetaGatedEditorVisibility({ attributes, context }) {
 				editorPostId !== null &&
 				Number(contextPostId) !== Number(editorPostId);
 
-			// Editing the source post — keep visible so meta can be filled in.
-			if (inPostContext && !isLoopPreview) {
+			// Editing the source post — keep visible so fields can be filled in.
+			if (!isLoopPreview) {
 				return defaultResult;
 			}
 
-			if (!isLoopPreview) {
+			const bindingSets = collectBindings(
+				ownBindings,
+				clientId
+					? select(blockEditorStore).getBlock(clientId)?.innerBlocks
+					: [],
+			);
+
+			if (bindingSets.length > 0) {
+				const values = resolveBoundValues(
+					select,
+					bindingSets,
+					{ postId: contextPostId, postType: contextPostType },
+					clientId,
+				);
+
+				return {
+					shouldHide: values.every(isMetaValueEmpty),
+					isTemplateSurface: false,
+					isLoopPreview: true,
+				};
+			}
+
+			// Legacy: content saved before bindings keyed the gate by metaField.
+			if (!metaField) {
 				return defaultResult;
 			}
 
@@ -102,10 +178,9 @@ export function useMetaGatedEditorVisibility({ attributes, context }) {
 				contextPostType,
 				contextPostId,
 			);
-			const metaValue = record?.meta?.[metaField];
 
 			return {
-				shouldHide: isMetaValueEmpty(metaValue),
+				shouldHide: isMetaValueEmpty(record?.meta?.[metaField]),
 				isTemplateSurface: false,
 				isLoopPreview: true,
 			};
@@ -113,6 +188,8 @@ export function useMetaGatedEditorVisibility({ attributes, context }) {
 		[
 			hideWhenMetaEmpty,
 			metaField,
+			ownBindings,
+			clientId,
 			contextPostId,
 			contextPostType,
 		],

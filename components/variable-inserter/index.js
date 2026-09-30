@@ -28,7 +28,7 @@ const StyledChipPanel = styled.div`
 	gap: 8px;
 	max-height: 300px;
 	overflow-y: auto;
-	background-color: var(--wp--preset--color--base-2, #f6f7f7);
+	background-color: #f6f7f7;
 	border-radius: 2px;
 `;
 

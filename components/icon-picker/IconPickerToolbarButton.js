@@ -24,11 +24,13 @@ const PLACEHOLDER_SVG =
  * @param {Object}   [props.value]       Current icon { name, iconSet, source }.
  * @param {Function} props.onChange      Called with new icon value.
  * @param {string}   [props.buttonLabel] Override the toolbar button label.
+ * @param {string}   [props.text]        Visible text shown beside the icon.
  */
 export function IconPickerToolbarButton({
 	value,
 	onChange,
 	buttonLabel = __("Select Icon", "wp-component-library"),
+	text,
 }) {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -44,7 +46,12 @@ export function IconPickerToolbarButton({
 
 	return (
 		<>
-			<ToolbarButton icon={toolbarIcon} label={buttonLabel} onClick={openModal} />
+			<ToolbarButton
+				icon={toolbarIcon}
+				label={buttonLabel}
+				text={text}
+				onClick={openModal}
+			/>
 			{isOpen && (
 				<IconPickerModal
 					value={value}

@@ -28,8 +28,16 @@ const PLACEHOLDER_SVG =
  * @param {Object}   [props.value]     Current icon { name, iconSet, source }.
  * @param {Function} props.onChange    Called with new icon value.
  * @param {string}   [props.className] Extra class forwarded to the wrapper.
+ * @param {boolean}  [props.isInteractive=true] When false, the icon is display-only
+ *                                          (no click/keyboard trigger) — pair it
+ *                                          with IconPickerToolbarButton.
  */
-export function InlineIconPicker({ value, onChange, className = "" }) {
+export function InlineIconPicker({
+	value,
+	onChange,
+	className = "",
+	isInteractive = true,
+}) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const openModal = useCallback(() => setIsOpen(true), []);
@@ -46,6 +54,18 @@ export function InlineIconPicker({ value, onChange, className = "" }) {
 	const svgContent = hasIcon
 		? safeSvgSource(value.source) || PLACEHOLDER_SVG
 		: PLACEHOLDER_SVG;
+
+	if (!isInteractive) {
+		return (
+			// eslint-disable-next-line react/no-danger
+			<InlinePickerWrap
+				as="div"
+				className={className || undefined}
+				style={{ cursor: "inherit" }}
+				dangerouslySetInnerHTML={{ __html: svgContent }}
+			/>
+		);
+	}
 
 	return (
 		<>

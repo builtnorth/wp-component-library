@@ -1,12 +1,20 @@
 /**
- * Semantic status color tokens for Polaris admin surfaces.
+ * Status colours for Polaris admin surfaces.
  *
- * Resolves from AdminColorScheme CSS variables with consistent fallbacks.
+ * Each value reads WordPress's design tokens (`--wpds-color-*`, WP 7.1+),
+ * then a fixed fallback. polaris-dashboard maps its status colours onto those
+ * tokens. Warning uses core's `caution` family, as core's Notice does.
  *
  * @package WPComponentLibrary
  */
 
-/** @type {Record<string, Record<'base' | 'light' | 'dark', string>>} */
+import { ADMIN_COLOR } from "./adminColors";
+
+/**
+ * Fixed fallbacks (polaris-dashboard's default status colours).
+ *
+ * @type {Record<string, Record<'base' | 'light' | 'dark', string>>}
+ */
 export const STATUS_COLOR_FALLBACKS = {
 	success: {
 		base: "#4ab866",
@@ -30,16 +38,56 @@ export const STATUS_COLOR_FALLBACKS = {
 	},
 };
 
+/** Core design-token family for each status. */
+const CORE_FAMILY = {
+	success: "success",
+	warning: "caution",
+	error: "error",
+	info: "info",
+};
+
 /**
+ * Core token for each role, and the fallback variant it uses.
+ *
+ * - content: text on a tinted surface
+ * - accent: text, icons and chart series on neutral chrome
+ * - stroke: borders, dots and markers
+ * - surface: tinted backgrounds
+ */
+const ROLES = {
+	content: ["foreground-content-%s", "dark"],
+	accent: ["foreground-content-%s-weak", "base"],
+	stroke: ["stroke-surface-%s-strong", "base"],
+	surface: ["background-surface-%s-weak", "light"],
+};
+
+/**
+ * A status colour by role.
+ *
+ * @param {'success' | 'warning' | 'error' | 'info'} type
+ * @param {'content' | 'accent' | 'stroke' | 'surface'} [role='accent']
+ * @returns {string}
+ */
+export const statusColor = (type, role = "accent") => {
+	const [token, variant] = ROLES[role] ?? ROLES.accent;
+	const family = CORE_FAMILY[type] ?? "error";
+	const fallback = STATUS_COLOR_FALLBACKS[type]?.[variant] ?? "#646970";
+
+	return `var(--wpds-color-${token.replace("%s", family)}, ${fallback})`;
+};
+
+/**
+ * A status colour by variant: base (text and icons), light (tinted
+ * backgrounds) or dark (text on a tinted background).
+ *
  * @param {'success' | 'warning' | 'error' | 'info'} type
  * @param {'base' | 'light' | 'dark'} [variant='base']
  * @returns {string}
  */
 export const statusVar = (type, variant = "base") => {
-	const fallback = STATUS_COLOR_FALLBACKS[type]?.[variant] ?? "#646970";
-	const suffix = variant === "base" ? "" : `-${variant}`;
+	const role = { base: "accent", light: "surface", dark: "content" }[variant] ?? "accent";
 
-	return `var(--color--${type}${suffix}, ${fallback})`;
+	return statusColor(type, role);
 };
 
 /**
@@ -49,9 +97,9 @@ export const statusVar = (type, variant = "base") => {
  * @returns {{ bg: string, text: string, border: string }}
  */
 export const getStatusSurfaceColors = (status) => ({
-	bg: statusVar(status, "light"),
-	text: statusVar(status, "dark"),
-	border: statusVar(status, "base"),
+	bg: statusColor(status, "surface"),
+	text: statusColor(status, "content"),
+	border: statusColor(status, "stroke"),
 });
 
 /**
@@ -95,13 +143,14 @@ export const getScoreChartColors = (score) => {
 	const tier = getScoreStatusTier(score);
 
 	return {
-		chart: statusVar(tier, "base"),
-		text: statusVar(tier, "dark"),
+		chart: statusColor(tier, "accent"),
+		text: statusColor(tier, "content"),
 	};
 };
 
 /**
- * Badge intent text color — error uses base for stronger contrast on light bg.
+ * Badge intent text color — error uses the accent for stronger contrast on a
+ * light background.
  *
  * @param {string} intent
  * @returns {{ background: string, color: string }}
@@ -111,40 +160,40 @@ export const getBadgeIntentColors = (intent) => {
 		case "error":
 		case "critical":
 			return {
-				background: statusVar("error", "light"),
-				color: statusVar("error", "base"),
+				background: statusColor("error", "surface"),
+				color: statusColor("error", "accent"),
 			};
 		case "warning":
 			return {
-				background: statusVar("warning", "light"),
-				color: statusVar("warning", "dark"),
+				background: statusColor("warning", "surface"),
+				color: statusColor("warning", "content"),
 			};
 		case "info":
 		case "suggestion":
 			return {
-				background: statusVar("info", "light"),
-				color: statusVar("info", "dark"),
+				background: statusColor("info", "surface"),
+				color: statusColor("info", "content"),
 			};
 		case "success":
 		case "passed":
 			return {
-				background: statusVar("success", "light"),
-				color: statusVar("success", "dark"),
+				background: statusColor("success", "surface"),
+				color: statusColor("success", "content"),
 			};
 		default:
 			return {
-				background: "var(--color--light-gray, #f0f0f0)",
-				color: "var(--color--dark-gray, #1e1e1e)",
+				background: ADMIN_COLOR.surfaceSubtle,
+				color: ADMIN_COLOR.text,
 			};
 	}
 };
 
 /** Default chart series colors aligned with admin status tokens. */
 export const defaultChartStatusColors = [
-	"var(--color--primary, #3858e9)",
+	ADMIN_COLOR.brandFill,
 	"#646970",
-	statusVar("success"),
-	statusVar("warning"),
-	statusVar("error"),
+	statusColor("success"),
+	statusColor("warning"),
+	statusColor("error"),
 	"#8b5cf6",
 ];

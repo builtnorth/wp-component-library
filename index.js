@@ -38,6 +38,7 @@ export {
 export { Badge } from "./components/badge";
 export {
 	STATUS_COLOR_FALLBACKS,
+	statusColor,
 	statusVar,
 	getStatusSurfaceColors,
 	getScoreStatusTier,
@@ -46,6 +47,7 @@ export {
 	getBadgeIntentColors,
 	defaultChartStatusColors,
 } from "./constants/statusColors";
+export { ADMIN_COLOR } from "./constants/adminColors";
 export { CaptchaPlaceholder } from "./components/captcha-placeholder";
 export { useAspectRatioOptions } from "./components/media/utils/aspect-ratios";
 export {

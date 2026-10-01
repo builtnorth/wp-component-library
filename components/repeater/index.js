@@ -1,3 +1,4 @@
+import { ADMIN_COLOR } from "../../constants/adminColors";
 import {
 	closestCenter,
 	DndContext,
@@ -65,12 +66,12 @@ const StyledRepeater = styled.div`
 			0 15px 30px rgba(0, 0, 0, 0.15),
 			0 5px 15px rgba(0, 0, 0, 0.08);
 		border-radius: 8px;
-		background: var(--color--white);
+		background: ${ADMIN_COLOR.surface};
 		cursor: grabbing;
 		transition: transform 0.2s ease;
 
 		> div {
-			background: var(--color--white);
+			background: ${ADMIN_COLOR.surface};
 			border-radius: 8px;
 		}
 	}
@@ -80,8 +81,8 @@ const StyledSortableItem = styled.div`
 	display: flex;
 	align-items: flex-start;
 	gap: 1rem;
-	background-color: var(--color--white, #fff);
-	border: 1px solid var(--color--border, #e0e0e0);
+	background-color: ${ADMIN_COLOR.surface};
+	border: 1px solid ${ADMIN_COLOR.border};
 	border-radius: 4px;
 	padding: 1rem;
 	transition: all 0.2s ease;
@@ -188,8 +189,8 @@ const StyledSortableItem = styled.div`
 				color 0.15s ease;
 
 			&:hover {
-				background-color: var(--wp-admin-theme-color, #007cba);
-				color: var(--color--white);
+				background-color: ${ADMIN_COLOR.brandFill};
+				color: ${ADMIN_COLOR.onBrand};
 			}
 		}
 	}
@@ -218,7 +219,7 @@ const StyledSortableItem = styled.div`
 		}
 
 		&.wpcl-repeater__item--expanded .built-repeater__item-header {
-			border-bottom: 1px solid var(--color--border, #e0e0e0);
+			border-bottom: 1px solid ${ADMIN_COLOR.border};
 		}
 
 		.built-repeater__summary {

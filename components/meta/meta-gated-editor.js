@@ -36,7 +36,7 @@ const PHP_TRIM = /^[ \t\n\r\0\x0B]+|[ \t\n\r\0\x0B]+$/g;
  * @returns {boolean}
  */
 function isPhpEmpty(value) {
-	return !value || value === "0";
+	return !value || value === "0" || (Array.isArray(value) && value.length === 0);
 }
 
 /**
@@ -67,18 +67,61 @@ export function isMetaValueEmpty(value) {
 	return false;
 }
 
+const POST_META_SOURCE = "core/post-meta";
+
+/**
+ * A post meta value as the front end reads it. Core's PHP post-meta source
+ * gives null for a protected key and for a key not shown in REST (absent from
+ * the record). REST types an unsaved integer or number field as 0 where the
+ * front end reads '', so 0 counts as unsaved.
+ *
+ * @returns {unknown} Meta value, or undefined when it isn't readable.
+ */
+function readablePostMeta(select, key, context) {
+	if (typeof key !== "string" || key === "" || key.startsWith("_")) {
+		return undefined;
+	}
+
+	const store = select(coreStore);
+	const record = (store.getEditedEntityRecord ?? store.getEntityRecord)(
+		"postType",
+		context.postType,
+		context.postId,
+	);
+	const value = record?.meta?.[key];
+
+	return value === 0 ? "" : value;
+}
+
 /**
  * Values of a block's own bindings resolved through their registered
- * sources, as the editor does; null when none resolves (no binding, or only
- * unregistered sources).
+ * sources, as the front end does; null when none resolves (no binding, only
+ * unregistered sources, or only attributes without binding support).
  *
  * @returns {unknown[]|null} Bound values.
  */
-function ownBoundValues(select, bindings, context, clientId) {
+function ownBoundValues(select, blockName, bindings, context, clientId) {
+	const supported =
+		select(blockEditorStore).getSettings?.()?.__experimentalBlockBindingsSupportedAttributes?.[blockName];
 	const values = [];
 
 	for (const [attribute, binding] of Object.entries(bindings || {})) {
-		const source = getBlockBindingsSource(binding?.source);
+		if (Array.isArray(supported) && !supported.includes(attribute)) {
+			continue;
+		}
+
+		if (typeof binding?.source !== "string") {
+			continue;
+		}
+
+		const args = binding.args && typeof binding.args === "object" ? binding.args : {};
+
+		if (binding.source === POST_META_SOURCE) {
+			values.push(readablePostMeta(select, args.key, context));
+			continue;
+		}
+
+		const source = getBlockBindingsSource(binding.source);
 
 		if (!source?.getValues) {
 			continue;
@@ -87,7 +130,7 @@ function ownBoundValues(select, bindings, context, clientId) {
 		const result = source.getValues({
 			select,
 			context,
-			bindings: { [attribute]: binding },
+			bindings: { [attribute]: { ...binding, args } },
 			clientId,
 		});
 		values.push(result?.[attribute]);
@@ -103,8 +146,8 @@ function ownBoundValues(select, bindings, context, clientId) {
  *
  * @returns {unknown[]|null} Bound values, or null when nothing is bound.
  */
-function boundValues(select, bindings, innerBlocks, context, clientId) {
-	const own = ownBoundValues(select, bindings, context, clientId);
+function boundValues(select, blockName, bindings, innerBlocks, context, clientId) {
+	const own = ownBoundValues(select, blockName, bindings, context, clientId);
 
 	if (own !== null) {
 		return own;
@@ -115,6 +158,7 @@ function boundValues(select, bindings, innerBlocks, context, clientId) {
 	for (const inner of innerBlocks || []) {
 		const innerValues = boundValues(
 			select,
+			inner.name,
 			inner.attributes?.metadata?.bindings,
 			inner.innerBlocks,
 			context,
@@ -178,12 +222,12 @@ export function useMetaGatedEditorVisibility({ attributes, clientId, context }) 
 				return defaultResult;
 			}
 
+			const block = clientId ? select(blockEditorStore).getBlock(clientId) : null;
 			const values = boundValues(
 				select,
+				block?.name,
 				ownBindings,
-				clientId
-					? select(blockEditorStore).getBlock(clientId)?.innerBlocks
-					: [],
+				block?.innerBlocks ?? [],
 				{ postId: contextPostId, postType: contextPostType },
 				clientId,
 			);
@@ -207,8 +251,21 @@ export function useMetaGatedEditorVisibility({ attributes, clientId, context }) 
 				contextPostId,
 			);
 
+			// The front end reads any unprotected field; the editor only sees
+			// REST meta, so a field not in REST stays visible.
+			const unreadable =
+				!metaField.startsWith("_") &&
+				!(record?.meta && Object.prototype.hasOwnProperty.call(record.meta, metaField));
+
 			return {
-				shouldHide: isMetaValueEmpty(record?.meta?.[metaField]),
+				shouldHide: unreadable
+					? false
+					: isMetaValueEmpty(
+							readablePostMeta(select, metaField, {
+								postType: contextPostType,
+								postId: contextPostId,
+							}),
+						),
 				isTemplateSurface: false,
 				isLoopPreview: true,
 			};

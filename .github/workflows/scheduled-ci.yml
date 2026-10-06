@@ -19,11 +19,16 @@ jobs:
           node-version: '22'
       
       - name: Install dependencies
-        run: npm ci
+        # No lockfile is tracked, and npm ci needs one.
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
       
       - name: Run build
         run: npm run build
       
-      - name: Run tests
-        run: npm test
-        continue-on-error: true
+      - name: Run unit tests
+        run: npm run test:unit

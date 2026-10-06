@@ -26,7 +26,24 @@ export function isTemplateEditorSurface(editorPostType) {
 	);
 }
 
+/** Characters PHP's trim() strips (not JS's wider whitespace set). */
+const PHP_TRIM = /^[ \t\n\r\0\x0B]+|[ \t\n\r\0\x0B]+$/g;
+
 /**
+ * PHP's empty() for a scalar.
+ *
+ * @param {unknown} value Value.
+ * @returns {boolean}
+ */
+function isPhpEmpty(value) {
+	return !value || value === "0";
+}
+
+/**
+ * Whether a bound value counts as empty, as navas-utility
+ * MetaGatedRender::is_value_empty() decides on the front end: arrays and
+ * objects are empty unless they are a usable icon (name + source).
+ *
  * @param {unknown} value Post meta value.
  * @returns {boolean}
  */
@@ -36,61 +53,76 @@ export function isMetaValueEmpty(value) {
 	}
 
 	if (Array.isArray(value)) {
-		return value.length === 0;
+		return true;
 	}
 
 	if (typeof value === "object") {
-		return !(value?.name && value?.source);
+		return isPhpEmpty(value.name) || isPhpEmpty(value.source);
 	}
 
 	if (typeof value === "string") {
-		return value.trim() === "";
+		return value.replace(PHP_TRIM, "") === "";
 	}
 
 	return false;
 }
 
 /**
- * Bindings of a block, else of its descendants (for wrappers such as a group
- * around a bound paragraph).
+ * Values of a block's own bindings resolved through their registered
+ * sources, as the editor does; null when none resolves (no binding, or only
+ * unregistered sources).
  *
- * @param {object|undefined} ownBindings  The block's metadata.bindings.
- * @param {object[]}         innerBlocks  The block's inner blocks.
- * @returns {object[]} One bindings object per bound block.
+ * @returns {unknown[]|null} Bound values.
  */
-function collectBindings(ownBindings, innerBlocks) {
-	if (ownBindings && Object.keys(ownBindings).length > 0) {
-		return [ownBindings];
+function ownBoundValues(select, bindings, context, clientId) {
+	const values = [];
+
+	for (const [attribute, binding] of Object.entries(bindings || {})) {
+		const source = getBlockBindingsSource(binding?.source);
+
+		if (!source?.getValues) {
+			continue;
+		}
+
+		const result = source.getValues({
+			select,
+			context,
+			bindings: { [attribute]: binding },
+			clientId,
+		});
+		values.push(result?.[attribute]);
 	}
 
-	return (innerBlocks || []).flatMap((inner) =>
-		collectBindings(inner.attributes?.metadata?.bindings, inner.innerBlocks),
-	);
+	return values.length > 0 ? values : null;
 }
 
 /**
- * Resolve bindings through their registered sources, as the editor does.
+ * Values of a block's own bindings, else of its descendants' bindings (for
+ * wrappers such as a group around a bound paragraph), as navas-utility
+ * MetaGatedRender::bound_values() reads them on the front end.
  *
- * @returns {unknown[]} Bound values.
+ * @returns {unknown[]|null} Bound values, or null when nothing is bound.
  */
-function resolveBoundValues(select, bindingSets, context, clientId) {
-	const values = [];
+function boundValues(select, bindings, innerBlocks, context, clientId) {
+	const own = ownBoundValues(select, bindings, context, clientId);
 
-	for (const bindings of bindingSets) {
-		for (const [attribute, binding] of Object.entries(bindings)) {
-			const source = getBlockBindingsSource(binding?.source);
+	if (own !== null) {
+		return own;
+	}
 
-			if (!source?.getValues) {
-				continue;
-			}
+	let values = null;
 
-			const result = source.getValues({
-				select,
-				context,
-				bindings: { [attribute]: binding },
-				clientId,
-			});
-			values.push(result?.[attribute]);
+	for (const inner of innerBlocks || []) {
+		const innerValues = boundValues(
+			select,
+			inner.attributes?.metadata?.bindings,
+			inner.innerBlocks,
+			context,
+			clientId,
+		);
+
+		if (innerValues !== null) {
+			values = [...(values ?? []), ...innerValues];
 		}
 	}
 
@@ -146,21 +178,17 @@ export function useMetaGatedEditorVisibility({ attributes, clientId, context }) 
 				return defaultResult;
 			}
 
-			const bindingSets = collectBindings(
+			const values = boundValues(
+				select,
 				ownBindings,
 				clientId
 					? select(blockEditorStore).getBlock(clientId)?.innerBlocks
 					: [],
+				{ postId: contextPostId, postType: contextPostType },
+				clientId,
 			);
 
-			if (bindingSets.length > 0) {
-				const values = resolveBoundValues(
-					select,
-					bindingSets,
-					{ postId: contextPostId, postType: contextPostType },
-					clientId,
-				);
-
+			if (values !== null) {
 				return {
 					shouldHide: values.every(isMetaValueEmpty),
 					isTemplateSurface: false,

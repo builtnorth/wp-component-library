@@ -15,7 +15,8 @@
 		"format": "wp-scripts format",
 		"lint:js": "wp-scripts lint-js",
 		"lint:md:docs": "wp-scripts lint-md-docs",
-		"lint:pkg-json": "wp-scripts lint-pkg-json"
+		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"test:unit": "wp-scripts test-unit-js components utils"
 	},
 	"repository": {
 		"type": "git",

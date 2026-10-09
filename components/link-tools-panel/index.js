@@ -2,7 +2,8 @@
  * Link Tools Panel
  *
  * Link settings for a block: a URL (WordPress's link search), "Use post
- * permalink" and "Open in new tab".
+ * permalink", "Open in new tab" and, when the block asks for it, the link's
+ * rel (e.g. nofollow).
  *
  * - `LinkToolsPanelItems`: the controls as tools panel items, for a block
  *   that already has a ToolsPanel to put them in.
@@ -10,6 +11,7 @@
  */
 import { __experimentalLinkControl as LinkControl } from "@wordpress/block-editor";
 import {
+	TextControl,
 	ToggleControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
@@ -22,6 +24,7 @@ export const LINK_DEFAULTS = {
 	link: "",
 	opensInNewTab: false,
 	isPermalink: false,
+	rel: "",
 };
 
 /**
@@ -37,6 +40,8 @@ export const LINK_DEFAULTS = {
  * @param {boolean}  [props.showPermalink=true]    Whether to offer "Use post permalink", for blocks that have no such setting.
  * @param {string}   [props.permalinkHelp]         Help text for "Use post permalink".
  * @param {string}   [props.newTabHelp]            Help text shown while "Open in new tab" is on.
+ * @param {boolean}  [props.showRel=false]         Whether to offer the link's rel, for blocks that save and render it.
+ * @param {string}   [props.rel]                   Link rel, e.g. "nofollow sponsored".
  */
 export function LinkToolsPanelItems({
 	link = LINK_DEFAULTS.link,
@@ -51,6 +56,8 @@ export function LinkToolsPanelItems({
 		"wp-component-library",
 	),
 	newTabHelp,
+	showRel = false,
+	rel = LINK_DEFAULTS.rel,
 }) {
 	return (
 		<>
@@ -124,6 +131,28 @@ export function LinkToolsPanelItems({
 					help={opensInNewTab ? newTabHelp : undefined}
 				/>
 			</ToolsPanelItem>
+
+			{showRel && (
+				<ToolsPanelItem
+					panelId={panelId}
+					hasValue={() => !!rel}
+					label={__("Link rel", "wp-component-library")}
+					onDeselect={() => onChange({ rel: LINK_DEFAULTS.rel })}
+					isShownByDefault={false}
+				>
+					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={__("Link rel", "wp-component-library")}
+						help={__(
+							"Space-separated values, e.g. nofollow or sponsored.",
+							"wp-component-library",
+						)}
+						value={rel}
+						onChange={(value) => onChange({ rel: value })}
+					/>
+				</ToolsPanelItem>
+			)}
 		</>
 	);
 }
@@ -150,7 +179,11 @@ export function LinkToolsPanel({
 		<ToolsPanel
 			label={label}
 			panelId={panelId}
-			resetAll={() => onChange({ ...LINK_DEFAULTS })}
+			resetAll={() => {
+				// rel only for blocks that offer it (they have the attribute).
+				const { rel, ...defaults } = LINK_DEFAULTS;
+				onChange(itemProps.showRel ? { ...defaults, rel } : defaults);
+			}}
 			className={className}
 		>
 			<LinkToolsPanelItems

@@ -1,6 +1,6 @@
 # Link Tools Panel
 
-Link settings for a block: a URL (WordPress's link search), "Use post permalink" and "Open in new tab".
+Link settings for a block: a URL (WordPress's link search), "Use post permalink", "Open in new tab" and, opt-in, the link's `rel`.
 WordPress's `LinkControl` is laid out for popovers; here it sits flush and fills the panel's width.
 
 ## Usage
@@ -41,7 +41,9 @@ import { LinkToolsPanel, LinkToolsPanelItems } from '@builtnorth/wp-component-li
 | `showPermalink` | `boolean` | `true` | Whether to offer "Use post permalink"; pass `false` for blocks with no such setting |
 | `permalinkHelp` | `string` | generic | Help text for "Use post permalink" |
 | `newTabHelp` | `string` | - | Help text shown while "Open in new tab" is on |
+| `showRel` | `boolean` | `false` | Whether to offer "Link rel"; only for blocks that save and render it |
+| `rel` | `string` | `''` | Link rel, e.g. `nofollow sponsored` |
 
 `LinkToolsPanel` also accepts `label` (panel title, default "Link") and `className`.
 
-`LINK_DEFAULTS` holds the default values (`{ link: '', opensInNewTab: false, isPermalink: false }`).
+`LINK_DEFAULTS` holds the default values (`{ link: '', opensInNewTab: false, isPermalink: false, rel: '' }`). `LinkToolsPanel`'s reset only clears `rel` when `showRel` is on.

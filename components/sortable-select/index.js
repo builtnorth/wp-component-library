@@ -73,6 +73,15 @@ const StyledInput = styled.input`
 	margin: 0;
 	font-size: 13px;
 	font-family: inherit;
+
+	// wp-admin's input[type="text"] (forms.css) outranks one class: the box
+	// is the wrapper's, so the field itself has none.
+	&& {
+		border: none;
+		padding: 0;
+		min-height: 0;
+		background: transparent;
+	}
 `;
 
 const StyledTextarea = styled.textarea`

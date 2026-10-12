@@ -45,14 +45,16 @@ const StyledWrapper = styled.div`
 	position: relative;
 `;
 
+// WordPress' 40px control height (__next40pxDefaultSize), as core's inputs.
 const StyledInputWrapper = styled.div`
+	box-sizing: border-box;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
 	align-items: center;
-	min-height: 30px;
-	padding: 2px 8px;
-	border: 1px solid #757575;
+	min-height: 40px;
+	padding: 4px 8px;
+	border: 1px solid #949494;
 	border-radius: 2px;
 	background: #fff;
 
@@ -192,6 +194,8 @@ const SearchInput = memo(function SearchInput({
 	suggestions,
 	handleKeyDown,
 	handleBlur,
+	onFocusOpen,
+	onBlurClose,
 	placeholder,
 	isDisabled,
 	isDragging,
@@ -202,7 +206,10 @@ const SearchInput = memo(function SearchInput({
 		ref: inputRef,
 		value: inputValue,
 		onChange: (e) => setInputValue(e.target.value),
-		onFocus: () => setShowSuggestions(suggestions.length > 0),
+		onFocus: () => {
+			onFocusOpen();
+			setShowSuggestions(suggestions.length > 0);
+		},
 		onBlur: (e) => {
 			// Prevent blur if we're dragging
 			if (isDragging) {
@@ -213,7 +220,7 @@ const SearchInput = memo(function SearchInput({
 			// Call the blur handler
 			handleBlur();
 			// Hide suggestions after a small delay to allow clicks
-			setTimeout(() => setShowSuggestions(false), 200);
+			onBlurClose();
 		},
 		onKeyDown: handleKeyDown,
 		placeholder: placeholder,
@@ -251,9 +258,27 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [loadedOptions, setLoadedOptions] = useState([]);
 	const [isDragging, setIsDragging] = useState(false);
+	const [isFocused, setIsFocused] = useState(false);
 
 	const inputRef = useRef();
 	const wrapperRef = useRef();
+	const blurTimer = useRef();
+
+	// Focus opens the list (before typing); leaving the field closes it after
+	// a moment, so a click on a suggestion still lands. Picking one focuses
+	// the field again, which cancels the close.
+	const handleFocusOpen = useCallback(() => {
+		clearTimeout(blurTimer.current);
+		setIsFocused(true);
+	}, []);
+	const handleBlurClose = useCallback(() => {
+		clearTimeout(blurTimer.current);
+		blurTimer.current = setTimeout(() => {
+			setShowSuggestions(false);
+			setIsFocused(false);
+		}, 200);
+	}, []);
+	useEffect(() => () => clearTimeout(blurTimer.current), []);
 
 	// Expose focus method to parent
 	useImperativeHandle(ref, () => ({
@@ -285,9 +310,10 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 		return map;
 	}, [options, loadedOptions, value, getOptionLabel]);
 
-	// Load suggestions when input changes
+	// Load suggestions when input changes, or on focus before typing (all
+	// options; not with requirePrefix, where "@" opens the list).
 	useEffect(() => {
-		if (!inputValue) {
+		if (!inputValue && (requirePrefix || !isFocused)) {
 			setSuggestions([]);
 			setShowSuggestions(false);
 			return;
@@ -306,7 +332,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 			return;
 		}
 
-		if (!shouldSearch || (!searchQuery && !requirePrefix)) {
+		if (!shouldSearch) {
 			setSuggestions([]);
 			setShowSuggestions(false);
 			return;
@@ -372,9 +398,10 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 			}
 		};
 
-		const timeoutId = setTimeout(loadSuggestions, 300);
+		// Typing waits for a pause; opening loads at once.
+		const timeoutId = setTimeout(loadSuggestions, inputValue ? 300 : 0);
 		return () => clearTimeout(timeoutId);
-	}, [inputValue, loadOptions]); // Removed dependencies causing infinite loop
+	}, [inputValue, isFocused, loadOptions]); // Removed dependencies causing infinite loop
 
 	// Handle adding a token
 	const handleAddToken = useCallback(
@@ -385,7 +412,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 
 			onChange([...value, option]);
 			setInputValue("");
-			setShowSuggestions(false);
+			// The list stays open to pick more (the picked one leaves it).
 			inputRef.current?.focus();
 		},
 		[onChange, value, maxItems],
@@ -561,6 +588,8 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 						suggestions={suggestions}
 						handleKeyDown={handleKeyDown}
 						handleBlur={handleBlur}
+						onFocusOpen={handleFocusOpen}
+						onBlurClose={handleBlurClose}
 						placeholder={value.length === 0 ? placeholder : ""}
 						isDisabled={isDisabled}
 						isDragging={isDragging}

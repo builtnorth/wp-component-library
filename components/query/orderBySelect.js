@@ -27,6 +27,21 @@ export const defaultOrderOptions = [
  * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
  * @returns {WPElement} Element to render
  */
+/**
+ * Split an order option value ("menu_order_asc") into orderby and order at
+ * its last underscore: orderby values can hold underscores themselves.
+ *
+ * @param {string} value Option value, `${orderby}_${order}`.
+ * @return {{ orderPostsBy: string, orderPostsDirection: string }} Attributes.
+ */
+export function parseOrderValue(value) {
+    const at = value.lastIndexOf("_");
+    return {
+        orderPostsBy: value.slice(0, at),
+        orderPostsDirection: value.slice(at + 1),
+    };
+}
+
 function OrderBySelect({
     attributes: { orderPostsBy, orderPostsDirection },
     setAttributes,
@@ -71,13 +86,7 @@ function OrderBySelect({
                 label="Order By"
                 value={`${orderPostsBy}_${orderPostsDirection}`}
                 options={finalOptions}
-                onChange={(value) => {
-                    const [orderby, order] = value.split("_");
-                    setAttributes({
-                        orderPostsBy: orderby,
-                        orderPostsDirection: order,
-                    });
-                }}
+                onChange={(value) => setAttributes(parseOrderValue(value))}
             />
         </ToolsPanelItem>
     );

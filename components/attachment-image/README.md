@@ -15,7 +15,7 @@ A flexible image display component that fetches and renders WordPress media atta
 ## Usage
 
 ```jsx
-import { AttachmentImage } from '@builtnorth/wp-component-library/components/attachment-image';
+import { AttachmentImage } from '@siratik/wp-component-library/components/attachment-image';
 
 // Basic usage
 <AttachmentImage 

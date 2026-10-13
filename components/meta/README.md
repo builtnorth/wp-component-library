@@ -7,7 +7,7 @@ Components for post meta in the Gutenberg editor.
 Adds a button to the document sidebar that opens a modal for editing post meta fields. Used by plugins such as Kitaris Directory and Kitaris Reviews.
 
 ```jsx
-import { MetaPanel } from "@builtnorth/wp-component-library";
+import { MetaPanel } from "@siratik/wp-component-library";
 import { TextControl } from "@wordpress/components";
 
 function ListingMetaPanel({ postMeta, onChange }) {

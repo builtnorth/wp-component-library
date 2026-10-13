@@ -24,7 +24,7 @@ import {
     CustomInspectorAppender,
     CustomColumnAppender,
     CustomInlineAppender 
-} from '@builtnorth/wp-component-library/components/block-appender';
+} from '@siratik/wp-component-library/components/block-appender';
 
 // Standard block appender
 <CustomBlockAppender

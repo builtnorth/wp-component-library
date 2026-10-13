@@ -17,7 +17,7 @@ A ToolsPanel-based component that provides attribute management for blocks in th
 ## Usage
 
 ```jsx
-import { AttributesPanel, useAttributes } from '@builtnorth/wp-component-library/components/attributes-panel';
+import { AttributesPanel, useAttributes } from '@siratik/wp-component-library/components/attributes-panel';
 
 function MyComponent() {
 	const { attributes, setAttributes } = useAttributes([

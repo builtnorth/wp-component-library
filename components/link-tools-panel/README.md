@@ -6,7 +6,7 @@ WordPress's `LinkControl` is laid out for popovers; here it sits flush and fills
 ## Usage
 
 ```jsx
-import { LinkToolsPanel, LinkToolsPanelItems } from '@builtnorth/wp-component-library';
+import { LinkToolsPanel, LinkToolsPanelItems } from '@siratik/wp-component-library';
 
 // Its own "Link" panel (sidebar or a toolbar popover)
 <LinkToolsPanel

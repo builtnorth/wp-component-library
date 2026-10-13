@@ -20,7 +20,7 @@ module.exports = {
 		...defaultConfig.output,
 		path: path.resolve(__dirname, 'build'),
 		library: {
-			name: '@builtnorth/wp-component-library',
+			name: '@siratik/wp-component-library',
 			type: 'umd',
 		},
 	},

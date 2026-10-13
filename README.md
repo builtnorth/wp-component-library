@@ -5,7 +5,7 @@ A comprehensive library of reusable React components, hooks, and utilities for W
 ## Installation
 
 ```bash
-npm install @builtnorth/wp-component-library
+npm install @siratik/wp-component-library
 ```
 
 ## Components
@@ -34,7 +34,7 @@ A full icon registry and picker system. Includes a WordPress data store (`wpcl/i
 | `IconPickerModal` | The modal itself — embeddable standalone |
 
 ```jsx
-import { registerIconSet, IconPicker } from "@builtnorth/wp-component-library";
+import { registerIconSet, IconPicker } from "@siratik/wp-component-library";
 
 // Eager library
 registerIconSet({
@@ -68,7 +68,7 @@ A drop-in replacement for `@10up/block-components` `registerBlockExtension`. Ext
 | `unregisterBlockExtension(blockName, extensionName)` | Remove a previously registered extension |
 
 ```jsx
-import { registerBlockExtension } from "@builtnorth/wp-component-library";
+import { registerBlockExtension } from "@siratik/wp-component-library";
 import { InspectorAdvancedControls } from "@wordpress/block-editor";
 import { ToggleControl } from "@wordpress/components";
 
@@ -121,7 +121,7 @@ Consistent media upload controls across all editor contexts.
 | `useAspectRatioOptions()` | Hook — standard aspect ratio option set |
 
 ```jsx
-import { InspectorMediaUpload } from "@builtnorth/wp-component-library";
+import { InspectorMediaUpload } from "@siratik/wp-component-library";
 
 <InspectorMediaUpload
     buttonTitle="Upload Logo"
@@ -182,7 +182,7 @@ Drag-and-drop repeatable item list.
 | `RemoveButton` | Remove item sub-component |
 
 ```jsx
-import { Repeater } from "@builtnorth/wp-component-library";
+import { Repeater } from "@siratik/wp-component-library";
 
 <Repeater
     items={items}

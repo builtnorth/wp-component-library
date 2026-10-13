@@ -15,7 +15,7 @@ This component's dependencies are included with the component library. No additi
 ## Basic Usage
 
 ```jsx
-import { SortableSelect } from '@builtnorth/wp-component-library';
+import { SortableSelect } from '@siratik/wp-component-library';
 import { useState } from '@wordpress/element';
 
 function MyComponent() {
@@ -61,7 +61,7 @@ function MyComponent() {
 ### Async Post Search
 
 ```jsx
-import { SortableSelect } from '@builtnorth/wp-component-library';
+import { SortableSelect } from '@siratik/wp-component-library';
 import apiFetch from '@wordpress/api-fetch';
 
 function PostSelector() {

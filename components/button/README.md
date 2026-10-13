@@ -14,7 +14,7 @@ A frontend button component for rendering styled buttons with accessibility feat
 ## Usage
 
 ```jsx
-import { Button } from '@builtnorth/wp-component-library/components/button';
+import { Button } from '@siratik/wp-component-library/components/button';
 
 // Basic button
 <Button 

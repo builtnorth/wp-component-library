@@ -18,7 +18,7 @@ An advanced input field component with autocomplete functionality for inserting 
 ## Usage
 
 ```jsx
-import { VariableField } from '@builtnorth/wp-component-library/components/variable-field';
+import { VariableField } from '@siratik/wp-component-library/components/variable-field';
 
 // Basic usage with simple options
 <VariableField

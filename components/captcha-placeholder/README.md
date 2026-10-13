@@ -21,7 +21,7 @@ A unified captcha component that provides a consistent interface for rendering d
 ## Usage
 
 ```jsx
-import { CaptchaPlaceholder } from '@builtnorth/wp-component-library/components/captcha-placeholder';
+import { CaptchaPlaceholder } from '@siratik/wp-component-library/components/captcha-placeholder';
 
 // Google reCAPTCHA v2
 <CaptchaPlaceholder

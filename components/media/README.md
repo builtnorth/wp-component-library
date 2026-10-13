@@ -28,7 +28,7 @@ import {
     InspectorMediaUpload,
     SettingsMediaUpload,
     ImageControls
-} from '@builtnorth/wp-component-library/components/media';
+} from '@siratik/wp-component-library/components/media';
 
 // Toolbar upload
 <BlockControls>
@@ -156,7 +156,7 @@ Advanced image settings panel with comprehensive controls:
 The library includes predefined aspect ratios via `ASPECT_RATIOS`:
 
 ```jsx
-import { ASPECT_RATIOS } from '@builtnorth/wp-component-library/components/media/utils/aspect-ratios';
+import { ASPECT_RATIOS } from '@siratik/wp-component-library/components/media/utils/aspect-ratios';
 
 // Available ratios:
 {

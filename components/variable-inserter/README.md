@@ -5,7 +5,7 @@ A reusable component for inserting variable tags into text fields. Similar to Yo
 ## Usage
 
 ```jsx
-import VariableInserter from "@builtnorth/wp-component-library/components/variable-inserter";
+import VariableInserter from "@siratik/wp-component-library/components/variable-inserter";
 
 const variables = [
     { label: "Site Name", value: "{site_name}" },
@@ -38,7 +38,7 @@ const variables = [
 
 ```jsx
 import { TextControl } from "@wordpress/components";
-import VariableInserter from "@builtnorth/wp-component-library/components/variable-inserter";
+import VariableInserter from "@siratik/wp-component-library/components/variable-inserter";
 
 const [value, setValue] = useState("");
 

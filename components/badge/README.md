@@ -5,7 +5,7 @@ A small status indicator component that displays text with semantic colors, base
 ## Usage
 
 ```jsx
-import { Badge } from '@builtnorth/wp-component-library';
+import { Badge } from '@siratik/wp-component-library';
 
 // Basic usage
 <Badge intent="success">Passed</Badge>

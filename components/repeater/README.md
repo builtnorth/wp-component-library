@@ -15,7 +15,7 @@ A flexible repeater component with drag-and-drop functionality powered by @dnd-k
 ## Usage
 
 ```jsx
-import { Repeater } from '@builtnorth/wp-component-library/components/repeater';
+import { Repeater } from '@siratik/wp-component-library/components/repeater';
 import { useState } from '@wordpress/element';
 
 function MyComponent() {

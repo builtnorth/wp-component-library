@@ -41,7 +41,7 @@ import {
     OrientationToolbar,
     JustificationToolbar,
     AlignmentToolbar 
-} from '@builtnorth/wp-component-library/components/layout';
+} from '@siratik/wp-component-library/components/layout';
 
 // In block toolbar
 <BlockControls>

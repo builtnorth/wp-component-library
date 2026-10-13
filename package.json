@@ -1,6 +1,6 @@
 {
 	"name": "@siratik/wp-component-library",
-	"version": "1.2.5",
+	"version": "0.1.0",
 	"description": "Library of components for use in the WordPress block editor.",
 	"main": "build/index.js",
 	"module": "build/index.js",

@@ -7,12 +7,22 @@
 
 const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 const path = require('path');
-const { filesystemCache, sharedWatchOptions } = require('../../webpack.shared.config');
+
+// The monorepo's shared build cache and watch settings. A standalone checkout
+// (release CI) has no monorepo around it, so fall back to the defaults there.
+let shared = null;
+try {
+	shared = require('../../webpack.shared.config');
+} catch (error) {
+	if (error.code !== 'MODULE_NOT_FOUND' || !String(error.message).includes('webpack.shared.config')) {
+		throw error;
+	}
+}
 
 module.exports = {
 	...defaultConfig,
-	cache: filesystemCache(__dirname),
-	watchOptions: sharedWatchOptions(defaultConfig.watchOptions),
+	cache: shared ? shared.filesystemCache(__dirname) : defaultConfig.cache,
+	watchOptions: shared ? shared.sharedWatchOptions(defaultConfig.watchOptions) : defaultConfig.watchOptions,
 	entry: {
 		index: path.resolve(__dirname, 'index.js'),
 	},

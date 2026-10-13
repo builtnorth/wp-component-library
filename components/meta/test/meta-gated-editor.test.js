@@ -1,6 +1,6 @@
 /**
  * The editor's loop preview hides meta-gated blocks by the same rules as
- * navas-utility MetaGatedRender on the front end.
+ * siratik-utility MetaGatedRender on the front end.
  */
 const mockSources = {
 	"test/source": {

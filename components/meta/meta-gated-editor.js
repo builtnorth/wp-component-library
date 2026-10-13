@@ -1,7 +1,7 @@
 /**
  * Editor visibility rules for hide-when-empty blocks (hideWhenMetaEmpty).
  *
- * Frontend output is suppressed by navas-utility MetaGatedBlockSupport /
+ * Frontend output is suppressed by siratik-utility MetaGatedBlockSupport /
  * render.php. In the editor, blocks stay visible on template surfaces so card
  * layouts remain editable; they hide in query/post-feed loop previews when
  * their Block Bindings are empty — the block's own, or for a wrapper with no
@@ -40,7 +40,7 @@ function isPhpEmpty(value) {
 }
 
 /**
- * Whether a bound value counts as empty, as navas-utility
+ * Whether a bound value counts as empty, as siratik-utility
  * MetaGatedRender::is_value_empty() decides on the front end: arrays and
  * objects are empty unless they are a usable icon (name + source).
  *
@@ -141,7 +141,7 @@ function ownBoundValues(select, blockName, bindings, context, clientId) {
 
 /**
  * Values of a block's own bindings, else of its descendants' bindings (for
- * wrappers such as a group around a bound paragraph), as navas-utility
+ * wrappers such as a group around a bound paragraph), as siratik-utility
  * MetaGatedRender::bound_values() reads them on the front end.
  *
  * @returns {unknown[]|null} Bound values, or null when nothing is bound.

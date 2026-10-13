@@ -33,10 +33,10 @@ function ButtonFrontend({
     // Add classes
     const wrapperClass = className
         ? `${className}__button is-size-${size}`
-        : `wp-block-polaris-button is-style-${style} is-size-${size}`;
+        : `wp-block-kitaris-button is-style-${style} is-size-${size}`;
     const linkClass = className
-        ? `wp-block-polaris-button__link wp-block-polaris-button__text`
-        : "wp-block-polaris-button__text";
+        ? `wp-block-kitaris-button__link wp-block-kitaris-button__text`
+        : "wp-block-kitaris-button__text";
 
     return (
         <span className={wrapperClass}>

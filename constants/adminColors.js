@@ -2,7 +2,7 @@
  * Admin colours by role.
  *
  * Each value reads WordPress's design tokens (`--wpds-color-*`, WP 7.1+) or
- * the admin theme colour, then a fixed fallback. polaris-dashboard maps its
+ * the admin theme colour, then a fixed fallback. kitaris-dashboard maps its
  * palette and whitelabel colours onto those tokens, so screens follow the
  * brand when it is active and WordPress's defaults when it is not.
  *
@@ -38,5 +38,5 @@ export const ADMIN_COLOR = {
 	/** Text and icons on a brand fill. */
 	onBrand: "var(--wpds-color-foreground-interactive-brand-strong, #ffffff)",
 	/** Second chart series and secondary accents (no core token). */
-	secondary: "var(--polaris-admin-color-secondary, #0F9C90)",
+	secondary: "var(--kitaris-admin-color-secondary, #0F9C90)",
 };

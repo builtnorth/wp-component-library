@@ -86,10 +86,10 @@ export {
 	getEditorExperienceSectionDivider,
 	getLocalize,
 	getLocalizeWindow,
-	getPolarisLocalize, // @deprecated — use getLocalize
-	getPolarisLocalizeWindow, // @deprecated — use getLocalizeWindow
+	getKitarisLocalize, // @deprecated — use getLocalize
+	getKitarisLocalizeWindow, // @deprecated — use getLocalizeWindow
 	SKIN_CHANGED_EVENT,
-} from "./utils/polaris-localize";
+} from "./utils/kitaris-localize";
 
 // Icon Picker & Registry
 export {

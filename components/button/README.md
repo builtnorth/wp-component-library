@@ -74,13 +74,13 @@ Available size variants through the `size` prop:
 The component generates BEM-style classes:
 
 ### Wrapper Classes
-- Base: `wp-block-polaris-button`
+- Base: `wp-block-kitaris-button`
 - Style modifier: `is-style-{style}`
 - Size modifier: `is-size-{size}`
 - Custom classes: Added via `className` prop
 
 ### Inner Elements
-- Link text: `wp-block-polaris-button__text`
+- Link text: `wp-block-kitaris-button__text`
 - Screen reader text: `screen-reader-text`
 
 ## Accessibility

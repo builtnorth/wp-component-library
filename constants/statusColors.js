@@ -1,8 +1,8 @@
 /**
- * Status colours for Polaris admin surfaces.
+ * Status colours for Kitaris admin surfaces.
  *
  * Each value reads WordPress's design tokens (`--wpds-color-*`, WP 7.1+),
- * then a fixed fallback. polaris-dashboard maps its status colours onto those
+ * then a fixed fallback. kitaris-dashboard maps its status colours onto those
  * tokens. Warning uses core's `caution` family, as core's Notice does.
  *
  * @package WPComponentLibrary
@@ -11,7 +11,7 @@
 import { ADMIN_COLOR } from "./adminColors";
 
 /**
- * Fixed fallbacks (polaris-dashboard's default status colours).
+ * Fixed fallbacks (kitaris-dashboard's default status colours).
  *
  * @type {Record<string, Record<'base' | 'light' | 'dark', string>>}
  */

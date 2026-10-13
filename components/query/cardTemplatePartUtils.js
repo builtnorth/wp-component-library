@@ -2,7 +2,7 @@
  * Resolve card template part options for a post type.
  *
  * Override via editor_experience.card_templates[postType] in the host plugin's
- * localize config (window.polaris_localize.blocks.editor_experience).
+ * localize config (window.kitaris_localize.blocks.editor_experience).
  *
  * @param {string} postType Post type slug.
  * @returns {string[]} Slug prefixes — a part matches if slug equals prefix or starts with prefix + '-'.
@@ -14,7 +14,7 @@ export function getCardSlugPrefixesForPostType(postType) {
 
 	const config =
 		typeof window !== "undefined" &&
-		window.polaris_localize?.blocks?.editor_experience?.card_templates?.[
+		window.kitaris_localize?.blocks?.editor_experience?.card_templates?.[
 			postType
 		];
 
@@ -25,12 +25,12 @@ export function getCardSlugPrefixesForPostType(postType) {
 	}
 
 	const knownPrefixes = {
-		polaris_service: ["card-service"],
-		polaris_team: ["card-team"],
-		polaris_promotion: ["card-promotion"],
-		polaris_coupon: ["card-promotion"],
-		polaris_listing: ["polaris_listing-card", "card-listing"],
-		polaris_review: ["polaris_review-card", "card-review"],
+		kitaris_service: ["card-service"],
+		kitaris_team: ["card-team"],
+		kitaris_promotion: ["card-promotion"],
+		kitaris_coupon: ["card-promotion"],
+		kitaris_listing: ["kitaris_listing-card", "card-listing"],
+		kitaris_review: ["kitaris_review-card", "card-review"],
 		post: ["post-card", "card-post"],
 		page: ["page-card", "card-page"],
 		search: ["search-result-card", "card-search"],
@@ -40,7 +40,7 @@ export function getCardSlugPrefixesForPostType(postType) {
 		return knownPrefixes[postType];
 	}
 
-	const base = postType.replace(/^polaris_/, "");
+	const base = postType.replace(/^kitaris_/, "");
 
 	return [`card-${base}`, `${postType}-card`];
 }
@@ -75,11 +75,11 @@ export function cardTemplatePartMatchesPostType(slug, postType, customFilter) {
  */
 export function getDefaultCardSlugForPostType(postType) {
 	const defaults = {
-		polaris_service: "card-service-001",
-		polaris_team: "card-team-001",
-		polaris_promotion: "card-promotion-001",
-		polaris_coupon: "card-promotion-001",
-		polaris_location: "card-location-001",
+		kitaris_service: "card-service-001",
+		kitaris_team: "card-team-001",
+		kitaris_promotion: "card-promotion-001",
+		kitaris_coupon: "card-promotion-001",
+		kitaris_location: "card-location-001",
 	};
 
 	if (defaults[postType]) {

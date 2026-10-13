@@ -1,5 +1,5 @@
 /**
- * Register icon sets declared in editor_experience.icons (Polaris localize).
+ * Register icon sets declared in editor_experience.icons (Kitaris localize).
  *
  * @module icon-picker/config-bootstrap
  */
@@ -61,7 +61,7 @@ async function loadIconsFromLibraryUrl(url, setName) {
 }
 
 /**
- * Register lazy icon sets from polaris_localize editor_experience.icons config.
+ * Register lazy icon sets from kitaris_localize editor_experience.icons config.
  *
  * Supports:
  *   - `sets[]` with `library_url` (resolved in PHP from directory + file)

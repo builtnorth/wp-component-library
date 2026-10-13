@@ -10,7 +10,7 @@ import { getDefaultCardSlugForPostType } from "./cardTemplatePartUtils";
  * @param {Object} props.attributes Block attributes (postType, templatePartSlug).
  * @param {Function} props.setAttributes Set block attributes.
  * @param {string} [props.postType] Post type override.
- * @param {string} [props.area] Template part area (default polaris-cards).
+ * @param {string} [props.area] Template part area (default kitaris-cards).
  * @param {string} [props.defaultSlug] Default slug for reset / deselect.
  * @param {Function} [props.slugFilter] Optional (slug, postType) => boolean.
  * @param {Function} [props.onSlugChange] Optional side effect when slug changes.

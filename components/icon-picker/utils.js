@@ -1,7 +1,7 @@
 import DOMPurify from "dompurify";
 
 /**
- * Shown when no icon is set: the polaris-essential "star" icon
+ * Shown when no icon is set: the kitaris-essential "star" icon
  * (copied from wp-blocks src/util/essential-icons.js).
  */
 export const PLACEHOLDER_SVG =

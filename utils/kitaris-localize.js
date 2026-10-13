@@ -1,8 +1,8 @@
 /**
- * Resolve polaris_localize across nested editor iframes (canvas vs shell).
+ * Resolve kitaris_localize across nested editor iframes (canvas vs shell).
  *
- * NOTE: window.polaris_localize, window.polarisLocalizeAdmin, and
- * window.polarisLocalizeShared are PHP-injected globals — their names are
+ * NOTE: window.kitaris_localize, window.kitarisLocalizeAdmin, and
+ * window.kitarisLocalizeShared are PHP-injected globals — their names are
  * controlled by the host plugin and cannot be changed here.
  */
 export const SKIN_CHANGED_EVENT = "themeSkinSwitcherChanged";
@@ -43,7 +43,7 @@ export function getLocalizeWindow(patternSlug = "") {
 	if (patternSlug) {
 		for (let i = chain.length - 1; i >= 0; i--) {
 			const url =
-				chain[i].polaris_localize?.blocks?.editor_experience?.patterns
+				chain[i].kitaris_localize?.blocks?.editor_experience?.patterns
 					?.pattern_urls?.[patternSlug];
 
 			if (url) {
@@ -53,7 +53,7 @@ export function getLocalizeWindow(patternSlug = "") {
 
 		for (let i = chain.length - 1; i >= 0; i--) {
 			const patterns =
-				chain[i].polaris_localize?.blocks?.editor_experience?.patterns;
+				chain[i].kitaris_localize?.blocks?.editor_experience?.patterns;
 
 			if (patterns?.available_patterns?.[patternSlug]) {
 				return chain[i];
@@ -62,7 +62,7 @@ export function getLocalizeWindow(patternSlug = "") {
 	}
 
 	for (let i = chain.length - 1; i >= 0; i--) {
-		if (chain[i].polaris_localize?.blocks?.editor_experience?.patterns) {
+		if (chain[i].kitaris_localize?.blocks?.editor_experience?.patterns) {
 			return chain[i];
 		}
 	}
@@ -75,7 +75,7 @@ export function getLocalizeWindow(patternSlug = "") {
  * @return {object|undefined}
  */
 export function getLocalize(patternSlug = "") {
-	return getLocalizeWindow(patternSlug).polaris_localize;
+	return getLocalizeWindow(patternSlug).kitaris_localize;
 }
 
 /**
@@ -94,7 +94,7 @@ export function getEditorExperienceSectionDivider() {
 
 	for (let i = chain.length - 1; i >= 0; i--) {
 		const sectionDivider =
-			chain[i].polaris_localize?.blocks?.editor_experience?.section_divider;
+			chain[i].kitaris_localize?.blocks?.editor_experience?.section_divider;
 
 		if (sectionDivider) {
 			return sectionDivider;
@@ -106,6 +106,6 @@ export function getEditorExperienceSectionDivider() {
 
 // Backwards-compat aliases for the renamed functions.
 /** @deprecated Use getLocalizeWindow instead. */
-export const getPolarisLocalizeWindow = getLocalizeWindow;
+export const getKitarisLocalizeWindow = getLocalizeWindow;
 /** @deprecated Use getLocalize instead. */
-export const getPolarisLocalize = getLocalize;
+export const getKitarisLocalize = getLocalize;

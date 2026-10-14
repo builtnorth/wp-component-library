@@ -31,6 +31,5 @@ jobs:
             publish-to-github: false
             use-workspace: false
             test-command: "test:unit"
-            # Lint stays off until the existing code passes the lint rules.
-            run-lint: false
+            lint-command: "lint:js"
         secrets: inherit

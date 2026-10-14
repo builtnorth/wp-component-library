@@ -17,18 +17,12 @@ function ButtonFrontend({
     size = "default",
     style = "default",
     text = "Button Text",
-    link = "#",
-    target = null,
     screenReader = null,
-    wrapperAttributes = null,
 }) {
     // Add screen reader text
     const screenReaderElement = screenReader ? (
         <span className="screen-reader-only">{screenReader}</span>
     ) : null;
-
-    // Add target attribute
-    const targetAttr = target ? { target: target } : {};
 
     // Add classes
     const wrapperClass = className

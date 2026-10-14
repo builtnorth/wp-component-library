@@ -92,7 +92,6 @@ function CustomColumnAppender({
 const CustomInlineAppender = ({
     clientId,
     label = __("Add Block", "wp-component-library"),
-    blockName = "core/paragraph",
 }) => {
     const isActive = useSelect(
         (select) => {

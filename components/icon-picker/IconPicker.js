@@ -33,6 +33,7 @@ export function IconPicker({ value, onChange, label = "", className = "" }) {
 	const svgSource = hasIcon ? value.source : PLACEHOLDER_SVG;
 
 	return (
+		// eslint-disable-next-line @wordpress/no-base-control-with-label-without-id -- the button has its own aria-label.
 		<BaseControl
 			label={label || __("Icon", "wp-component-library")}
 			className={className || undefined}
@@ -48,7 +49,6 @@ export function IconPicker({ value, onChange, label = "", className = "" }) {
 						: __("Choose icon", "wp-component-library")
 				}
 			>
-				{/* eslint-disable-next-line react/no-danger */}
 				<PickerPreview dangerouslySetInnerHTML={{ __html: svgSource }} />
 				<PickerName>
 					{hasIcon

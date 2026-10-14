@@ -33,14 +33,9 @@ function AttributesPanel({
 	// Get available meta fields from the current post type
 	const metaFields = useSelect((select) => {
 		const { getEditedPostAttribute } = select('core/editor');
-		const { getPostType } = select('core');
 		
 		// Try to get meta from editor first
 		const meta = getEditedPostAttribute?.('meta') || {};
-		
-		// Get registered meta fields for the post type
-		const postType = getEditedPostAttribute?.('type');
-		const postTypeObject = postType ? getPostType(postType) : null;
 		
 		// Combine meta keys from various sources
 		const metaKeys = new Set();
@@ -121,7 +116,7 @@ function AttributesPanel({
 	};
 
 	const handleAttributeSelect = (id, selectedValue) => {
-		if (!selectedValue) return;
+		if (!selectedValue) { return; }
 		
 		// Check if attribute already exists
 		const existingAttr = localAttributes.find(attr => attr.id === id);
@@ -169,9 +164,6 @@ function AttributesPanel({
 	const resetAttribute = (id) => {
 		handleAttributeChange(id, '');
 	};
-
-	// Check if any attributes have values
-	const hasValues = localAttributes.some(attr => attr.value);
 
 	return (
 		<ToolsPanel

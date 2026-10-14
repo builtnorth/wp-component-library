@@ -46,6 +46,7 @@ function CardTemplatePartPanel({
 
 	return (
 		<ToolsPanel
+			// eslint-disable-next-line @wordpress/i18n-text-domain -- text domain is a prop for the consumer.
 			label={__("Card layout", textDomain)}
 			resetAll={resetCardLayout}
 		>

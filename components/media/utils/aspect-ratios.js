@@ -6,15 +6,15 @@ import { __ } from "@wordpress/i18n";
  * WordPress core aspect ratio presets (when theme enables defaultAspectRatios).
  * @see https://developer.wordpress.org/news/2024/08/registering-custom-aspect-ratios-in-wordpress-6-6/
  */
-const DEFAULT_CORE_ASPECT_RATIOS = [
-	{ name: "Square", ratio: "1" },
-	{ name: "Standard", ratio: "4/3" },
-	{ name: "Portrait", ratio: "3/4" },
-	{ name: "Classic", ratio: "3/2" },
-	{ name: "Classic Portrait", ratio: "2/3" },
-	{ name: "Wide", ratio: "16/9" },
-	{ name: "Extra Wide", ratio: "21/9" },
-	{ name: "Tall", ratio: "9/16" },
+const getDefaultCoreAspectRatios = () => [
+	{ name: __("Square", "wp-component-library"), ratio: "1" },
+	{ name: __("Standard", "wp-component-library"), ratio: "4/3" },
+	{ name: __("Portrait", "wp-component-library"), ratio: "3/4" },
+	{ name: __("Classic", "wp-component-library"), ratio: "3/2" },
+	{ name: __("Classic Portrait", "wp-component-library"), ratio: "2/3" },
+	{ name: __("Wide", "wp-component-library"), ratio: "16/9" },
+	{ name: __("Extra Wide", "wp-component-library"), ratio: "21/9" },
+	{ name: __("Tall", "wp-component-library"), ratio: "9/16" },
 ];
 
 /**
@@ -96,10 +96,7 @@ export function useAspectRatioOptions() {
 		});
 
 		if (presets.length === 0 && defaultAspectRatiosEnabled !== false) {
-			presets = DEFAULT_CORE_ASPECT_RATIOS.map((ratio) => ({
-				name: __(ratio.name, "wp-component-library"),
-				ratio: ratio.ratio,
-			}));
+			presets = getDefaultCoreAspectRatios();
 		}
 
 		const ratioOptions = presets

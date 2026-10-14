@@ -49,7 +49,7 @@ export function registerBlockExtension(
 	const isArray = Array.isArray(blockName);
 
 	// Normalise wildcard
-	if (blockName === "*") blockName = "all";
+	if (blockName === "*") { blockName = "all"; }
 
 	/**
 	 * Returns true when `name` should be extended.
@@ -58,8 +58,8 @@ export function registerBlockExtension(
 	 * @returns {boolean}
 	 */
 	const matches = (name) => {
-		if (blockName === "all") return true;
-		if (isArray) return blockName.includes(name);
+		if (blockName === "all") { return true; }
+		if (isArray) { return blockName.includes(name); }
 		return name === blockName;
 	};
 
@@ -73,7 +73,7 @@ export function registerBlockExtension(
 		"blocks.registerBlockType",
 		`${prefix}/addAttributesToBlock`,
 		(settings, name) => {
-			if (!matches(name)) return settings;
+			if (!matches(name)) { return settings; }
 			return {
 				...settings,
 				attributes: { ...settings.attributes, ...attributes },
@@ -87,7 +87,7 @@ export function registerBlockExtension(
 		(BlockEdit) => (props) => {
 			const { name, isSelected } = props;
 
-			if (!matches(name)) return createElement(BlockEdit, props);
+			if (!matches(name)) { return createElement(BlockEdit, props); }
 
 			const before = order === "before" && isSelected;
 			const after = order === "after" && isSelected;
@@ -120,10 +120,9 @@ export function registerBlockExtension(
 				wrapperProps,
 			} = props;
 
-			if (!matches(name)) return createElement(BlockListBlock, props);
+			if (!matches(name)) { return createElement(BlockListBlock, props); }
 
 			const generatedClass = classNameGenerator(blockAttrs);
-			const mergedClass = cx(className, generatedClass);
 
 			let mergedStyle = { ...style };
 			let generatedStyle = null;
@@ -140,6 +139,8 @@ export function registerBlockExtension(
 			if (!generatedClass && !generatedStyle) {
 				return createElement(BlockListBlock, props);
 			}
+
+			const mergedClass = cx(className, generatedClass);
 
 			return createElement(BlockListBlock, {
 				...props,
@@ -164,10 +165,9 @@ export function registerBlockExtension(
 		(extraProps, blockType, blockAttrs) => {
 			const { className = "", style = {} } = extraProps;
 
-			if (!matches(blockType.name)) return extraProps;
+			if (!matches(blockType.name)) { return extraProps; }
 
 			const generatedClass = classNameGenerator(blockAttrs);
-			const mergedClass = cx(className, generatedClass);
 
 			let mergedStyle = { ...style };
 			let generatedStyle = null;
@@ -177,7 +177,9 @@ export function registerBlockExtension(
 				mergedStyle = { ...style, ...generatedStyle };
 			}
 
-			if (!generatedClass && !generatedStyle) return extraProps;
+			if (!generatedClass && !generatedStyle) { return extraProps; }
+
+			const mergedClass = cx(className, generatedClass);
 
 			return { ...extraProps, className: mergedClass, style: mergedStyle };
 		},
@@ -191,9 +193,9 @@ export function registerBlockExtension(
  * @param {string}          extensionName Same extensionName passed to registerBlockExtension.
  */
 export function unregisterBlockExtension(blockName, extensionName) {
-	if (!blockName || !extensionName) return;
+	if (!blockName || !extensionName) { return; }
 
-	if (blockName === "*") blockName = "all";
+	if (blockName === "*") { blockName = "all"; }
 
 	const isArray = Array.isArray(blockName);
 	const ns = isArray ? blockName.join("-") : blockName;

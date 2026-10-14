@@ -43,11 +43,6 @@ function TaxonomySelect({
         return allTaxonomies.filter((tax) => tax.types.includes(postType));
     }, [allTaxonomies, postType]);
 
-    // Memoize taxonomies with fallback to prevent new array creation
-    const taxonomies = useMemo(() => {
-        return allTaxonomies || [];
-    }, [allTaxonomies]);
-
     // Auto-select first taxonomy when post type changes (only if showNoneOption is false)
     useEffect(() => {
         if (filteredTaxonomies.length > 0) {
@@ -126,6 +121,7 @@ function TaxonomySelect({
                 }
                 disabled={!postType || filteredTaxonomies.length === 0}
                 help={
+                    // eslint-disable-next-line no-nested-ternary -- render branches.
                     !postType
                         ? __("Please select a post type first", "built")
                         : filteredTaxonomies.length === 0

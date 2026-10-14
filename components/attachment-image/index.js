@@ -33,7 +33,7 @@ function AttachmentImage({
         image: select("core").getEntityRecord("postType", "attachment", imageId),
     }));
 
-    if (!imageId || imageId === 0 || !image) return null;
+    if (!imageId || imageId === 0 || !image) { return null; }
 
     const appendToFirstClass = (classString, appendix) => {
         const classes = classString.split(" ");
@@ -44,7 +44,7 @@ function AttachmentImage({
     };
 
     const imageAttributes = () => {
-        let attributes = {
+        const attributes = {
             className: appendToFirstClass(className, "__img"),
             src: image.source_url,
             alt: customAlt || image.alt_text,
@@ -52,7 +52,7 @@ function AttachmentImage({
             height: image.media_details.height,
             sizes: `(max-width: ${maxWidth}) 100vw, ${maxWidth}`,
             style: {
-                aspectRatio: aspectRatio,
+                aspectRatio,
                 ...(objectFit ? { objectFit } : {}),
             },
         };
@@ -71,6 +71,7 @@ function AttachmentImage({
         return { ...attributes, ...overrideProps };
     };
 
+    // eslint-disable-next-line jsx-a11y/alt-text -- alt comes from imageAttributes().
     const imgElement = <img {...imageAttributes()} />;
     const captionElement =
         showCaption && caption ? (

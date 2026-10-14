@@ -10,6 +10,7 @@ import { forwardRef } from "@wordpress/element";
 import { useIcon } from "./hooks";
 import { safeSvgSource } from "./utils";
 
+// eslint-disable-next-line no-shadow -- named for React DevTools.
 const IconDisplay = forwardRef(function IconDisplay(
 	{ name, iconSet, source, onClick, className = "", style, ...rest },
 	ref,
@@ -41,7 +42,6 @@ const IconDisplay = forwardRef(function IconDisplay(
 		<div
 			ref={ref}
 			className={`wpcl-icon${className ? ` ${className}` : ""}`}
-			// eslint-disable-next-line react/no-danger
 			dangerouslySetInnerHTML={{ __html: svgSource }}
 			style={style}
 			{...clickProps}

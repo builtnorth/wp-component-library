@@ -21,23 +21,24 @@ function PostTypeSelect({
 }) {
     const defaultPostType = "post";
 
+    const getPostTypeList = useSelect((select) =>
+        select("core").getPostTypes({ per_page: 20 }),
+    );
+
     const getPostTypesOptions = () => {
-        const getPostTypeList = useSelect((select) =>
-            select("core").getPostTypes({ per_page: 20 }),
-        );
         let filteredPostTypes = [];
         let postTypesOptions = [];
 
         if (getPostTypeList) {
             filteredPostTypes = getPostTypeList.filter(
-                (postType) =>
-                    postType.viewable == true &&
-                    postType.rest_base !== "media" &&
-                    postType.rest_base !== "pages",
+                (type) =>
+                    type.viewable === true &&
+                    type.rest_base !== "media" &&
+                    type.rest_base !== "pages",
             );
-            postTypesOptions = filteredPostTypes.map((postType) => ({
-                label: postType.name,
-                value: postType.slug,
+            postTypesOptions = filteredPostTypes.map((type) => ({
+                label: type.name,
+                value: type.slug,
             }));
         }
 

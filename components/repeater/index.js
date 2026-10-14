@@ -31,13 +31,13 @@ import {
 	trash,
 } from "@wordpress/icons";
 import PropTypes from "prop-types";
-import React, {
+import {
 	createContext,
 	useContext,
 	useEffect,
 	useRef,
 	useState,
-} from "react";
+} from "@wordpress/element";
 
 // Styled components
 const StyledRepeater = styled.div`
@@ -284,6 +284,7 @@ export const DragHandle = ({
 	const context = useContext(RepeaterItemContext);
 
 	if (!context) {
+		// eslint-disable-next-line no-console -- developer misuse warning.
 		console.warn("DragHandle must be used within a Repeater item");
 		return null;
 	}
@@ -314,6 +315,7 @@ export const RemoveButton = ({ label = __("Remove", "wp-component-library"), ...
 	const context = useContext(RepeaterItemContext);
 
 	if (!context) {
+		// eslint-disable-next-line no-console -- developer misuse warning.
 		console.warn("RemoveButton must be used within a Repeater item");
 		return null;
 	}

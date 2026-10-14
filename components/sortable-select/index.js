@@ -186,6 +186,7 @@ function tokensToString(tokens, getOptionLabel, getOptionValue) {
 /**
  * Memoized input component to prevent re-renders during drag
  */
+// eslint-disable-next-line no-shadow -- named for React DevTools.
 const SearchInput = memo(function SearchInput({
 	inputRef,
 	inputValue,
@@ -223,7 +224,7 @@ const SearchInput = memo(function SearchInput({
 			onBlurClose();
 		},
 		onKeyDown: handleKeyDown,
-		placeholder: placeholder,
+		placeholder,
 		disabled: isDisabled,
 	};
 	
@@ -238,6 +239,7 @@ const SearchInput = memo(function SearchInput({
  * Inner component that handles the actual select functionality
  * Separated to prevent BaseControl from re-rendering
  */
+// eslint-disable-next-line no-shadow -- named for React DevTools.
 const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	value,
 	onChange,
@@ -256,7 +258,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 	const [inputValue, setInputValue] = useState("");
 	const [showSuggestions, setShowSuggestions] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
-	const [loadedOptions, setLoadedOptions] = useState([]);
+	const [, setLoadedOptions] = useState([]);
 	const [isDragging, setIsDragging] = useState(false);
 	const [isFocused, setIsFocused] = useState(false);
 
@@ -298,17 +300,6 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 		}),
 	);
 
-	// Create a map for quick lookups
-	const optionsByLabel = useMemo(() => {
-		const map = new Map();
-
-		// Add all available options
-		[...options, ...loadedOptions, ...value].forEach((option) => {
-			map.set(getOptionLabel(option), option);
-		});
-
-		return map;
-	}, [options, loadedOptions, value, getOptionLabel]);
 
 	// Load suggestions when input changes, or on focus before typing (all
 	// options; not with requirePrefix, where "@" opens the list).
@@ -390,6 +381,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 				setSuggestions(filtered);
 				setShowSuggestions(filtered.length > 0);
 			} catch (error) {
+				// eslint-disable-next-line no-console -- surface load failures to developers.
 				console.error("Error loading options:", error);
 				setSuggestions([]);
 				setShowSuggestions(false);
@@ -533,9 +525,9 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 		if (
 			!isDragging &&
 			inputRef.current &&
-			document.activeElement !== inputRef.current
+			inputRef.current.ownerDocument.activeElement !== inputRef.current
 		) {
-			const hadFocus = document.activeElement?.closest(
+			const hadFocus = inputRef.current.ownerDocument.activeElement?.closest(
 				".sortable-select__input-wrapper",
 			);
 			if (hadFocus) {
@@ -605,7 +597,7 @@ const SortableSelectInner = memo(forwardRef(function SortableSelectInner({
 							<StyledLoading>
 								<Spinner />
 								<span>
-									{__("Loading...", "wp-component-library")}
+									{__("Loading…", "wp-component-library")}
 								</span>
 							</StyledLoading>
 						) : (
@@ -655,27 +647,26 @@ export default function SortableSelect({
 	loadOptions,
 	getOptionLabel = (option) => option.label || option.name || option.title,
 	getOptionValue = (option) => option.value || option.id,
-	placeholder = __("Search and select...", "wp-component-library"),
+	placeholder = __("Search and select…", "wp-component-library"),
 	label,
 	help,
-	isMulti = true,
 	isDisabled = false,
 	className = "",
 	maxItems,
 	requirePrefix = false,
 	inputType = 'text',
-	...props
 }) {
 	const innerRef = useRef();
 	
 	return (
+		// eslint-disable-next-line @wordpress/no-base-control-with-label-without-id -- custom token input; see lint report.
 		<BaseControl
 			__nextHasNoMarginBottom
 			__next40pxDefaultMarginBottom
 			label={label}
 			help={help}
 			className={`sortable-select ${className}`}
-			onClick={(e) => {
+			onClick={() => {
 				// Focus input when clicking anywhere on the BaseControl
 				innerRef.current?.focus();
 			}}

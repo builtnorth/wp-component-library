@@ -96,12 +96,11 @@ function SettingsMediaUpload({
     help = null,
     buttonTitle = null,
     showImagePlaceholder = true,
-    size = "medium",
 }) {
     // Get image data for preview
     const imageData = useSelect(
         (select) => {
-            if (!imageId) return null;
+            if (!imageId) { return null; }
             return select("core").getEntityRecord("postType", "attachment", imageId);
         },
         [imageId]

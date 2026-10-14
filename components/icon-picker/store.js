@@ -35,7 +35,7 @@ const storeSelectors = {
 		const sorted = [...sets].sort((a, b) => {
 			const pa = a.priority ?? 0;
 			const pb = b.priority ?? 0;
-			if (pb !== pa) return pb - pa;
+			if (pb !== pa) { return pb - pa; }
 			return a.name.localeCompare(b.name);
 		});
 
@@ -72,7 +72,7 @@ const storeSelectors = {
 	 */
 	getIcons(state, name) {
 		const set = state.iconSets[name];
-		if (!set) return [];
+		if (!set) { return []; }
 
 		return set.icons.reduce((acc, icon) => {
 			const filtered = applyFilters("wpcl.icons.icon", icon, set);
@@ -88,7 +88,7 @@ const storeSelectors = {
 	 */
 	getIcon(state, iconSetName, iconName) {
 		const set = state.iconSets[iconSetName];
-		if (!set) return undefined;
+		if (!set) { return undefined; }
 		return set.icons.find((icon) => icon.name === iconName);
 	},
 };
@@ -139,7 +139,7 @@ function reducer(state = DEFAULT_STATE, action) {
 
 		case "SET_ICON_SET_LOADING": {
 			const set = state.iconSets[action.name];
-			if (!set) return state;
+			if (!set) { return state; }
 			return {
 				...state,
 				iconSets: {
@@ -155,7 +155,7 @@ function reducer(state = DEFAULT_STATE, action) {
 
 		case "SET_ICON_SET_ICONS": {
 			const set = state.iconSets[action.name];
-			if (!set) return state;
+			if (!set) { return state; }
 			return {
 				...state,
 				iconSets: {
@@ -172,7 +172,7 @@ function reducer(state = DEFAULT_STATE, action) {
 
 		case "SET_ICON_SET_ERROR": {
 			const set = state.iconSets[action.name];
-			if (!set) return state;
+			if (!set) { return state; }
 			return {
 				...state,
 				iconSets: {
@@ -187,7 +187,7 @@ function reducer(state = DEFAULT_STATE, action) {
 		}
 
 		case "REMOVE_ICON_SET": {
-			if (!state.iconSets[action.name]) return state;
+			if (!state.iconSets[action.name]) { return state; }
 			const next = {
 				...state,
 				iconSets: { ...state.iconSets },

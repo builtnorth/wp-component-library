@@ -64,6 +64,7 @@ function ManualTermSelector({
 
 				return terms || [];
 			} catch (error) {
+				// eslint-disable-next-line no-console -- surface REST failures to developers.
 				console.error('Error loading terms:', error);
 				return [];
 			}
@@ -96,7 +97,7 @@ function ManualTermSelector({
 			loadOptions={loadTerms}
 			getOptionLabel={(term) => term.name || `Term #${term.id}`}
 			getOptionValue={(term) => term.id}
-			placeholder={__("Type to search terms...", "built")}
+			placeholder={__("Type to search terms…", "built")}
 			label={__("Select Terms", "built")}
 			help={__(
 				"Start typing to search for taxonomy terms, then select them from the dropdown. Drag to reorder.",

@@ -26,14 +26,22 @@ function toCssAspectRatio(ratio) {
 	return String(16 / 9);
 }
 
+/**
+ * CSS max-width for the preview (number = px; empty = none).
+ *
+ * @param {number|string|null} maxWidth
+ * @returns {string}
+ */
+function toCssMaxWidth(maxWidth) {
+	if (maxWidth == null || maxWidth === "") {
+		return "none";
+	}
+	return typeof maxWidth === "number" ? `${maxWidth}px` : maxWidth;
+}
+
 // Styled components
 const StyledWrapper = styled.div`
-	max-width: ${(props) =>
-		props.maxWidth != null && props.maxWidth !== ""
-			? typeof props.maxWidth === "number"
-				? `${props.maxWidth}px`
-				: props.maxWidth
-			: "none"};
+	max-width: ${(props) => toCssMaxWidth(props.maxWidth)};
 
 	/* Shared frame so placeholder and selected image occupy the same box. */
 	.built-inspector-media-preview {
@@ -82,7 +90,7 @@ const ALLOWED_MEDIA_TYPES = ["image"];
  */
 function useMediaOpen({ onSelect, multiple, allowedTypes }) {
 	return useCallback(() => {
-		if (typeof wp === "undefined" || !wp.media) return;
+		if (typeof wp === "undefined" || !wp.media) { return; }
 
 		const frame = wp.media({
 			title: __("Select or Upload Media", "wp-component-library"),
@@ -118,7 +126,6 @@ function InspectorMediaUpload({
 	mediaIDs,
 	onSelect,
 	onRemove,
-	gallery,
 	multiple,
 	buttonTitle,
 	variant,
@@ -127,21 +134,20 @@ function InspectorMediaUpload({
 	label = null,
 	help = null,
 	showImagePlaceholder,
-	getImageUrlFromMediaIDs,
 	aspectRatio = 16 / 9,
 	maxWidth = null,
 }) {
 	// Handle ID, [id], and attachment object formats for mediaIDs.
 	const getMediaId = (mediaData) => {
-		if (!mediaData) return null;
-		if (typeof mediaData === "number") return mediaData;
+		if (!mediaData) { return null; }
+		if (typeof mediaData === "number") { return mediaData; }
 		if (typeof mediaData === "string" && /^\d+$/.test(mediaData)) {
 			return parseInt(mediaData, 10);
 		}
 		if (Array.isArray(mediaData)) {
 			return getMediaId(mediaData[0]);
 		}
-		if (typeof mediaData === "object" && mediaData.id) return mediaData.id;
+		if (typeof mediaData === "object" && mediaData.id) { return mediaData.id; }
 		return null;
 	};
 

@@ -29,7 +29,7 @@ const MetaPanelBase = ({
     const [isOpen, setOpen] = useState(false);
 
     // Only show for specified post type
-    if (postType && postType !== currentPostType) return null;
+    if (postType && postType !== currentPostType) { return null; }
 
     return (
         <>

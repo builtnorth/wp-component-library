@@ -73,6 +73,7 @@ export const statusColor = (type, role = "accent") => {
 	const family = CORE_FAMILY[type] ?? "error";
 	const fallback = STATUS_COLOR_FALLBACKS[type]?.[variant] ?? "#646970";
 
+	// eslint-disable-next-line @wordpress/no-unknown-ds-tokens -- token names come from the ROLES/CORE_FAMILY maps above.
 	return `var(--wpds-color-${token.replace("%s", family)}, ${fallback})`;
 };
 

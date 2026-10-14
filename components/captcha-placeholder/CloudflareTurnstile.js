@@ -17,8 +17,8 @@ const Turnstile = styled.div`
 	display: inline-flex;
 	align-items: center;
 	background: ${props => {
-		if (props.theme === 'dark') return '#1f1f1f';
-		if (props.mode === 'non-interactive') return '#f9fafb';
+		if (props.theme === 'dark') { return '#1f1f1f'; }
+		if (props.mode === 'non-interactive') { return '#f9fafb'; }
 		return 'white';
 	}};
 	border: 1px solid ${props => props.theme === 'dark' ? '#444' : '#ddd'};
@@ -101,7 +101,7 @@ export function CloudflareTurnstile({ theme, mode }) {
 				{mode === 'non-interactive' && (
 					<TurnstileSpinner>
 						<TurnstileSpinnerInner />
-						<TurnstileLabel theme={theme}>{__("Verifying...", "wp-component-library")}</TurnstileLabel>
+						<TurnstileLabel theme={theme}>{__("Verifying…", "wp-component-library")}</TurnstileLabel>
 					</TurnstileSpinner>
 				)}
 				<TurnstileLogo>Cloudflare</TurnstileLogo>

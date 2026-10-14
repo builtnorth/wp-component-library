@@ -133,6 +133,7 @@ function CardTemplatePartSelect({
 			hasValue={() =>
 				!!templatePartSlug && templatePartSlug !== resolvedDefault
 			}
+			// eslint-disable-next-line @wordpress/i18n-text-domain -- text domain is a prop for the consumer.
 			label={__("Card layout", textDomain)}
 			onDeselect={() => {
 				setAttributes({ templatePartSlug: resolvedDefault });
@@ -146,7 +147,9 @@ function CardTemplatePartSelect({
 			<SelectControl
 				__nextHasNoMarginBottom={true}
 				__next40pxDefaultSize
+				// eslint-disable-next-line @wordpress/i18n-text-domain -- text domain is a prop for the consumer.
 				label={__("Card layout", textDomain)}
+				// eslint-disable-next-line @wordpress/i18n-text-domain -- text domain is a prop for the consumer.
 				help={__(
 					"Choose which card template part to use for each post in the loop.",
 					textDomain,

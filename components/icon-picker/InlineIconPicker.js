@@ -54,7 +54,6 @@ export function InlineIconPicker({
 
 	if (!isInteractive) {
 		return (
-			// eslint-disable-next-line react/no-danger
 			<InlinePickerWrap
 				as="div"
 				className={className || undefined}
@@ -66,7 +65,6 @@ export function InlineIconPicker({
 
 	return (
 		<>
-			{/* eslint-disable-next-line react/no-danger */}
 			<InlinePickerWrap
 				as="div"
 				role="button"

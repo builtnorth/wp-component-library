@@ -36,7 +36,6 @@ export function IconPickerToolbarButton({
 
 	const svgSource = safeSvgSource(value?.source ?? PLACEHOLDER_SVG) || PLACEHOLDER_SVG;
 
-	// eslint-disable-next-line react/no-danger
 	const toolbarIcon = (
 		<ToolbarIconWrap dangerouslySetInnerHTML={{ __html: svgSource }} />
 	);

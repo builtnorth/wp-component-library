@@ -62,6 +62,7 @@ function ManualPostSelector({
 
                 return posts || [];
             } catch (error) {
+                // eslint-disable-next-line no-console -- surface REST failures to developers.
                 console.error('Error loading posts:', error);
                 return [];
             }
@@ -94,7 +95,7 @@ function ManualPostSelector({
             loadOptions={loadPosts}
             getOptionLabel={(post) => post.title?.rendered || `Post #${post.id}`}
             getOptionValue={(post) => post.id}
-            placeholder={__("Type to search posts...", "built")}
+            placeholder={__("Type to search posts…", "built")}
             label={__("Select Posts", "built")}
             help={__(
                 "Start typing to search for posts, then select them from the dropdown. Drag to reorder.",

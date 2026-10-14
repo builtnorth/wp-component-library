@@ -94,8 +94,8 @@ export default function CustomSortableToken({
 		transition,
 		isDragging,
 	} = useSortable({
-		id: id,
-		disabled: disabled,
+		id,
+		disabled,
 	});
 
 	const style = {

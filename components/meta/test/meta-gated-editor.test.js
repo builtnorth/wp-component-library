@@ -52,6 +52,7 @@ function hides(bindings, innerBlocks = [], { meta = {}, metaField } = {}) {
 	mockInnerBlocks = innerBlocks;
 	mockMeta = meta;
 
+	// eslint-disable-next-line react-hooks/rules-of-hooks -- called directly; its data hooks are mocked.
 	return useMetaGatedEditorVisibility({
 		attributes: { hideWhenMetaEmpty: true, metaField, metadata: { bindings } },
 		clientId: "client-1",

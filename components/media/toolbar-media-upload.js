@@ -19,13 +19,12 @@ function ToolbarMediaUpload({
     onSelect,
     gallery,
     multiple,
-    buttonTitle,
 }) {
     // Handle both ID and object formats for mediaIDs
     const getMediaId = (mediaData) => {
-        if (!mediaData) return null;
-        if (typeof mediaData === "number") return mediaData;
-        if (typeof mediaData === "object" && mediaData.id) return mediaData.id;
+        if (!mediaData) { return null; }
+        if (typeof mediaData === "number") { return mediaData; }
+        if (typeof mediaData === "object" && mediaData.id) { return mediaData.id; }
         return null;
     };
 

@@ -67,8 +67,8 @@ export function Badge({
 }) {
     // Determine icon based on intent - matches Gutenberg icons
     const getIntentIcon = () => {
-        if (icon) return icon;
-        if (!showIcon) return null;
+        if (icon) { return icon; }
+        if (!showIcon) { return null; }
 
         switch (intent) {
             case "error":

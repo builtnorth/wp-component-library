@@ -71,7 +71,7 @@ const MIN_LIST_HEIGHT = 200;
 function buildRows(groups) {
 	const rows = [];
 	for (const group of groups) {
-		if (!group.icons.length) continue;
+		if (!group.icons.length) { continue; }
 		rows.push({ type: "header", label: group.label });
 		for (let i = 0; i < group.icons.length; i += COLUMNS) {
 			rows.push({
@@ -86,6 +86,7 @@ function buildRows(groups) {
 /**
  * Single icon cell — memoized to avoid re-renders during scroll.
  */
+// eslint-disable-next-line no-shadow -- named for React DevTools.
 const IconCell = memo(function IconCell({ icon, isSelected, onSelect }) {
 	const handleClick = useCallback(() => onSelect(icon), [icon, onSelect]);
 	const handleKeyDown = useCallback(
@@ -110,7 +111,6 @@ const IconCell = memo(function IconCell({ icon, isSelected, onSelect }) {
 			aria-label={displayName}
 			aria-pressed={isSelected}
 		>
-			{/* eslint-disable-next-line react/no-danger */}
 			<CellSvg
 				dangerouslySetInnerHTML={{ __html: safeSvgSource(icon.source) }}
 			/>
@@ -123,6 +123,7 @@ const IconCell = memo(function IconCell({ icon, isSelected, onSelect }) {
  * Row renderer for react-window VariableSizeList.
  * react-window passes an absolute-positioned `style` for each row.
  */
+// eslint-disable-next-line no-shadow -- named for React DevTools.
 const RowRenderer = memo(function RowRenderer({ index, style, data }) {
 	const { rows, selectedIcon, onSelect } = data;
 	const row = rows[index];
@@ -187,10 +188,10 @@ export function IconPickerModal({ value, onChange, onClose }) {
 			: groups;
 
 		const term = search.trim();
-		if (!term) return setFiltered;
+		if (!term) { return setFiltered; }
 
 		const idxs = fuzzy.filter(haystack, term);
-		if (!idxs || !idxs.length) return [];
+		if (!idxs || !idxs.length) { return []; }
 
 		const matchedKeys = new Set(
 			idxs.map((i) => `${allIcons[i].iconSet}::${allIcons[i].name}`),
@@ -241,7 +242,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 
 		updateHeight();
 
-		const observer = new ResizeObserver(updateHeight);
+		const observer = new window.ResizeObserver(updateHeight);
 		observer.observe(el);
 
 		return () => observer.disconnect();
@@ -313,7 +314,6 @@ export function IconPickerModal({ value, onChange, onClose }) {
 	const headerActions = value?.source ? (
 		<HeaderSelectedInfo>
 			{__("Selected:", "wp-component-library")}
-			{/* eslint-disable-next-line react/no-danger */}
 			<HeaderSelectedSvg
 				dangerouslySetInnerHTML={{
 					__html: safeSvgSource(value.source),
@@ -361,6 +361,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 						</SearchAndFilter>
 
 						<IconCount>
+							{/* eslint-disable-next-line no-nested-ternary -- render branches. */}
 							{isLoading && totalIcons > 0
 								? sprintf(
 										/* translators: %d = number of icons loaded so far */
@@ -370,6 +371,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 										),
 										totalIcons,
 									)
+								// eslint-disable-next-line no-nested-ternary -- render branches.
 								: totalIcons > 0
 									? sprintf(
 											/* translators: %d = number of icons found */
@@ -392,6 +394,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 					</PickerControls>
 
 					<PickerBody ref={listWrapRef}>
+						{/* eslint-disable-next-line no-nested-ternary -- render branches. */}
 						{isInitialLoad ? (
 							<EmptyState>
 								{__("Loading icons…", "wp-component-library")}

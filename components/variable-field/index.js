@@ -17,6 +17,7 @@ import { DOWN, ENTER, ESCAPE, UP } from "@wordpress/keycodes";
  * Internal dependencies
  */
 import styled from "@emotion/styled";
+import { formatVariableToken, valueToChipHTML } from "./value-to-chip-html";
 
 // Styled components
 const StyledWrapper = styled.div`
@@ -168,11 +169,6 @@ const StyledSuggestion = styled.button`
     }
 `;
 
-const VARIABLE_TOKEN_PATTERN =
-    /\{\{([a-zA-Z0-9_.-]+)\}\}|\{([a-zA-Z0-9_.-]+)\}/g;
-
-const formatVariableToken = (name) => `{{${name}}}`;
-
 // Hidden input for form submission
 const StyledHiddenInput = styled.input`
     position: absolute;
@@ -182,8 +178,18 @@ const StyledHiddenInput = styled.input`
 `;
 
 /**
+ * The selection in the node's own window, so it also works inside the editor iframe.
+ *
+ * @param {Node|null} node
+ * @returns {Selection}
+ */
+const getSelectionFor = (node) =>
+    (node?.ownerDocument?.defaultView ?? window).getSelection();
+
+/**
  * VariableField Component
  */
+// eslint-disable-next-line no-shadow -- named for React DevTools.
 const VariableField = forwardRef(function VariableField(
     {
         value = "",
@@ -212,7 +218,6 @@ const VariableField = forwardRef(function VariableField(
     const containerRef = useRef();
     const wrapperRef = useRef();
     const hiddenInputRef = useRef();
-
     const resolveChipLabel = useCallback(
         (varName) => {
             const token = formatVariableToken(varName);
@@ -231,34 +236,20 @@ const VariableField = forwardRef(function VariableField(
     );
 
     // Convert value to HTML with chips
-    const valueToHTML = useCallback((val) => {
-        if (!val) return "";
-        // Add zero-width spaces between elements for better cursor positioning
-        let html = val.replace(
-            VARIABLE_TOKEN_PATTERN,
-            (match, doubleName, singleName) => {
-                const varName = doubleName || singleName;
-                const label = resolveChipLabel(varName);
-
-                return `<span class="variable-chip" contenteditable="false" data-variable="${varName}">${label}<span class="chip-remove">×</span></span>`;
-            },
-        );
-        // Ensure there's always an editable space at the end
-        if (!html.endsWith('\u200B')) {
-            html += '\u200B';
-        }
-        return html;
-    }, [resolveChipLabel]);
+    const valueToHTML = useCallback(
+        (val) => valueToChipHTML(val, resolveChipLabel),
+        [resolveChipLabel]
+    );
 
     // Get plain text from container
     const getPlainText = useCallback(() => {
-        if (!containerRef.current) return "";
+        if (!containerRef.current) { return ""; }
         
         let text = "";
         const nodes = containerRef.current.childNodes;
         
         nodes.forEach(node => {
-            if (node.nodeType === Node.TEXT_NODE) {
+            if (node.nodeType === window.Node.TEXT_NODE) {
                 // Remove zero-width spaces from the text
                 text += node.textContent.replace(/\u200B/g, '');
             } else if (node.classList && node.classList.contains("variable-chip")) {
@@ -272,7 +263,7 @@ const VariableField = forwardRef(function VariableField(
 
     // Initialize content
     useEffect(() => {
-        if (containerRef.current && document.activeElement !== containerRef.current) {
+        if (containerRef.current && containerRef.current.ownerDocument.activeElement !== containerRef.current) {
             const currentHTML = containerRef.current.innerHTML;
             const newHTML = valueToHTML(value);
             // Only update if content actually changed
@@ -283,10 +274,8 @@ const VariableField = forwardRef(function VariableField(
     }, [value, valueToHTML]);
 
     // Handle input changes
-    const handleInput = useCallback((e) => {
-        // Preserve cursor position
-        const selection = window.getSelection();
-        const savedRange = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+    const handleInput = useCallback(() => {
+        const selection = getSelectionFor(containerRef.current);
         
         const plainValue = getPlainText();
         
@@ -296,7 +285,7 @@ const VariableField = forwardRef(function VariableField(
             const container = range.startContainer;
             
             // Only check for @ in text nodes, not in chips
-            if (container.nodeType === Node.TEXT_NODE) {
+            if (container.nodeType === window.Node.TEXT_NODE) {
                 const textContent = container.textContent;
                 const offset = range.startOffset;
                 const textBeforeCursor = textContent.substring(0, offset);
@@ -313,8 +302,8 @@ const VariableField = forwardRef(function VariableField(
                     } else {
                         // Typing after @
                         const filtered = options.filter((option) => {
-                            const label = getOptionLabel(option).toLowerCase();
-                            return label.includes(searchTerm);
+                            const optionLabel = getOptionLabel(option).toLowerCase();
+                            return optionLabel.includes(searchTerm);
                         });
                         setSuggestions(filtered);
                         setShowSuggestions(filtered.length > 0);
@@ -336,13 +325,13 @@ const VariableField = forwardRef(function VariableField(
 
     // Handle selecting a suggestion
     const selectSuggestion = useCallback((option) => {
-        const selection = window.getSelection();
+        const selection = getSelectionFor(containerRef.current);
         
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
             const container = range.startContainer;
             
-            if (container.nodeType === Node.TEXT_NODE) {
+            if (container.nodeType === window.Node.TEXT_NODE) {
                 const textContent = container.textContent;
                 const offset = range.startOffset;
                 const textBeforeCursor = textContent.substring(0, offset);
@@ -377,7 +366,7 @@ const VariableField = forwardRef(function VariableField(
                     
                     // Find the last text node or create one if needed
                     for (let i = allNodes.length - 1; i >= 0; i--) {
-                        if (allNodes[i].nodeType === Node.TEXT_NODE) {
+                        if (allNodes[i].nodeType === window.Node.TEXT_NODE) {
                             targetNode = allNodes[i];
                             targetOffset = targetNode.textContent.length;
                             break;
@@ -385,7 +374,7 @@ const VariableField = forwardRef(function VariableField(
                     }
                     
                     if (targetNode) {
-                        const sel = window.getSelection();
+                        const sel = getSelectionFor(containerRef.current);
                         const newRange = document.createRange();
                         newRange.setStart(targetNode, targetOffset);
                         newRange.collapse(true);
@@ -431,7 +420,7 @@ const VariableField = forwardRef(function VariableField(
         
         // Handle backspace on chip boundaries
         if (e.key === 'Backspace') {
-            const selection = window.getSelection();
+            const selection = getSelectionFor(containerRef.current);
             if (selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
                 if (range.collapsed && range.startOffset === 0) {
@@ -451,10 +440,10 @@ const VariableField = forwardRef(function VariableField(
     const handlePaste = useCallback((e) => {
         e.preventDefault();
         const text = e.clipboardData.getData("text/plain");
-        if (!text) return;
+        if (!text) { return; }
 
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
+        const selection = getSelectionFor(containerRef.current);
+        if (!selection.rangeCount) { return; }
 
         const range = selection.getRangeAt(0);
         range.deleteContents();
@@ -482,7 +471,7 @@ const VariableField = forwardRef(function VariableField(
                 const chip = e.target.parentElement;
                 
                 // Save cursor position before removal
-                const selection = window.getSelection();
+                const selection = getSelectionFor(containerRef.current);
                 const focusNode = selection.focusNode;
                 const focusOffset = selection.focusOffset;
                 
@@ -542,6 +531,7 @@ const VariableField = forwardRef(function VariableField(
     );
 
     return (
+        // eslint-disable-next-line @wordpress/no-base-control-with-label-without-id -- contenteditable field; see lint report.
         <BaseControl
             __nextHasNoMarginBottom
             __next40pxDefaultSize

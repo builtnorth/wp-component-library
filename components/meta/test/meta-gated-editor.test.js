@@ -13,9 +13,10 @@ let mockBlockName = "test/block";
 let mockSupported;
 let mockMeta = {};
 
-jest.mock("@wordpress/blocks", () => ({ getBlockBindingsSource: (name) => mockSources[name] }));
-jest.mock("@wordpress/block-editor", () => ({ store: "core/block-editor" }));
-jest.mock("@wordpress/core-data", () => ({ store: "core" }));
+// WordPress provides these at runtime, so a standalone install has none: virtual mocks.
+jest.mock("@wordpress/blocks", () => ({ getBlockBindingsSource: (name) => mockSources[name] }), { virtual: true });
+jest.mock("@wordpress/block-editor", () => ({ store: "core/block-editor" }), { virtual: true });
+jest.mock("@wordpress/core-data", () => ({ store: "core" }), { virtual: true });
 jest.mock("@wordpress/data", () => ({
 	useSelect: (callback) =>
 		callback((store) => {
@@ -33,7 +34,7 @@ jest.mock("@wordpress/data", () => ({
 				getEditedEntityRecord: () => ({ meta: mockMeta }),
 			};
 		}),
-}));
+}), { virtual: true });
 
 /**
  * Internal dependencies

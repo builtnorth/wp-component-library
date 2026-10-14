@@ -30,6 +30,7 @@ jobs:
             publish-to-npm: true
             publish-to-github: false
             use-workspace: false
-            run-tests: false
+            test-command: "test:unit"
+            # Lint stays off until the existing code passes the lint rules.
             run-lint: false
         secrets: inherit

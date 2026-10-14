@@ -1,11 +1,16 @@
 /**
  * Order option values split into orderby and order at the last underscore.
  */
-// Only the parsing is under test; the controls aren't rendered.
-jest.mock("@wordpress/components", () => ({
-	SelectControl: () => null,
-	__experimentalToolsPanelItem: () => null,
-}));
+// Only the parsing is under test; the controls aren't rendered. Virtual:
+// WordPress provides the package at runtime, so a standalone install has none.
+jest.mock(
+	"@wordpress/components",
+	() => ({
+		SelectControl: () => null,
+		__experimentalToolsPanelItem: () => null,
+	}),
+	{ virtual: true }
+);
 
 import { defaultOrderOptions, parseOrderValue } from "../orderBySelect";
 

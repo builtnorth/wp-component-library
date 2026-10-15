@@ -53,6 +53,7 @@ const CORE_FAMILY = {
  * - accent: text, icons and chart series on neutral chrome
  * - stroke: borders, dots and markers
  * - surface: tinted backgrounds
+ * - fill: chart series, rings and bars (see statusColor)
  */
 const ROLES = {
 	content: ["foreground-content-%s", "dark"],
@@ -64,11 +65,19 @@ const ROLES = {
 /**
  * A status colour by role.
  *
+ * `fill` has no core token: core's status foregrounds are darkened for text
+ * contrast (caution reads olive as a fill), so filled shapes use the bright
+ * base palette instead.
+ *
  * @param {'success' | 'warning' | 'error' | 'info'} type
- * @param {'content' | 'accent' | 'stroke' | 'surface'} [role='accent']
+ * @param {'content' | 'accent' | 'stroke' | 'surface' | 'fill'} [role='accent']
  * @returns {string}
  */
 export const statusColor = (type, role = "accent") => {
+	if (role === "fill") {
+		return STATUS_COLOR_FALLBACKS[type]?.base ?? STATUS_COLOR_FALLBACKS.error.base;
+	}
+
 	const [token, variant] = ROLES[role] ?? ROLES.accent;
 	const family = CORE_FAMILY[type] ?? "error";
 	const fallback = STATUS_COLOR_FALLBACKS[type]?.[variant] ?? "#646970";
@@ -144,7 +153,7 @@ export const getScoreChartColors = (score) => {
 	const tier = getScoreStatusTier(score);
 
 	return {
-		chart: statusColor(tier, "accent"),
+		chart: statusColor(tier, "fill"),
 		text: statusColor(tier, "content"),
 	};
 };
@@ -193,8 +202,8 @@ export const getBadgeIntentColors = (intent) => {
 export const defaultChartStatusColors = [
 	ADMIN_COLOR.brandFill,
 	"#646970",
-	statusColor("success"),
-	statusColor("warning"),
-	statusColor("error"),
+	statusColor("success", "fill"),
+	statusColor("warning", "fill"),
+	statusColor("error", "fill"),
 	"#8b5cf6",
 ];

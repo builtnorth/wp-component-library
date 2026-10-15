@@ -12,7 +12,7 @@ import { statusColor } from "../../constants/statusColors";
 
 const Track = styled.div`
     display: flex;
-    gap: 4px;
+    gap: 6px;
     width: 100%;
 `;
 

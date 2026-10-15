@@ -14,6 +14,13 @@ export const PLACEHOLDER_SVG =
  * the root <svg> element, then sanitizes with DOMPurify to remove event
  * handlers (onload, onerror, etc.), <script> tags, and javascript: hrefs.
  *
+ * Icons never need these, so they are removed too:
+ * - <style> elements (inline SVG styles apply to the whole page) and
+ *   <image> elements (they load remote files).
+ * - style attributes that could load a resource (url(), image(), @, or CSS
+ *   escapes that could hide either).
+ * - href / xlink:href values that are not same-document "#" references.
+ *
  * @param {string} source
  * @returns {string}
  */
@@ -33,7 +40,59 @@ export function safeSvgSource(source) {
 		return "";
 	}
 
-	return DOMPurify.sanitize(trimmed, {
+	const purifier = getIconPurifier();
+	if (!purifier) {
+		// No DOM to sanitize with, so render nothing rather than raw markup.
+		return "";
+	}
+
+	return purifier.sanitize(trimmed, {
 		USE_PROFILES: { svg: true, svgFilters: true },
+		FORBID_TAGS: ["style", "image"],
 	});
+}
+
+/**
+ * Style values that could fetch a resource, or hide one behind CSS escapes.
+ */
+const UNSAFE_STYLE_PATTERN = /url\s*\(|image|@|\\|expression/i;
+
+let iconPurifier = null;
+
+/**
+ * A DOMPurify instance of our own, so the attribute hook below never
+ * affects other DOMPurify users on the page.
+ *
+ * @returns {Object|null} DOMPurify instance, or null without a DOM.
+ */
+function getIconPurifier() {
+	if (iconPurifier) {
+		return iconPurifier;
+	}
+
+	if (typeof window === "undefined") {
+		return null;
+	}
+
+	iconPurifier = DOMPurify(window);
+
+	iconPurifier.addHook("afterSanitizeAttributes", (node) => {
+		if (!node.hasAttribute) {
+			return;
+		}
+
+		["href", "xlink:href"].forEach((name) => {
+			const value = node.getAttribute(name);
+			if (value !== null && !value.trim().startsWith("#")) {
+				node.removeAttribute(name);
+			}
+		});
+
+		const style = node.getAttribute("style");
+		if (style !== null && UNSAFE_STYLE_PATTERN.test(style)) {
+			node.removeAttribute("style");
+		}
+	});
+
+	return iconPurifier;
 }

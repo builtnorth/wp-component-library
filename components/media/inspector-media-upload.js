@@ -11,7 +11,18 @@ import { __ } from "@wordpress/i18n";
 import { AttachmentImage } from "../attachment-image";
 
 /**
+ * "auto", a number ("1.91") or a ratio ("16/9", "16 / 9").
+ */
+const ASPECT_RATIO_PATTERN = /^(auto|\d+(\.\d+)?(\s*\/\s*\d+(\.\d+)?)?)$/;
+
+/**
+ * A number with an optional length unit ("400", "64px", "20rem", "50%").
+ */
+const MAX_WIDTH_PATTERN = /^\d+(\.\d+)?(px|em|rem|%|vw|ch)?$/;
+
+/**
  * CSS aspect-ratio accepts a number (e.g. 1.91) or a ratio string ("16/9").
+ * Anything else falls back to 16/9, so a prop value can never add CSS rules.
  *
  * @param {number|string} ratio
  * @returns {string}
@@ -20,23 +31,26 @@ function toCssAspectRatio(ratio) {
 	if (typeof ratio === "number" && Number.isFinite(ratio) && ratio > 0) {
 		return String(ratio);
 	}
-	if (typeof ratio === "string" && ratio.trim() !== "") {
+	if (typeof ratio === "string" && ASPECT_RATIO_PATTERN.test(ratio.trim())) {
 		return ratio.trim();
 	}
 	return String(16 / 9);
 }
 
 /**
- * CSS max-width for the preview (number = px; empty = none).
+ * CSS max-width for the preview (number = px; empty or invalid = none).
  *
  * @param {number|string|null} maxWidth
  * @returns {string}
  */
 function toCssMaxWidth(maxWidth) {
-	if (maxWidth == null || maxWidth === "") {
-		return "none";
+	if (typeof maxWidth === "number" && Number.isFinite(maxWidth) && maxWidth >= 0) {
+		return `${maxWidth}px`;
 	}
-	return typeof maxWidth === "number" ? `${maxWidth}px` : maxWidth;
+	if (typeof maxWidth === "string" && MAX_WIDTH_PATTERN.test(maxWidth.trim())) {
+		return maxWidth.trim();
+	}
+	return "none";
 }
 
 // Styled components

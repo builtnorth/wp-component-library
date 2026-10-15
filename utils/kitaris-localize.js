@@ -8,26 +8,43 @@
 export const SKIN_CHANGED_EVENT = "themeSkinSwitcherChanged";
 
 /**
+ * Whether a window's globals can be read from here (same origin).
+ *
+ * @param {Window} win
+ * @return {boolean}
+ */
+function isReadableWindow(win) {
+	try {
+		// Throws a SecurityError for a cross-origin window.
+		return !!win.document;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * The current window plus each same-origin ancestor. The walk stops at the
+ * first cross-origin parent, so callers can read globals from every entry.
+ *
  * @return {Window[]}
  */
 function getEditorWindowChain() {
-	const chain = [];
+	const chain = [window];
 
 	try {
 		let win = window;
 
-		while (win) {
-			chain.push(win);
+		while (win.parent && win.parent !== win) {
+			win = win.parent;
 
-			if (win.parent === win) {
+			if (!isReadableWindow(win)) {
 				break;
 			}
 
-			win = win.parent;
+			chain.push(win);
 		}
 	} catch {
-		// Cross-origin frame — use the current window only.
-		chain.push(window);
+		// Keep whatever was collected before the error.
 	}
 
 	return chain;

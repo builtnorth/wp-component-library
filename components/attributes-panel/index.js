@@ -12,8 +12,48 @@ import { useState, useEffect, useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 
 /**
+ * Attributes whose value is loaded or followed as a URL.
+ */
+const URL_ATTRIBUTES = [ 'href', 'src', 'xlink:href', 'action', 'formaction', 'poster', 'srcset' ];
+
+/**
+ * Event handler attributes (onclick, onerror, ...) run script, so they are
+ * never offered or accepted.
+ *
+ * @param {string} name Attribute name.
+ * @returns {boolean}
+ */
+export function isUnsafeAttributeName( name ) {
+	return typeof name === 'string' && /^\s*on/i.test( name );
+}
+
+/**
+ * javascript:, vbscript: and data: URLs can run script, so they are rejected
+ * for URL attributes. Whitespace and control characters are ignored when
+ * reading the scheme, as browsers do ("java\tscript:").
+ *
+ * @param {string} name  Attribute name.
+ * @param {string} value Attribute value.
+ * @returns {boolean}
+ */
+export function isUnsafeAttributeValue( name, value ) {
+	if ( typeof name !== 'string' || typeof value !== 'string' ) {
+		return false;
+	}
+	if ( ! URL_ATTRIBUTES.includes( name.trim().toLowerCase() ) ) {
+		return false;
+	}
+	const compact = value.replace( /[\u0000-\u0020]/g, '' ).toLowerCase();
+	return /(^|,)(javascript|vbscript|data):/.test( compact );
+}
+
+/**
  * AttributesPanel component that uses ToolsPanel and ComboboxControl
  * to manage block attributes with meta field selection.
+ *
+ * The panel refuses event handler names (on*) and script/data URLs in URL
+ * attributes, but that is only a UI guard: whoever outputs the attributes
+ * must still allowlist names and escape values (esc_attr / esc_url) on render.
  *
  * @since 1.0.0
  *
@@ -108,6 +148,9 @@ function AttributesPanel({
 	}, [attributes]);
 
 	const handleAttributeChange = (id, value) => {
+		if ( isUnsafeAttributeValue( id, value ) ) {
+			return;
+		}
 		const updatedAttributes = localAttributes.map((attr) =>
 			attr.id === id ? { ...attr, value } : attr
 		);
@@ -117,6 +160,7 @@ function AttributesPanel({
 
 	const handleAttributeSelect = (id, selectedValue) => {
 		if (!selectedValue) { return; }
+		if ( isUnsafeAttributeName( selectedValue ) ) { return; }
 		
 		// Check if attribute already exists
 		const existingAttr = localAttributes.find(attr => attr.id === id);

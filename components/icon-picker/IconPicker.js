@@ -14,7 +14,7 @@ import { __ } from "@wordpress/i18n";
 
 import { IconPickerModal } from "./IconPickerModal";
 import { PickerPreview, PickerName } from "./styles";
-import { PLACEHOLDER_SVG } from "./utils";
+import { PLACEHOLDER_SVG, safeSvgSource } from "./utils";
 
 /**
  * @param {Object}   props
@@ -30,7 +30,8 @@ export function IconPicker({ value, onChange, label = "", className = "" }) {
 	const closeModal = useCallback(() => setIsOpen(false), []);
 
 	const hasIcon = value?.source;
-	const svgSource = hasIcon ? value.source : PLACEHOLDER_SVG;
+	// The stored source is block data, so sanitize it like every other sink.
+	const svgSource = (hasIcon && safeSvgSource(value.source)) || PLACEHOLDER_SVG;
 
 	return (
 		// eslint-disable-next-line @wordpress/no-base-control-with-label-without-id -- the button has its own aria-label.

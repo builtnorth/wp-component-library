@@ -81,3 +81,12 @@ The ComboboxControl is populated with:
 - Common WordPress meta fields like _thumbnail_id, _wp_page_template
 
 Users can also type custom attribute names not in the list.
+
+## Security
+
+The panel refuses event handler attribute names (anything starting with `on`, such as `onclick`) and `javascript:`, `vbscript:` and `data:` URLs in URL attributes (`href`, `src`, `srcset`, `action`, `formaction`, `poster`, `xlink:href`). This is only a guard in the editor UI. Saved attributes can still be changed by other means, so the code that outputs them must:
+
+- allowlist the attribute names it renders, and
+- escape every value on output (`esc_attr()`, and `esc_url()` for URL attributes).
+
+`isUnsafeAttributeName()` and `isUnsafeAttributeValue()` are exported from this module so consumers can reuse the same checks.

@@ -36,6 +36,7 @@ export {
 	useAttributes,
 } from "./components/attributes-panel";
 export { Badge } from "./components/badge";
+export { SegmentedBar } from "./components/segmented-bar";
 export {
 	STATUS_COLOR_FALLBACKS,
 	statusColor,

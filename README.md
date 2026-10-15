@@ -228,6 +228,14 @@ Customisable appender buttons for inner blocks.
 
 ---
 
+### SegmentedBar
+
+| Export | Description |
+|---|---|
+| `SegmentedBar` | Row of status-colored segments, one per item ("3 of 4 on") |
+
+---
+
 ### Button
 
 | Export | Description |

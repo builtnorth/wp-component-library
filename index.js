@@ -92,6 +92,9 @@ export {
 	SKIN_CHANGED_EVENT,
 } from "./utils/kitaris-localize";
 
+// Color controls
+export { slugAwareColorSetter } from "./utils/slug-aware-color-setter";
+
 // Icon Picker & Registry
 export {
 	iconStore,

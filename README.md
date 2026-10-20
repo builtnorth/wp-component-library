@@ -1,4 +1,4 @@
-# WP Component Library
+# Siratik WP Component Library
 
 A comprehensive library of reusable React components, hooks, and utilities for WordPress block development. Built for use with `@wordpress/scripts` and the Gutenberg block editor.
 
@@ -253,6 +253,26 @@ Customisable appender buttons for inner blocks.
 
 Several patterns and ideas in this library were inspired by the excellent open-source work from **[10up](https://github.com/10up)**, particularly [`@10up/block-components`](https://github.com/10up/block-components). Their `registerBlockExtension` API and icon picker concepts were especially influential in shaping the equivalent features here. We're grateful for the work they've done for the WordPress developer community.
 
+## License
+
+GPL-3.0-or-later — see `LICENSE`.
+
 ## Disclaimer
 
-This library is provided "as is" without warranty of any kind. Always test components in your specific environment before deploying to production.
+This software is provided "as is", without warranty of any kind, express or
+implied, including the warranties of merchantability and fitness for a
+particular purpose. To the extent permitted by applicable law, the authors and
+copyright holders, together with their parent, subsidiary, and affiliated
+companies and contributors, are not liable for any direct, indirect,
+incidental, or consequential damages arising from its use or inability to use
+it, including loss of data, revenue, or site availability.
+
+The software does not guarantee that your site is secure, ranks in search
+results, or complies with privacy or other laws; that remains the site owner's
+responsibility. AI-generated content can be inaccurate and should be reviewed
+before publishing. Third-party services the software connects to are governed
+by their own terms.
+
+Keep a current backup and test changes on a staging site before applying them
+to a live site. See sections 15 and 16 of the GNU General Public License,
+version 3, for the full terms.

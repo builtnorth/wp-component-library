@@ -18,6 +18,9 @@ export {
 } from "./api";
 export { registerConfigIconSets } from "./config-bootstrap";
 
+// SVG sanitizing for inline rendering
+export { safeSvgSource } from "./utils";
+
 // React hooks
 export {
 	useIconSets,

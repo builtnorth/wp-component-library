@@ -116,4 +116,5 @@ export {
 	IconPickerModal,
 	IconPickerToolbarButton,
 	InlineIconPicker,
+	safeSvgSource,
 } from "./components/icon-picker";

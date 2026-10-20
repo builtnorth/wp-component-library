@@ -19,7 +19,9 @@ try {
 	}
 }
 
-module.exports = {
+const withLicenseNotices = (config) => (shared ? shared.withLicenseNotices(config) : config);
+
+module.exports = withLicenseNotices({
 	...defaultConfig,
 	cache: shared ? shared.filesystemCache(__dirname) : defaultConfig.cache,
 	watchOptions: shared ? shared.sharedWatchOptions(defaultConfig.watchOptions) : defaultConfig.watchOptions,
@@ -76,4 +78,4 @@ module.exports = {
 			callback();
 		},
 	],
-};
+});

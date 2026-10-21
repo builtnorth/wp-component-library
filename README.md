@@ -248,7 +248,7 @@ Customisable appender buttons for inner blocks.
 
 | Export | Description |
 |---|---|
-| `ButtonFrontend` | Minimal frontend button — safe to use outside the editor |
+| `ButtonFrontend` | Minimal frontend button — safe to use outside the editor. `style` (Fill / Outline) and `variant` (Primary, Secondary, Tertiary, Text Link) |
 
 ---
 

@@ -33,12 +33,10 @@
 		"@dnd-kit/modifiers": "^9.0.0",
 		"@dnd-kit/sortable": "^10.0.0",
 		"@dnd-kit/utilities": "^3.2.2",
-		"@leeoniya/ufuzzy": "^1.0.14",
 		"@wordpress/icons": "^11.8.0",
 		"classnames": "^2.5.1",
 		"dompurify": "^3.4.7",
-		"prop-types": "^15.8.1",
-		"react-window": "^1.8.11"
+		"prop-types": "^15.8.1"
 	},
 	"peerDependencies": {
 		"@emotion/react": "^11.14.0",

@@ -4,8 +4,8 @@
  * React hooks for reading icon data from the icon registry store.
  */
 
-import { useSelect } from "@wordpress/data";
-import { useEffect } from "@wordpress/element";
+import { select as selectFromStore, useSelect } from "@wordpress/data";
+import { useEffect, useMemo } from "@wordpress/element";
 
 import { loadAllIconSets } from "./api";
 import { STORE_NAME } from "./store";
@@ -101,32 +101,37 @@ export function useIcon(iconSetName, iconName) {
 /**
  * Grouped icons for the picker modal — triggers lazy loading on mount.
  *
+ * Groups are rebuilt only when a set changes (the store's sets map is
+ * replaced on every change), not on every store update.
+ *
  * @returns {{ groups: Array, isLoading: boolean, isInitialLoad: boolean, hasPending: boolean }}
  */
 export function useIconPickerGroups() {
-	const { groups, isLoading, hasPending, pendingKey } = useSelect((select) => {
-		const store = select(STORE_NAME);
-		const iconSets = store.getIconSets();
+	const setsMap = useSelect(
+		(select) => select(STORE_NAME).getIconSetsMap(),
+		[],
+	);
 
-		return {
-			groups: iconSets.map((set) => ({
-				...set,
-				icons: store.getIcons(set.name).map((icon) => ({
-					...icon,
-					iconSet: set.name,
-				})),
+	const groups = useMemo(() => {
+		const store = selectFromStore(STORE_NAME);
+		return store.getIconSets().map((set) => ({
+			...set,
+			icons: store.getIcons(set.name).map((icon) => ({
+				...icon,
+				iconSet: set.name,
 			})),
-			isLoading: store.isIconSetsLoading(),
-			hasPending: store.hasPendingIconSets(),
-			pendingKey: iconSets
-				.filter(
-					(set) =>
-						set.loadStatus === "idle" || set.loadStatus === "loading",
-				)
-				.map((set) => set.name)
-				.join("\0"),
-		};
-	}, []);
+		}));
+		// setsMap is the cache key: the store replaces it whenever a set changes.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [setsMap]);
+
+	const sets = Object.values(setsMap);
+	const isLoading = sets.some((set) => set.loadStatus === "loading");
+	const pendingSets = sets.filter(
+		(set) => set.loadStatus === "idle" || set.loadStatus === "loading",
+	);
+	const hasPending = pendingSets.length > 0;
+	const pendingKey = pendingSets.map((set) => set.name).join("\0");
 
 	useEffect(() => {
 		if (!pendingKey) {

@@ -43,6 +43,14 @@ const storeSelectors = {
 	},
 
 	/**
+	 * The registered sets keyed by name, unfiltered and unsorted. The same
+	 * object until a set changes, so hooks can memoize on it.
+	 */
+	getIconSetsMap(state) {
+		return state.iconSets;
+	},
+
+	/**
 	 * Get a specific icon set by name.
 	 */
 	getIconSet(state, name) {

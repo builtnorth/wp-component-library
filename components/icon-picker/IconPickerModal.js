@@ -2,156 +2,337 @@
  * Icon Picker Modal
  *
  * The shared modal used by all three picker variants (inspector, toolbar, inline).
- * Features:
- *   - Fuzzy search across all sets via @leeoniya/ufuzzy
- *   - Set filter dropdown to narrow to a specific icon library
- *   - Grouped sections by icon set (sorted by priority, highest first)
- *   - Virtualized list via react-window — only visible rows rendered in the DOM,
- *     handles thousands of icons without performance degradation
- *   - Uniform row height (fits up to 4 lines of name text); names clamp at 4 lines
- *   - Currently selected icon shown in the modal header
+ * Looks and behaves like the icon picker of WordPress core's Icon block (WP 7.1),
+ * which core does not export, rebuilt with @wordpress/components:
+ *   - Full-screen "Icon library" modal.
+ *   - Sidebar: search (debounced) and vertical tabs, "All" then one tab per
+ *     registered icon set (on WP 7.1+ these are core's icon collections).
+ *   - Grid of icon buttons (icon + label), rendered in batches; the selected
+ *     icon is a primary button, scrolled into view on open.
+ *   - Opens on the selected icon's set, else the first set.
+ *   - Search matches the current tab's icon names and labels.
+ *
+ * Keyboard: Arrow Up/Down (Home/End) move between tabs; the grid is one tab
+ * stop, with arrow keys (Home/End) to move between icons. Escape closes.
  */
 
-import { Global } from "@emotion/react";
-import UFuzzy from "@leeoniya/ufuzzy";
-import { Modal, SearchControl, SelectControl } from "@wordpress/components";
+import { Modal, SearchControl, Spinner } from "@wordpress/components";
+import { useAsyncList, useDebounce, useInstanceId } from "@wordpress/compose";
 import {
 	memo,
 	useCallback,
-	useEffect,
 	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
 } from "@wordpress/element";
-import { __, sprintf } from "@wordpress/i18n";
-import { VariableSizeList } from "react-window";
+import { __, isRTL } from "@wordpress/i18n";
+import { chevronRight, Icon as WPIcon } from "@wordpress/icons";
 
 import { useIconPickerGroups } from "./hooks";
 import {
-	CellButton,
-	CellName,
-	CellSvg,
-	EmptyState,
-	GroupHeader,
-	GroupHeaderRow,
-	HeaderSelectedInfo,
-	HeaderSelectedSvg,
-	IconCount,
-	IconRow,
-	modalGlobalStyles,
-	ModalInner,
-	PickerBody,
-	PickerControls,
-	SearchAndFilter,
-	SetSelectorWrap,
+	IconGridItem,
+	IconGridItemIcon,
+	IconGridItemTitle,
+	IconGridList,
+	PickerLoading,
+	PickerNoResults,
+	PickerPanel,
+	PickerSidebar,
+	Tab,
+	TabList,
 } from "./styles";
 import { safeSvgSource } from "./utils";
 
-// Fuzzy search instance (created once, stateless and reusable)
-const fuzzy = new UFuzzy();
+/** Icons rendered per batch, like core. */
+const BATCH_SIZE = 20;
 
-// Grid + virtualization constants.
-// ICON_ROW_HEIGHT must accommodate the CellButton height (108px) + row padding (4+4).
-// This fixed height lets VariableSizeList virtualize without per-row measurement.
-const COLUMNS = 8; // must match grid-template-columns in styles.js
-const ICON_ROW_HEIGHT = 116; // px: cell (108) + top/bottom padding (4+4)
-// Fits GroupHeader margins + padding + label (margin-top/bottom are 1rem / 0.5rem).
-const HEADER_ROW_HEIGHT = 48;
-const DEFAULT_LIST_HEIGHT = 520; // px — fallback before ResizeObserver measures
-const MIN_LIST_HEIGHT = 200;
+/** Search delay in ms, like core. */
+const SEARCH_DEBOUNCE = 300;
+
+/** The "All" tab's value. */
+const ALL = "";
 
 /**
- * Build a flat array of rows for VariableSizeList.
+ * Lowercase, trimmed and accent-free, for search matching.
  *
- * Each entry is either:
- *   { type: 'header', label: string }
- *   { type: 'icons',  items: IconItem[] }
+ * @param {string} input
+ * @returns {string}
  */
-function buildRows(groups) {
-	const rows = [];
-	for (const group of groups) {
-		if (!group.icons.length) { continue; }
-		rows.push({ type: "header", label: group.label });
-		for (let i = 0; i < group.icons.length; i += COLUMNS) {
-			rows.push({
-				type: "icons",
-				items: group.icons.slice(i, i + COLUMNS),
-			});
-		}
-	}
-	return rows;
+function normalizeSearch(input = "") {
+	return String(input)
+		.normalize("NFD")
+		.replace(/[̀-ͯ]/g, "")
+		.trim()
+		.toLowerCase();
 }
 
 /**
- * Single icon cell — memoized to avoid re-renders during scroll.
+ * Whether a set is the one a saved icon belongs to: by name, or by one of
+ * the set's `aliases` (older set names, e.g. a theme set a core collection
+ * replaced).
+ *
+ * @param {Object} group
+ * @param {string} iconSet
+ * @returns {boolean}
+ */
+function isSetOf(group, iconSet) {
+	if (!iconSet) {
+		return false;
+	}
+	return (
+		group.name === iconSet ||
+		(Array.isArray(group.aliases) && group.aliases.includes(iconSet))
+	);
+}
+
+/**
+ * @param {Object} icon
+ * @returns {string}
+ */
+const iconKey = (icon) => `${icon.iconSet}::${icon.name}`;
+
+/**
+ * Single icon button — memoized so batches and focus moves only re-render
+ * the cells that change.
  */
 // eslint-disable-next-line no-shadow -- named for React DevTools.
-const IconCell = memo(function IconCell({ icon, isSelected, onSelect }) {
-	const handleClick = useCallback(() => onSelect(icon), [icon, onSelect]);
-	const handleKeyDown = useCallback(
-		(e) => {
-			if (e.key === "Enter" || e.key === " ") {
-				e.preventDefault();
-				onSelect(icon);
-			}
-		},
-		[icon, onSelect],
-	);
-
-	const displayName = icon.label || icon.name;
+const IconGridCell = memo(function IconGridCell({
+	icon,
+	isSelected,
+	isTabStop,
+	onSelect,
+	onFocusCell,
+	cellRef,
+}) {
+	const label = icon.label || icon.name;
 
 	return (
-		<CellButton
-			type="button"
-			className={isSelected ? "is-selected" : undefined}
-			onClick={handleClick}
-			onKeyDown={handleKeyDown}
-			title={displayName}
-			aria-label={displayName}
-			aria-pressed={isSelected}
+		<IconGridItem
+			ref={cellRef}
+			__next40pxDefaultSize
+			variant={isSelected ? "primary" : undefined}
+			className="wpcl-icon-picker__item"
+			tabIndex={isTabStop ? 0 : -1}
+			aria-current={isSelected ? "true" : undefined}
+			data-icon-key={iconKey(icon)}
+			onClick={() => onSelect(icon)}
+			onFocus={() => onFocusCell(iconKey(icon))}
 		>
-			<CellSvg
+			<IconGridItemIcon
+				aria-hidden="true"
 				dangerouslySetInnerHTML={{ __html: safeSvgSource(icon.source) }}
 			/>
-			<CellName className="cell-name">{displayName}</CellName>
-		</CellButton>
+			<IconGridItemTitle>{label}</IconGridItemTitle>
+		</IconGridItem>
 	);
 });
 
 /**
- * Row renderer for react-window VariableSizeList.
- * react-window passes an absolute-positioned `style` for each row.
+ * The icon grid: core's layout, rendered in batches, one tab stop.
+ *
+ * @param {Object}   props
+ * @param {Array}    props.icons          Icons to show.
+ * @param {Function} props.isSelectedIcon Whether an icon is the saved one.
+ * @param {Function} props.onSelect
  */
-// eslint-disable-next-line no-shadow -- named for React DevTools.
-const RowRenderer = memo(function RowRenderer({ index, style, data }) {
-	const { rows, selectedIcon, onSelect } = data;
-	const row = rows[index];
+function IconGrid({ icons, isSelectedIcon, onSelect }) {
+	const shownIcons = useAsyncList(icons, { step: BATCH_SIZE });
+	const listRef = useRef(null);
+	const selectedRef = useRef(null);
+	const [activeKey, setActiveKey] = useState(null);
 
-	if (row.type === "header") {
+	const selectedIndex = useMemo(
+		() => icons.findIndex(isSelectedIcon),
+		[icons, isSelectedIcon],
+	);
+
+	// The roving tab stop: the last focused icon, else the selected one, else the first.
+	const tabStopKey = useMemo(() => {
+		if (activeKey && shownIcons.some((icon) => iconKey(icon) === activeKey)) {
+			return activeKey;
+		}
+		if (selectedIndex >= 0 && selectedIndex < shownIcons.length) {
+			return iconKey(icons[selectedIndex]);
+		}
+		return shownIcons[0] ? iconKey(shownIcons[0]) : null;
+	}, [activeKey, shownIcons, selectedIndex, icons]);
+
+	// Like core: once the selected icon has rendered (with a batch after it),
+	// scroll it to the middle, unless the user already scrolled.
+	const isReadyToScroll =
+		selectedIndex >= 0 &&
+		(shownIcons.length >= selectedIndex + BATCH_SIZE ||
+			shownIcons.length === icons.length);
+
+	useLayoutEffect(() => {
+		const node = selectedRef.current;
+		if (!isReadyToScroll || !node) {
+			return;
+		}
+		const scroller = node.closest(".components-modal__content");
+		if (scroller?.scrollTop) {
+			return;
+		}
+		node.scrollIntoView({ block: "center" });
+	}, [isReadyToScroll]);
+
+	const handleKeyDown = useCallback(
+		(event) => {
+			const list = listRef.current;
+			if (!list) {
+				return;
+			}
+			const cells = Array.from(
+				list.querySelectorAll(":scope > .wpcl-icon-picker__item"),
+			);
+			const current = cells.indexOf(event.target);
+			if (current < 0) {
+				return;
+			}
+
+			const columns = Math.max(
+				1,
+				window
+					.getComputedStyle(list)
+					.gridTemplateColumns.split(" ")
+					.filter(Boolean).length,
+			);
+			const forward = isRTL() ? "ArrowLeft" : "ArrowRight";
+			const back = isRTL() ? "ArrowRight" : "ArrowLeft";
+
+			let next;
+			switch (event.key) {
+				case forward:
+					next = current + 1;
+					break;
+				case back:
+					next = current - 1;
+					break;
+				case "ArrowDown":
+					next = current + columns;
+					break;
+				case "ArrowUp":
+					next = current - columns;
+					break;
+				case "Home":
+					next = 0;
+					break;
+				case "End":
+					next = cells.length - 1;
+					break;
+				default:
+					return;
+			}
+
+			event.preventDefault();
+			next = Math.min(Math.max(next, 0), cells.length - 1);
+			cells[next]?.focus();
+		},
+		[],
+	);
+
+	if (!icons.length) {
 		return (
-			<GroupHeaderRow style={style}>
-				<GroupHeader>{row.label}</GroupHeader>
-			</GroupHeaderRow>
+			<PickerNoResults>
+				<p>{__("No results found.", "wp-component-library")}</p>
+			</PickerNoResults>
 		);
 	}
 
 	return (
-		<IconRow style={style}>
-			{row.items.map((icon) => (
-				<IconCell
-					key={`${icon.iconSet}::${icon.name}`}
-					icon={icon}
-					isSelected={
-						selectedIcon?.name === icon.name &&
-						selectedIcon?.iconSet === icon.iconSet
-					}
-					onSelect={onSelect}
-				/>
-			))}
-		</IconRow>
+		<IconGridList
+			ref={listRef}
+			role="group"
+			aria-label={__("Icon library", "wp-component-library")}
+			onKeyDown={handleKeyDown}
+		>
+			{shownIcons.map((icon, index) => {
+				const key = iconKey(icon);
+				return (
+					<IconGridCell
+						key={key}
+						icon={icon}
+						isSelected={index === selectedIndex}
+						isTabStop={key === tabStopKey}
+						onSelect={onSelect}
+						onFocusCell={setActiveKey}
+						cellRef={index === selectedIndex ? selectedRef : undefined}
+					/>
+				);
+			})}
+		</IconGridList>
 	);
-});
+}
+
+/**
+ * Vertical tabs, like core's: arrow keys move and select.
+ *
+ * @param {Object}   props
+ * @param {Array<{ value: string, label: string }>} props.tabs
+ * @param {string}   props.value
+ * @param {Function} props.onChange
+ * @param {string}   props.idBase
+ */
+function CollectionTabs({ tabs, value, onChange, idBase }) {
+	const refs = useRef([]);
+
+	const handleKeyDown = (event, index) => {
+		let next;
+		switch (event.key) {
+			case "ArrowDown":
+				next = (index + 1) % tabs.length;
+				break;
+			case "ArrowUp":
+				next = (index - 1 + tabs.length) % tabs.length;
+				break;
+			case "Home":
+				next = 0;
+				break;
+			case "End":
+				next = tabs.length - 1;
+				break;
+			default:
+				return;
+		}
+		event.preventDefault();
+		onChange(tabs[next].value);
+		refs.current[next]?.focus();
+	};
+
+	return (
+		<TabList
+			role="tablist"
+			aria-orientation="vertical"
+			aria-label={__("Icon collections", "wp-component-library")}
+		>
+			{tabs.map((tab, index) => {
+				const isSelected = tab.value === value;
+				return (
+					<Tab
+						key={tab.value || "all"}
+						ref={(node) => {
+							refs.current[index] = node;
+						}}
+						type="button"
+						role="tab"
+						id={`${idBase}-tab-${index}`}
+						aria-selected={isSelected}
+						aria-controls={`${idBase}-panel`}
+						tabIndex={isSelected ? 0 : -1}
+						onClick={() => onChange(tab.value)}
+						onKeyDown={(event) => handleKeyDown(event, index)}
+					>
+						<span className="wpcl-icon-picker__tab-label">
+							{tab.label}
+						</span>
+						<WPIcon icon={chevronRight} size={24} />
+					</Tab>
+				);
+			})}
+		</TabList>
+	);
+}
 
 /**
  * The modal itself.
@@ -162,135 +343,102 @@ const RowRenderer = memo(function RowRenderer({ index, style, data }) {
  * @param {Function} props.onClose     Called when the modal should close.
  */
 export function IconPickerModal({ value, onChange, onClose }) {
+	const idBase = useInstanceId(IconPickerModal, "wpcl-icon-picker");
+	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
-	const [selectedSet, setSelectedSet] = useState("");
+	const debouncedSetSearch = useDebounce(setSearch, SEARCH_DEBOUNCE);
+	const [currentTab, setCurrentTab] = useState(null);
 
-	const { groups, isLoading, isInitialLoad } = useIconPickerGroups();
+	const { groups, hasPending } = useIconPickerGroups();
 
-	const setOptions = useMemo(
+	const valueName = value?.name;
+	const valueSet = value?.iconSet;
+	const valueSource = value?.source;
+
+	// Whether a grid icon is the saved one: same name in the saved set (or a
+	// set aliasing it). Values without a set (some consumers pass the registry
+	// icon itself) match on name and SVG source.
+	const isSelectedIcon = useCallback(
+		(icon) => {
+			if (!valueName || icon.name !== valueName) {
+				return false;
+			}
+			if (valueSet) {
+				const group = groups.find((item) => item.name === icon.iconSet);
+				return Boolean(group && isSetOf(group, valueSet));
+			}
+			return Boolean(valueSource) && icon.source === valueSource;
+		},
+		[groups, valueName, valueSet, valueSource],
+	);
+
+	const selectedGroup = useMemo(
+		() =>
+			groups.find((group) =>
+				valueSet
+					? isSetOf(group, valueSet)
+					: group.icons.some(isSelectedIcon),
+			),
+		[groups, valueSet, isSelectedIcon],
+	);
+
+	const tabs = useMemo(
 		() => [
-			{ label: __("All Libraries", "wp-component-library"), value: "" },
-			...groups.map((g) => ({ label: g.label, value: g.name })),
+			{ value: ALL, label: __("All", "wp-component-library") },
+			...groups.map((group) => ({
+				value: group.name,
+				label: group.label || group.name,
+			})),
 		],
 		[groups],
 	);
 
-	const allIcons = useMemo(() => groups.flatMap((g) => g.icons), [groups]);
+	const tabValue =
+		currentTab !== null && tabs.some((tab) => tab.value === currentTab)
+			? currentTab
+			: (selectedGroup?.name ?? groups[0]?.name ?? ALL);
+	const tabIndex = Math.max(
+		0,
+		tabs.findIndex((tab) => tab.value === tabValue),
+	);
+	const tabGroup =
+		tabValue === ALL ? null : groups.find((group) => group.name === tabValue);
+
+	const isTabLoading = tabGroup
+		? tabGroup.loadStatus === "idle" || tabGroup.loadStatus === "loading"
+		: hasPending;
+
+	const tabIcons = useMemo(
+		() =>
+			tabValue === ALL
+				? groups.flatMap((group) => group.icons)
+				: (groups.find((group) => group.name === tabValue)?.icons ?? []),
+		[groups, tabValue],
+	);
 
 	const haystack = useMemo(
-		() => allIcons.map((icon) => `${icon.label ?? ""} ${icon.name}`),
-		[allIcons],
-	);
-
-	const filteredGroups = useMemo(() => {
-		const setFiltered = selectedSet
-			? groups.filter((g) => g.name === selectedSet)
-			: groups;
-
-		const term = search.trim();
-		if (!term) { return setFiltered; }
-
-		const idxs = fuzzy.filter(haystack, term);
-		if (!idxs || !idxs.length) { return []; }
-
-		const matchedKeys = new Set(
-			idxs.map((i) => `${allIcons[i].iconSet}::${allIcons[i].name}`),
-		);
-
-		return setFiltered
-			.map((g) => ({
-				...g,
-				icons: g.icons.filter((icon) =>
-					matchedKeys.has(`${icon.iconSet}::${icon.name}`),
-				),
-			}))
-			.filter((g) => g.icons.length > 0);
-	}, [search, selectedSet, groups, allIcons, haystack]);
-
-	const rows = useMemo(() => buildRows(filteredGroups), [filteredGroups]);
-
-	// Remount the virtual list when filter/search changes so react-window does not
-	// reuse row slots with stale absolute positioning (overlapping icons).
-	const virtualListKey = useMemo(
 		() =>
-			`${selectedSet}\0${search.trim()}\0${rows
-				.map((row) =>
-					row.type === "header"
-						? `h:${row.label}`
-						: `i:${row.items.map((icon) => icon.name).join(",")}`,
-				)
-				.join("\n")}`,
-		[selectedSet, search, rows],
+			tabIcons.map(
+				(icon) =>
+					`${normalizeSearch(icon.name)}\n${normalizeSearch(icon.label ?? "")}`,
+			),
+		[tabIcons],
 	);
 
-	const listRef = useRef(null);
-	const listWrapRef = useRef(null);
-	const [listHeight, setListHeight] = useState(DEFAULT_LIST_HEIGHT);
-
-	useLayoutEffect(() => {
-		const el = listWrapRef.current;
-		if (!el) {
-			return undefined;
+	const filteredIcons = useMemo(() => {
+		const term = normalizeSearch(search);
+		if (!term) {
+			return tabIcons;
 		}
+		return tabIcons.filter((icon, index) => haystack[index].includes(term));
+	}, [search, tabIcons, haystack]);
 
-		const updateHeight = () => {
-			const next = Math.floor(el.getBoundingClientRect().height);
-			if (next >= MIN_LIST_HEIGHT) {
-				setListHeight(next);
-			}
-		};
-
-		updateHeight();
-
-		const observer = new window.ResizeObserver(updateHeight);
-		observer.observe(el);
-
-		return () => observer.disconnect();
-	}, []);
-
-	const resetScrollPositions = useCallback(() => {
-		listRef.current?.scrollTo(0);
-
-		let parent = listWrapRef.current?.parentElement;
-		while (parent) {
-			const { overflowY } = window.getComputedStyle(parent);
-			if (overflowY === "auto" || overflowY === "scroll") {
-				parent.scrollTop = 0;
-			}
-			parent = parent.parentElement;
-		}
-	}, []);
-
-	useEffect(() => {
-		resetScrollPositions();
-	}, [virtualListKey, resetScrollPositions]);
-
-	const getRowKey = useCallback((index) => {
-		const row = rows[index];
-
-		if (!row) {
-			return `row-${index}`;
-		}
-
-		if (row.type === "header") {
-			return `header:${row.label}`;
-		}
-
-		return `icons:${row.items.map((icon) => `${icon.iconSet}::${icon.name}`).join("|")}`;
-	}, [rows]);
-
-	// All icon rows share one fixed height; only headers differ.
-	const getItemSize = useCallback(
-		(index) =>
-			rows[index]?.type === "header"
-				? HEADER_ROW_HEIGHT
-				: ICON_ROW_HEIGHT,
-		[rows],
-	);
-
-	const totalIcons = useMemo(
-		() => filteredGroups.reduce((acc, g) => acc + g.icons.length, 0),
-		[filteredGroups],
+	const handleSearch = useCallback(
+		(next) => {
+			setSearchInput(next);
+			debouncedSetSearch(next);
+		},
+		[debouncedSetSearch],
 	);
 
 	const handleSelect = useCallback(
@@ -306,129 +454,48 @@ export function IconPickerModal({ value, onChange, onClose }) {
 		[onChange, onClose],
 	);
 
-	const listData = useMemo(
-		() => ({ rows, selectedIcon: value, onSelect: handleSelect }),
-		[rows, value, handleSelect],
-	);
-
-	const headerActions = value?.source ? (
-		<HeaderSelectedInfo>
-			{__("Selected:", "wp-component-library")}
-			<HeaderSelectedSvg
-				dangerouslySetInnerHTML={{
-					__html: safeSvgSource(value.source),
-				}}
-			/>
-		</HeaderSelectedInfo>
-	) : undefined;
-
 	return (
-		<>
-			<Global styles={modalGlobalStyles} />
-			<Modal
-				title={__("Choose Icon", "wp-component-library")}
-				headerActions={headerActions}
-				size="large"
-				onRequestClose={onClose}
-				className="wpcl-icon-picker-modal"
+		<Modal
+			className="wpcl-icon-picker-modal"
+			title={__("Icon library", "wp-component-library")}
+			onRequestClose={onClose}
+			isFullScreen
+		>
+			<PickerSidebar>
+				<SearchControl
+					__nextHasNoMarginBottom
+					value={searchInput}
+					onChange={handleSearch}
+				/>
+				<CollectionTabs
+					tabs={tabs}
+					value={tabValue}
+					onChange={setCurrentTab}
+					idBase={idBase}
+				/>
+			</PickerSidebar>
+			<PickerPanel
+				role="tabpanel"
+				id={`${idBase}-panel`}
+				aria-labelledby={`${idBase}-tab-${tabIndex}`}
+				tabIndex={-1}
 			>
-				<ModalInner>
-					<PickerControls>
-						<SearchAndFilter>
-							<SearchControl
-								__nextHasNoMarginBottom
-								value={search}
-								onChange={setSearch}
-								placeholder={__(
-									"Search icons\u2026",
-									"wp-component-library",
-								)}
-							/>
-							{groups.length > 1 && (
-								<SetSelectorWrap>
-									<SelectControl
-										__nextHasNoMarginBottom
-										value={selectedSet}
-										options={setOptions}
-										onChange={setSelectedSet}
-										aria-label={__(
-											"Filter by icon library",
-											"wp-component-library",
-										)}
-									/>
-								</SetSelectorWrap>
-							)}
-						</SearchAndFilter>
-
-						<IconCount>
-							{/* eslint-disable-next-line no-nested-ternary -- render branches. */}
-							{isLoading && totalIcons > 0
-								? sprintf(
-										/* translators: %d = number of icons loaded so far */
-										__(
-											"%d icon(s) loaded — loading more…",
-											"wp-component-library",
-										),
-										totalIcons,
-									)
-								// eslint-disable-next-line no-nested-ternary -- render branches.
-								: totalIcons > 0
-									? sprintf(
-											/* translators: %d = number of icons found */
-											__(
-												"%d icon(s) found",
-												"wp-component-library",
-											),
-											totalIcons,
-										)
-									: isInitialLoad
-										? __(
-												"Loading icons…",
-												"wp-component-library",
-											)
-										: __(
-												"No icons found.",
-												"wp-component-library",
-											)}
-						</IconCount>
-					</PickerControls>
-
-					<PickerBody ref={listWrapRef}>
-						{/* eslint-disable-next-line no-nested-ternary -- render branches. */}
-						{isInitialLoad ? (
-							<EmptyState>
-								{__("Loading icons…", "wp-component-library")}
-							</EmptyState>
-						) : rows.length > 0 ? (
-							<VariableSizeList
-								key={virtualListKey}
-								ref={listRef}
-								height={listHeight}
-								itemCount={rows.length}
-								itemSize={getItemSize}
-								itemData={listData}
-								itemKey={getRowKey}
-								width="100%"
-								className="wpcl-icon-picker-modal__list"
-							>
-								{RowRenderer}
-							</VariableSizeList>
-						) : (
-							<EmptyState>
-								{groups.length === 0
-									? __(
-											"No icon sets registered.",
-											"wp-component-library",
-										)
-									: __(
-											"No icons match your search.",
-											"wp-component-library",
-										)}
-							</EmptyState>
-						)}
-					</PickerBody>
-				</ModalInner>
-			</Modal>
-		</>
+				{isTabLoading ? (
+					<PickerLoading
+						role="status"
+						aria-label={__("Loading…", "wp-component-library")}
+					>
+						<Spinner />
+					</PickerLoading>
+				) : (
+					<IconGrid
+						key={tabValue || "all"}
+						icons={filteredIcons}
+						isSelectedIcon={isSelectedIcon}
+						onSelect={handleSelect}
+					/>
+				)}
+			</PickerPanel>
+		</Modal>
 	);
 }

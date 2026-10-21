@@ -96,3 +96,43 @@ function getIconPurifier() {
 
 	return iconPurifier;
 }
+
+/** The "All" tab's value. */
+export const ALL_TAB = "";
+
+/**
+ * Whether a set is the one a saved icon belongs to: by name, or by one of
+ * the set's `aliases` (older set names, e.g. a theme set a core collection
+ * replaced).
+ *
+ * @param {Object} group
+ * @param {string} iconSet
+ * @returns {boolean}
+ */
+export function isSetOf(group, iconSet) {
+	if (!iconSet) {
+		return false;
+	}
+	return (
+		group.name === iconSet ||
+		(Array.isArray(group.aliases) && group.aliases.includes(iconSet))
+	);
+}
+
+/**
+ * The tab the picker opens on: the selected icon's set, like core's Icon
+ * block, so the icon shows highlighted in a short list; "All" when no icon is
+ * selected (or its set is gone), so every icon is offered first.
+ *
+ * @param {Array}    groups         Icon sets ({ name, aliases, icons }).
+ * @param {string}   [valueSet]     The selected icon's set.
+ * @param {Function} isSelectedIcon Whether a grid icon is the selected one
+ *                                  (for values without a set).
+ * @returns {string} A set name, or ALL_TAB.
+ */
+export function openingTab(groups, valueSet, isSelectedIcon) {
+	const group = groups.find((item) =>
+		valueSet ? isSetOf(item, valueSet) : item.icons.some(isSelectedIcon),
+	);
+	return group?.name ?? ALL_TAB;
+}

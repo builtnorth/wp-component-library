@@ -9,7 +9,7 @@
  *     registered icon set (on WP 7.1+ these are core's icon collections).
  *   - Grid of icon buttons (icon + label), rendered in batches; the selected
  *     icon is a primary button, scrolled into view on open.
- *   - Opens on the selected icon's set, else the first set.
+ *   - Opens on the selected icon's set (like core), else on "All".
  *   - Search matches the current tab's icon names and labels.
  *
  * Keyboard: Arrow Up/Down (Home/End) move between tabs; the grid is one tab
@@ -42,16 +42,13 @@ import {
 	Tab,
 	TabList,
 } from "./styles";
-import { safeSvgSource } from "./utils";
+import { ALL_TAB as ALL, isSetOf, openingTab, safeSvgSource } from "./utils";
 
 /** Icons rendered per batch, like core. */
 const BATCH_SIZE = 20;
 
 /** Search delay in ms, like core. */
 const SEARCH_DEBOUNCE = 300;
-
-/** The "All" tab's value. */
-const ALL = "";
 
 /**
  * Lowercase, trimmed and accent-free, for search matching.
@@ -65,25 +62,6 @@ function normalizeSearch(input = "") {
 		.replace(/[̀-ͯ]/g, "")
 		.trim()
 		.toLowerCase();
-}
-
-/**
- * Whether a set is the one a saved icon belongs to: by name, or by one of
- * the set's `aliases` (older set names, e.g. a theme set a core collection
- * replaced).
- *
- * @param {Object} group
- * @param {string} iconSet
- * @returns {boolean}
- */
-function isSetOf(group, iconSet) {
-	if (!iconSet) {
-		return false;
-	}
-	return (
-		group.name === iconSet ||
-		(Array.isArray(group.aliases) && group.aliases.includes(iconSet))
-	);
 }
 
 /**
@@ -372,13 +350,8 @@ export function IconPickerModal({ value, onChange, onClose }) {
 		[groups, valueName, valueSet, valueSource],
 	);
 
-	const selectedGroup = useMemo(
-		() =>
-			groups.find((group) =>
-				valueSet
-					? isSetOf(group, valueSet)
-					: group.icons.some(isSelectedIcon),
-			),
+	const openingTabValue = useMemo(
+		() => openingTab(groups, valueSet, isSelectedIcon),
 		[groups, valueSet, isSelectedIcon],
 	);
 
@@ -396,7 +369,7 @@ export function IconPickerModal({ value, onChange, onClose }) {
 	const tabValue =
 		currentTab !== null && tabs.some((tab) => tab.value === currentTab)
 			? currentTab
-			: (selectedGroup?.name ?? groups[0]?.name ?? ALL);
+			: openingTabValue;
 	const tabIndex = Math.max(
 		0,
 		tabs.findIndex((tab) => tab.value === tabValue),

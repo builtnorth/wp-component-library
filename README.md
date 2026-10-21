@@ -236,6 +236,14 @@ Customisable appender buttons for inner blocks.
 
 ---
 
+### StylePicker
+
+| Export | Description |
+|---|---|
+| `StylePicker` | One of a few options, shown like core's block Styles panel (for a style-like attribute) |
+
+---
+
 ### Button
 
 | Export | Description |

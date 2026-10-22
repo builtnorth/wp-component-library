@@ -34,9 +34,9 @@
 		"@dnd-kit/modifiers": "^9.0.0",
 		"@dnd-kit/sortable": "^10.0.0",
 		"@dnd-kit/utilities": "^3.2.2",
-		"@wordpress/icons": "^11.8.0",
+		"@wordpress/icons": "^15.5.0",
 		"classnames": "^2.5.1",
-		"dompurify": "^3.4.7",
+		"dompurify": "^3.4.17",
 		"prop-types": "^15.8.1"
 	},
 	"peerDependencies": {

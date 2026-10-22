@@ -39,6 +39,10 @@ export function reorderByIds(items, orderedIds, getItemId = (item) => item.id) {
 	return ordered;
 }
 
+// Shared empty result: useSelect compares results, so a new [] per call would
+// re-render and log "useSelect returns different values".
+const NO_TERMS = [];
+
 /**
  * Hook to fetch and reorder terms based on selectedTerms order
  * 
@@ -51,7 +55,7 @@ export function useOrderedTerms(selectedTerms, taxonomy) {
 	const { terms } = useSelect(
 		(select) => {
 			if (!taxonomy || !selectedTerms || selectedTerms.length === 0) {
-				return { terms: [] };
+				return { terms: NO_TERMS };
 			}
 
 			const fetchedTerms = select('core').getEntityRecords('taxonomy', taxonomy, {
@@ -59,7 +63,7 @@ export function useOrderedTerms(selectedTerms, taxonomy) {
 				per_page: selectedTerms.length,
 			});
 
-			return { terms: fetchedTerms || [] };
+			return { terms: fetchedTerms || NO_TERMS };
 		},
 		[selectedTerms, taxonomy]
 	);

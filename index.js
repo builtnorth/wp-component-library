@@ -23,18 +23,12 @@ export {
 	ToolbarMediaUpload,
 } from "./components/media";
 export { ImageControls } from "./components/media/image-controls";
-export {
-	isMetaValueEmpty,
-	isTemplateEditorSurface,
-	useMetaGatedEditorVisibility,
-} from "./components/meta/meta-gated-editor";
-export { MetaPanel } from "./components/meta/MetaPanel";
+// MetaPanel, AttributesPanel and the meta-gated editor helpers need the post
+// editor (@wordpress/editor or its store): they live in
+// `@siratik/wp-component-library/editor` (editor.js), so screens outside the
+// post editor never load @wordpress/editor through this entry.
 export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
 // Query Controls - Individual ToolsPanelItems that can be composed together
-export {
-	default as AttributesPanel,
-	useAttributes,
-} from "./components/attributes-panel";
 export { Badge } from "./components/badge";
 export { SegmentedBar } from "./components/segmented-bar";
 export { StylePicker } from "./components/style-picker";

@@ -8,6 +8,14 @@ A comprehensive library of reusable React components, hooks, and utilities for W
 npm install @siratik/wp-component-library
 ```
 
+The package ships source (ES modules + JSX), so build it with `@wordpress/scripts` or another
+bundler that transpiles dependencies. There are two entry points:
+
+- `@siratik/wp-component-library`: everything below except the post-editor-only exports.
+- `@siratik/wp-component-library/editor`: `MetaPanel`, `AttributesPanel`, `useAttributes` and the
+  meta-gated editor helpers, which need `@wordpress/editor`. Keeping them separate means screens
+  outside the post editor never load `@wordpress/editor`.
+
 ## Components
 
 ### Icons
@@ -161,8 +169,8 @@ Post query builder controls that compose into a consistent query panel.
 
 | Export | Description |
 |---|---|
-| `AttributesPanel` | Dynamic HTML attribute editor (id, rel, title, etc.) |
-| `useAttributes()` | Hook for managing the attributes array state |
+| `AttributesPanel` | Dynamic HTML attribute editor (id, rel, title, etc.). From `/editor` |
+| `useAttributes()` | Hook for managing the attributes array state. From `/editor` |
 | `SortableSelect` | Token field with drag-to-reorder |
 | `tokensToString()` | Utility — converts token array to comma string |
 | `VariableField` | Text input with `@`-triggered variable autocomplete |
@@ -197,6 +205,8 @@ import { Repeater } from "@siratik/wp-component-library";
 ---
 
 ### Meta
+
+Import these from `@siratik/wp-component-library/editor`.
 
 | Export | Description |
 |---|---|

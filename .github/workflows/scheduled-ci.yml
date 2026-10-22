@@ -27,8 +27,5 @@ jobs:
             npm install
           fi
       
-      - name: Run build
-        run: npm run build
-      
       - name: Run unit tests
         run: npm run test:unit

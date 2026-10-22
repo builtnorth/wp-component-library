@@ -42,6 +42,14 @@ module.exports = withLicenseNotices({
 			'react-dom': 'ReactDOM',
 		},
 		function({ request }, callback) {
+			// @wordpress/icons has no wp.* global, so an external becomes a
+			// require() that each consumer resolves to the whole CommonJS icon
+			// set. Bundle it: the library's named imports tree-shake to the few
+			// icons it uses.
+			if (request === '@wordpress/icons' || request.startsWith('@wordpress/icons/')) {
+				return callback();
+			}
+
 			// WordPress dependencies
 			if (request.startsWith('@wordpress/')) {
 				const lib = request.replace('@wordpress/', '');

@@ -9,6 +9,15 @@
 		"./editor": "./editor.js",
 		"./constants/*": "./constants/*.js"
 	},
+	"files": [
+		"index.js",
+		"editor.js",
+		"components",
+		"utils",
+		"constants",
+		"!**/test/**",
+		"!**/*.test.js"
+	],
 	"sideEffects": [
 		"./components/icon-picker/store.js"
 	],

@@ -2,6 +2,7 @@ import {
     RangeControl,
     __experimentalToolsPanelItem as ToolsPanelItem,
 } from "@wordpress/components";
+import { __ } from "@wordpress/i18n";
 
 /**
  * Standalone posts per page control
@@ -13,25 +14,23 @@ import {
  * @param {number} props.min Minimum value
  * @param {number} props.max Maximum value
  * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: false)
+ * @param {number} props.defaultValue The block's default count (default: 6)
  * @returns {WPElement} Element to render
  */
 function PostsPerPageControl({
     attributes: { postsPerPage },
     setAttributes,
-    label = "Amount to Display",
+    label = __("Amount to display", "wp-component-library"),
     min = 1,
     max = 50,
     isShownByDefault = false,
+    defaultValue = 6,
 }) {
-    const defaultPostsPerPage = 6;
-
     return (
         <ToolsPanelItem
-            hasValue={() => postsPerPage !== defaultPostsPerPage}
+            hasValue={() => postsPerPage !== defaultValue}
             label={label}
-            onDeselect={() =>
-                setAttributes({ postsPerPage: defaultPostsPerPage })
-            }
+            onDeselect={() => setAttributes({ postsPerPage: defaultValue })}
             isShownByDefault={isShownByDefault}
         >
             <RangeControl

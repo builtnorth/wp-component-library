@@ -31,7 +31,7 @@ function SelectionModeControl({
     return (
         <ToolsPanelItem
             hasValue={() => selectionMode !== defaultSelectionMode}
-            label={__("Selection Mode", "built_starter")}
+            label={__("Selection Mode", "wp-component-library")}
             onDeselect={() =>
                 setAttributes({ selectionMode: defaultSelectionMode })
             }
@@ -40,17 +40,17 @@ function SelectionModeControl({
             <ToggleGroupControl
                 __next40pxDefaultSize={true}
                 __nextHasNoMarginBottom
-                label={__("Selection Mode", "built_starter")}
+                label={__("Selection Mode", "wp-component-library")}
                 value={selectionMode}
                 onChange={handleSelectionModeChange}
                 isBlock
             >
                 <ToggleGroupControlOption
-                    label={__("Auto", "built_starter")}
+                    label={__("Auto", "wp-component-library")}
                     value="auto"
                 />
                 <ToggleGroupControlOption
-                    label={__("Manual", "built_starter")}
+                    label={__("Manual", "wp-component-library")}
                     value="manual"
                 />
             </ToggleGroupControl>

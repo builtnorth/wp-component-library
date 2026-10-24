@@ -24,7 +24,7 @@ export const STATUS_COLOR_FALLBACKS = {
 	warning: {
 		base: "#f0b849",
 		light: "#fef8e6",
-		dark: "#b26200",
+		dark: "#a35a00",
 	},
 	error: {
 		base: "#cc1818",

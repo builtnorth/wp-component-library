@@ -6,7 +6,8 @@
  * IMPORTANT — Nominatim usage policy:
  *   https://operations.osmfoundation.org/policies/nominatim/
  *
- *   - Hard limit: 1 request/second
+ *   - Hard limit: 1 request/second. Requests from a page are spaced at
+ *     least 2 seconds apart (MIN_REQUEST_INTERVAL_MS) as a safety margin.
  *   - **No autocomplete-style as-you-type queries.** Callers MUST be
  *     explicit-submit (Enter / button click) and NOT fire on every
  *     keystroke or debounced keystroke burst. Use
@@ -22,6 +23,54 @@
  */
 
 const NOMINATIM_BASE = "https://nominatim.openstreetmap.org/search";
+
+// ---------------------------------------------------------------------------
+// Request spacing
+//
+// Nominatim allows at most one request a second. Network requests from this
+// page are spaced at least two seconds apart, a safety margin: a search that
+// comes sooner waits its turn. Cache hits don't wait. A search cancelled
+// while it waits sends nothing.
+// ---------------------------------------------------------------------------
+export const MIN_REQUEST_INTERVAL_MS = 2000;
+
+let nextRequestAt = 0;
+
+/**
+ * Reserve the next request slot and wait for it.
+ *
+ * @param {AbortSignal} [signal]
+ * @returns {Promise<void>} Rejects with an AbortError if cancelled first.
+ */
+function waitForRequestSlot(signal) {
+	const now = Date.now();
+	const startAt = Math.max(now, nextRequestAt);
+	nextRequestAt = startAt + MIN_REQUEST_INTERVAL_MS;
+
+	const delay = startAt - now;
+	if (delay <= 0) {
+		return Promise.resolve();
+	}
+
+	return new Promise((resolve, reject) => {
+		const timer = setTimeout(resolve, delay);
+		signal?.addEventListener(
+			"abort",
+			() => {
+				clearTimeout(timer);
+				reject(new DOMException("Aborted", "AbortError"));
+			},
+			{ once: true },
+		);
+	});
+}
+
+/**
+ * Test helper: forget the last request time.
+ */
+export function resetGeocoderSpacing() {
+	nextRequestAt = 0;
+}
 
 // ---------------------------------------------------------------------------
 // Per-session geocode result cache
@@ -178,6 +227,9 @@ export async function geocodeAddress({
 	}
 
 	try {
+		await waitForRequestSlot(signal);
+		if (signal?.aborted) return [];
+
 		const response = await fetch(`${NOMINATIM_BASE}?${params.toString()}`, {
 			headers: { Accept: "application/json" },
 			signal,

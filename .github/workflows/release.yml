@@ -26,7 +26,7 @@ jobs:
             version: ${{ inputs.version }}
             prerelease: ${{ inputs.prerelease }}
             package-name: "wp-component-library"
-            node-version: "22"
+            node-version: "24"
             publish-to-npm: true
             publish-to-github: false
             use-workspace: false

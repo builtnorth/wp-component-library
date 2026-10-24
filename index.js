@@ -30,6 +30,14 @@ export { ImageControls } from "./components/media/image-controls";
 export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
 // Query Controls - Individual ToolsPanelItems that can be composed together
 export { Badge } from "./components/badge";
+// Address search (Nominatim, explicit submit only).
+export {
+	GeocoderSearchControl,
+	geocodeAddress,
+	toOrganizationLocation,
+	GEOCODER_ATTRIBUTION_HTML,
+	DEFAULT_GEOCODER_COUNTRY_CODES,
+} from "./components/geocoder";
 export { SegmentedBar } from "./components/segmented-bar";
 export { StylePicker } from "./components/style-picker";
 export {

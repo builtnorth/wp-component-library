@@ -6,6 +6,8 @@
  */
 
 export { GeocoderSearchControl } from "./GeocoderSearchControl";
+export { AddressEntryControl } from "./AddressEntryControl";
+export { getCountryOptions } from "./countryOptions";
 export {
 	geocodeAddress,
 	toOrganizationLocation,

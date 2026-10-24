@@ -32,8 +32,10 @@ export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
 export { Badge } from "./components/badge";
 // Address search (Nominatim, explicit submit only).
 export {
+	AddressEntryControl,
 	GeocoderSearchControl,
 	geocodeAddress,
+	getCountryOptions,
 	toOrganizationLocation,
 	GEOCODER_ATTRIBUTION_HTML,
 	DEFAULT_GEOCODER_COUNTRY_CODES,

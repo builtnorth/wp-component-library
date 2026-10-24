@@ -5,6 +5,7 @@ import {
 	geocodeAddress,
 	MIN_REQUEST_INTERVAL_MS,
 	resetGeocoderSpacing,
+	toAddressQuery,
 } from "../geocoder";
 
 describe("geocodeAddress request spacing", () => {
@@ -54,5 +55,27 @@ describe("geocodeAddress request spacing", () => {
 
 		await expect(pending).resolves.toEqual([]);
 		expect(global.fetch).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe("toAddressQuery", () => {
+	it("joins street, city and state + ZIP, leaving line 2 out", () => {
+		expect(
+			toAddressQuery({
+				address_street: "1200 Harbor St",
+				address_street_2: "Suite 300",
+				address_city: "Portland",
+				address_state: "OR",
+				address_zip: "97209",
+			}),
+		).toBe("1200 Harbor St, Portland, OR 97209");
+	});
+
+	it("skips blank parts without stray separators", () => {
+		expect(toAddressQuery({ address_city: " Portland ", address_zip: "97209" })).toBe(
+			"Portland, 97209",
+		);
+		expect(toAddressQuery({})).toBe("");
+		expect(toAddressQuery(null)).toBe("");
 	});
 });

@@ -342,6 +342,28 @@ export function toOrganizationLocation(result) {
 }
 
 /**
+ * One-line lookup query for an organization-shaped address: street, city,
+ * "state ZIP". Line 2 (suite, unit, floor) is left out: it makes lookups fail.
+ *
+ * @param {Object} location Object with address_* keys.
+ * @returns {string}
+ */
+export function toAddressQuery(location) {
+	const value = location && typeof location === "object" ? location : {};
+	return [
+		value.address_street,
+		value.address_city,
+		[value.address_state, value.address_zip]
+			.map((part) => String(part || "").trim())
+			.filter(Boolean)
+			.join(" "),
+	]
+		.map((part) => String(part || "").trim())
+		.filter(Boolean)
+		.join(", ");
+}
+
+/**
  * Visible attribution required by the Nominatim usage policy.
  * Render this somewhere near the search control (small print is fine).
  */

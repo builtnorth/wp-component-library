@@ -103,6 +103,7 @@ const StyledAddressEntry = styled.div`
  * @param {Function} [props.onRemove]          Shows a Remove address button when set.
  * @param {string}   [props.searchControlId]   Id for the search input.
  * @param {string}   [props.notFoundMessage]   Shown when Find on map finds nothing.
+ * @param {boolean}  [props.showFindOnMap]     False hides Find on map (no pin to place).
  * @param {string}   [props.className]
  */
 export function AddressEntryControl({
@@ -111,6 +112,7 @@ export function AddressEntryControl({
 	onRemove,
 	searchControlId = "address-entry-search",
 	notFoundMessage,
+	showFindOnMap = true,
 	className = "",
 }) {
 	const location = value && typeof value === "object" ? value : {};
@@ -343,16 +345,18 @@ export function AddressEntryControl({
 						onChange={setField("address_country")}
 					/>
 					<div className="address-entry__actions">
-						<Button
-							variant="secondary"
-							size="compact"
-							onClick={handleFindOnMap}
-							isBusy={findStatus === "searching"}
-							disabled={!canFindOnMap || findStatus === "searching"}
-							accessibleWhenDisabled
-						>
-							{__("Find on map", "wp-component-library")}
-						</Button>
+						{showFindOnMap && (
+							<Button
+								variant="secondary"
+								size="compact"
+								onClick={handleFindOnMap}
+								isBusy={findStatus === "searching"}
+								disabled={!canFindOnMap || findStatus === "searching"}
+								accessibleWhenDisabled
+							>
+								{__("Find on map", "wp-component-library")}
+							</Button>
+						)}
 						{onRemove && hasAddress && (
 							<Button
 								variant="tertiary"

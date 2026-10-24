@@ -41,6 +41,19 @@ import {
 
 // Styled components
 const StyledRepeater = styled.div`
+	/* A core Modal's open animation keeps its end transform (fill-mode
+	   forwards); a transformed frame throws off dnd-kit's keyboard
+	   measuring, so arrow keys skip an item. The end keyframe is the
+	   resting state, so dropping the fill changes nothing visually.
+	   The held transform was also what positioned the absolute modal
+	   header; position: relative keeps the header in the frame without
+	   affecting the fixed-position drag overlay. */
+	.components-modal__screen-overlay:not(.is-animating-out)
+		.components-modal__frame:has(&) {
+		animation-fill-mode: none;
+		position: relative;
+	}
+
 	.built-repeater__items {
 		display: flex;
 		flex-direction: column;
@@ -264,6 +277,29 @@ const StyledDragHandle = styled.div`
 	flex-shrink: 0;
 `;
 
+/**
+ * restrictToParentElement, with the dragged rect's edges rebuilt from its size.
+ *
+ * When the drag overlay resizes after mounting (e.g. responsive columns
+ * settling), dnd-kit updates only its width/height and keeps the first
+ * bottom/right, so the item looks taller than it is and can't reach the
+ * last slot.
+ */
+const restrictToParent = (args) => {
+	const rect = args.draggingNodeRect;
+
+	return restrictToParentElement({
+		...args,
+		draggingNodeRect: rect
+			? {
+					...rect,
+					bottom: rect.top + rect.height,
+					right: rect.left + rect.width,
+				}
+			: rect,
+	});
+};
+
 const itemChromeButtonProps = {
 	variant: "secondary",
 	iconSize: 20,
@@ -289,20 +325,29 @@ export const DragHandle = ({
 		return null;
 	}
 
-	const { attributes, listeners } = context;
+	const { attributes, listeners, isDragging } = context;
+
+	// Escape cancels the drag (dnd-kit listens on the document); mark it
+	// handled so a surrounding Modal doesn't close as well.
+	const onKeyDown = (event) => {
+		if (isDragging && event.key === "Escape") {
+			event.preventDefault();
+		}
+		listeners?.onKeyDown?.(event);
+		props.onKeyDown?.(event);
+	};
 
 	return (
-		<StyledDragHandle
-			className="built-repeater__drag-handle"
-			{...attributes}
-			{...listeners}
-		>
+		<StyledDragHandle className="built-repeater__drag-handle">
+			{/* The button is the drag control, so it isn't nested in another one. */}
 			<Button
 				icon={dragHandle}
 				label={label}
-				tabIndex={-1}
+				{...attributes}
+				{...listeners}
 				{...itemChromeButtonProps}
 				{...props}
+				onKeyDown={onKeyDown}
 			/>
 		</StyledDragHandle>
 	);
@@ -396,6 +441,7 @@ const SortableItem = ({
 		onRemove,
 		id,
 		canRemove,
+		isDragging,
 	};
 
 	const itemClassName = [
@@ -663,7 +709,7 @@ const Repeater = ({
 				collisionDetection={closestCenter}
 				onDragStart={handleDragStart}
 				onDragEnd={handleDragEnd}
-				modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+				modifiers={[restrictToVerticalAxis, restrictToParent]}
 			>
 				{items.length === 0 ? (
 					<div className="built-repeater__empty-state">

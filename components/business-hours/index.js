@@ -5,3 +5,4 @@
  */
 
 export { WeeklyHoursControl } from "./WeeklyHoursControl";
+export { SpecialHoursControl } from "./SpecialHoursControl";

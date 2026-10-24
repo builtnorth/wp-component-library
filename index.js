@@ -41,7 +41,7 @@ export {
 	DEFAULT_GEOCODER_COUNTRY_CODES,
 } from "./components/geocoder";
 // Weekly business hours editor (controlled).
-export { WeeklyHoursControl } from "./components/business-hours";
+export { SpecialHoursControl, WeeklyHoursControl } from "./components/business-hours";
 export { SegmentedBar } from "./components/segmented-bar";
 export { StylePicker } from "./components/style-picker";
 export {

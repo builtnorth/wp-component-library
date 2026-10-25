@@ -91,7 +91,9 @@ export function GeocoderSearchControl({
 					countryCodes,
 					signal: controller.signal,
 				});
-				if (controller.signal.aborted) return;
+				if (controller.signal.aborted) {
+					return;
+				}
 				setSuggestions(results);
 				setShowSuggestions(true);
 				setSelectedIndex(-1);
@@ -118,7 +120,9 @@ export function GeocoderSearchControl({
 	const handleSelect = useCallback(
 		(suggestion) => {
 			onSelect?.(suggestion);
-			if (clearOnSelect) setValue("");
+			if (clearOnSelect) {
+				setValue("");
+			}
 			setSuggestions([]);
 			setShowSuggestions(false);
 			setSelectedIndex(-1);
@@ -151,7 +155,9 @@ export function GeocoderSearchControl({
 				return;
 			}
 
-			if (!showSuggestions || suggestions.length === 0) return;
+			if (!showSuggestions || suggestions.length === 0) {
+				return;
+			}
 
 			if (e.key === "ArrowDown") {
 				e.preventDefault();
@@ -175,7 +181,9 @@ export function GeocoderSearchControl({
 
 	// Click-outside to dismiss.
 	useEffect(() => {
-		if (!showSuggestions) return undefined;
+		if (!showSuggestions) {
+			return undefined;
+		}
 		const handler = (event) => {
 			if (
 				containerRef.current &&
@@ -193,7 +201,9 @@ export function GeocoderSearchControl({
 	// set state on a torn-down component.
 	useEffect(() => {
 		return () => {
-			if (abortRef.current) abortRef.current.abort();
+			if (abortRef.current) {
+				abortRef.current.abort();
+			}
 		};
 	}, []);
 

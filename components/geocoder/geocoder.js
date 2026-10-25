@@ -114,7 +114,9 @@ function buildCacheKey(query, limit, countryCodes) {
 function readGeocodeCache(key) {
 	try {
 		const raw = sessionStorage.getItem(key);
-		if (!raw) return null;
+		if (!raw) {
+			return null;
+		}
 		const { ts, data } = JSON.parse(raw);
 		if (Date.now() - ts > GEOCODE_CACHE_TTL_MS) {
 			sessionStorage.removeItem(key);
@@ -200,12 +202,16 @@ export async function geocodeAddress({
 	signal,
 } = {}) {
 	const trimmed = (query || "").trim();
-	if (trimmed.length < 3) return [];
+	if (trimmed.length < 3) {
+		return [];
+	}
 
 	// Check session cache before hitting the network.
 	const cacheKey = buildCacheKey(trimmed, limit, countryCodes);
 	const cached = readGeocodeCache(cacheKey);
-	if (cached) return cached;
+	if (cached) {
+		return cached;
+	}
 
 	const params = new URLSearchParams({
 		q: trimmed,
@@ -228,22 +234,31 @@ export async function geocodeAddress({
 
 	try {
 		await waitForRequestSlot(signal);
-		if (signal?.aborted) return [];
+		if (signal?.aborted) {
+			return [];
+		}
 
 		const response = await fetch(`${NOMINATIM_BASE}?${params.toString()}`, {
 			headers: { Accept: "application/json" },
 			signal,
 		});
-		if (!response.ok) return [];
+		if (!response.ok) {
+			return [];
+		}
 		const data = await response.json();
-		if (!Array.isArray(data)) return [];
+		if (!Array.isArray(data)) {
+			return [];
+		}
 		const results = data.map(toGeocodeResult).filter(Boolean);
 		writeGeocodeCache(cacheKey, results);
 		return results;
 	} catch (err) {
 		// Aborted requests are expected (explicit-submit UX can still abort
 		// an in-flight request if the user submits a new search quickly).
-		if (err?.name === "AbortError") return [];
+		if (err?.name === "AbortError") {
+			return [];
+		}
+		// eslint-disable-next-line no-console -- surfaces failed lookups, which otherwise return no results silently.
 		console.error("Nominatim geocoding error:", err);
 		return [];
 	}
@@ -258,7 +273,9 @@ export async function geocodeAddress({
 function toGeocodeResult(item) {
 	const lat = Number(item.lat);
 	const lng = Number(item.lon);
-	if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+	if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+		return null;
+	}
 
 	const a = item.address || {};
 	const houseNumber = a.house_number || "";
@@ -308,14 +325,24 @@ function formatDisplayName(item, { street, road }) {
 			a.office ||
 			a.building ||
 			item.name;
-		if (poi) parts.push(poi);
+		if (poi) {
+			parts.push(poi);
+		}
 	}
 
 	const city = a.city || a.town || a.village || a.hamlet || a.suburb;
-	if (city) parts.push(city);
-	if (a.state) parts.push(a.state);
-	if (a.postcode) parts.push(a.postcode);
-	if (a.country_code) parts.push(a.country_code.toUpperCase());
+	if (city) {
+		parts.push(city);
+	}
+	if (a.state) {
+		parts.push(a.state);
+	}
+	if (a.postcode) {
+		parts.push(a.postcode);
+	}
+	if (a.country_code) {
+		parts.push(a.country_code.toUpperCase());
+	}
 
 	return parts.length ? parts.join(", ") : item.display_name || "";
 }
@@ -328,7 +355,9 @@ function formatDisplayName(item, { street, road }) {
  * @returns {{street:string,city:string,state:string,zip:string,country:string,lat:number,lng:number}|null}
  */
 export function toOrganizationLocation(result) {
-	if (!result) return null;
+	if (!result) {
+		return null;
+	}
 	const a = result.address;
 	return {
 		street: a.street || "",

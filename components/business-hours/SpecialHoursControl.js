@@ -23,13 +23,17 @@ function generateId() {
 }
 
 function timeStringToObject(str) {
-	if (!str) return { hours: 9, minutes: 0 };
+	if (!str) {
+		return { hours: 9, minutes: 0 };
+	}
 	const [h, m] = str.split(":");
 	return { hours: parseInt(h, 10), minutes: parseInt(m, 10) };
 }
 
 function timeObjectToString(obj) {
-	if (!obj || typeof obj.hours !== "number") return "09:00";
+	if (!obj || typeof obj.hours !== "number") {
+		return "09:00";
+	}
 	return `${String(obj.hours).padStart(2, "0")}:${String(obj.minutes ?? 0).padStart(2, "0")}`;
 }
 
@@ -75,6 +79,7 @@ function HolidayRow({ item, onUpdate, is24HourFormat = false }) {
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					label={__("From (MM-DD)", "wp-component-library")}
+					// eslint-disable-next-line @wordpress/i18n-hyphenated-range -- MM-DD date, not a range.
 					help={__("e.g. 12-25", "wp-component-library")}
 					value={item.date_from ?? ""}
 					onChange={(v) => update("date_from", v)}
@@ -88,6 +93,7 @@ function HolidayRow({ item, onUpdate, is24HourFormat = false }) {
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 					label={__("To (MM-DD)", "wp-component-library")}
+					// eslint-disable-next-line @wordpress/i18n-hyphenated-range -- MM-DD date, not a range.
 					help={__("e.g. 12-25", "wp-component-library")}
 					value={item.date_to ?? ""}
 					onChange={(v) => update("date_to", v)}

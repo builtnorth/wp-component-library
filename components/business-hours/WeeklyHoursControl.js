@@ -167,7 +167,9 @@ function DayHours({ day, dayHours, updateHours, is24HourFormat = false }) {
 
 	// Convert 24-hour time string to time object for TimePicker
 	const timeStringToTimeObject = (timeString) => {
-		if (!timeString) return { hours: 9, minutes: 0 };
+		if (!timeString) {
+			return { hours: 9, minutes: 0 };
+		}
 		const [hours, minutes] = timeString.split(":");
 		return {
 			hours: parseInt(hours),
@@ -219,6 +221,54 @@ function DayHours({ day, dayHours, updateHours, is24HourFormat = false }) {
 		updateHours(day, "close_time", timeString);
 	};
 
+	let dayStatus;
+	if (dayHours.closed) {
+		dayStatus = (
+			<Flex justify="flex-end">
+				<span
+					style={{
+						color: "#757575",
+						fontStyle: "italic",
+					}}
+				>
+					{__("Closed all day", "wp-component-library")}
+				</span>
+			</Flex>
+		);
+	} else if (dayHours.open_24_hours) {
+		dayStatus = (
+			<Flex justify="flex-end">
+				<span
+					style={{
+						color: "#757575",
+					}}
+				>
+					{__("Open 24 hours", "wp-component-library")}
+				</span>
+			</Flex>
+		);
+	} else {
+		dayStatus = (
+			<Flex justify="flex-end" align="center" gap="2">
+				<TimePicker.TimeInput
+					key={`${day}-open-${is24HourFormat}`}
+					className="business-hours__time business-hours__time--open"
+					value={openTime}
+					onChange={handleOpenTimeChange}
+					is12Hour={!is24HourFormat}
+				/>
+				<span className="business-hours__dash">–</span>
+				<TimePicker.TimeInput
+					key={`${day}-close-${is24HourFormat}`}
+					className="business-hours__time business-hours__time--close"
+					value={closeTime}
+					onChange={handleCloseTimeChange}
+					is12Hour={!is24HourFormat}
+				/>
+			</Flex>
+		);
+	}
+
 	return (
 		<PanelRow className="business-hours">
 			<Flex align="center" gap="3" style={{ width: "100%" }}>
@@ -259,46 +309,7 @@ function DayHours({ day, dayHours, updateHours, is24HourFormat = false }) {
 				</FlexItem>
 
 				<FlexItem style={{ flex: 1, minWidth: "200px" }}>
-					{dayHours.closed ? (
-						<Flex justify="flex-end">
-							<span
-								style={{
-									color: "#757575",
-									fontStyle: "italic",
-								}}
-							>
-								{__("Closed all day", "wp-component-library")}
-							</span>
-						</Flex>
-					) : dayHours.open_24_hours ? (
-						<Flex justify="flex-end">
-							<span
-								style={{
-									color: "#757575",
-								}}
-							>
-								{__("Open 24 hours", "wp-component-library")}
-							</span>
-						</Flex>
-					) : (
-						<Flex justify="flex-end" align="center" gap="2">
-							<TimePicker.TimeInput
-								key={`${day}-open-${is24HourFormat}`}
-								className="business-hours__time business-hours__time--open"
-								value={openTime}
-								onChange={handleOpenTimeChange}
-								is12Hour={!is24HourFormat}
-							/>
-							<span className="business-hours__dash">–</span>
-							<TimePicker.TimeInput
-								key={`${day}-close-${is24HourFormat}`}
-								className="business-hours__time business-hours__time--close"
-								value={closeTime}
-								onChange={handleCloseTimeChange}
-								is12Hour={!is24HourFormat}
-							/>
-						</Flex>
-					)}
+					{dayStatus}
 				</FlexItem>
 			</Flex>
 		</PanelRow>
@@ -321,7 +332,7 @@ export function WeeklyHoursControl({
 	className = "",
 }) {
 	const businessHours = hours || {};
-	const always_open = businessHours.always_open ?? false;
+	const alwaysOpen = businessHours.always_open ?? false;
 	const is24HourFormat = businessHours.is_24_hour_format ?? false;
 
 	const updateHours = (day, field, value) => {
@@ -353,7 +364,7 @@ export function WeeklyHoursControl({
 					<ToggleControl
 						__nextHasNoMarginBottom
 						label={__("Open 24/7", "wp-component-library")}
-						checked={always_open}
+						checked={alwaysOpen}
 						onChange={(newValue) =>
 							updateGlobalSetting("always_open", newValue)
 						}
@@ -372,7 +383,7 @@ export function WeeklyHoursControl({
 				</Flex>
 			) : null}
 
-			{always_open ? (
+			{alwaysOpen ? (
 				<div
 					style={{
 						textAlign: "center",

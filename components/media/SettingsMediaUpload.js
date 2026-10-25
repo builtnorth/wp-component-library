@@ -2,7 +2,7 @@
  * Settings Media Upload Component
  * Designed for admin settings contexts (not block editor)
  */
-import { MediaUpload, MediaUploadCheck } from "@wordpress/media-utils";
+import { MediaUpload } from "@wordpress/media-utils";
 import { Button, Flex, Placeholder } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { __ } from "@wordpress/i18n";
@@ -145,40 +145,39 @@ function SettingsMediaUpload({
 
             {/* Buttons */}
             <StyledButtons>
-                <MediaUploadCheck>
-                    <Flex gap={2}>
-                        <MediaUpload
-                            onSelect={onSelect}
-                            allowedTypes={ALLOWED_MEDIA_TYPES}
-                            value={imageId}
-                            render={({ open }) => (
-                                <Button
-                                    variant="secondary"
-                                    onClick={open}
-                                    size="default"
-                                >
-                                    {buttonTitle || 
-                                        (hasImage 
-                                            ? __("Change Image", "wp-component-library")
-                                            : __("Upload Image", "wp-component-library")
-                                        )
-                                    }
-                                </Button>
-                            )}
-                        />
-                        
-                        {hasImage && (
+                {/* Settings pages are admin-only; the media frame and upload endpoint check upload permissions. */}
+                <Flex gap={2}>
+                    <MediaUpload
+                        onSelect={onSelect}
+                        allowedTypes={ALLOWED_MEDIA_TYPES}
+                        value={imageId}
+                        render={({ open }) => (
                             <Button
                                 variant="secondary"
-                                isDestructive={true}
-                                onClick={onRemove}
+                                onClick={open}
                                 size="default"
                             >
-                                {__("Remove Image", "wp-component-library")}
+                                {buttonTitle || 
+                                    (hasImage 
+                                        ? __("Change Image", "wp-component-library")
+                                        : __("Upload Image", "wp-component-library")
+                                    )
+                                }
                             </Button>
                         )}
-                    </Flex>
-                </MediaUploadCheck>
+                    />
+                    
+                    {hasImage && (
+                        <Button
+                            variant="secondary"
+                            isDestructive={true}
+                            onClick={onRemove}
+                            size="default"
+                        >
+                            {__("Remove Image", "wp-component-library")}
+                        </Button>
+                    )}
+                </Flex>
             </StyledButtons>
         </StyledSettingsMediaUpload>
     );

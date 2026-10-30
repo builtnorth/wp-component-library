@@ -3,7 +3,7 @@
  *
  * Link settings for a block: a URL (WordPress's link search), "Use post
  * permalink", "Open in new tab" and, when the block asks for it, the link's
- * rel (e.g. nofollow).
+ * rel (e.g. nofollow) and accessible label.
  *
  * - `LinkToolsPanelItems`: the controls as tools panel items, for a block
  *   that already has a ToolsPanel to put them in.
@@ -25,6 +25,7 @@ export const LINK_DEFAULTS = {
 	opensInNewTab: false,
 	isPermalink: false,
 	rel: "",
+	ariaLabel: "",
 };
 
 /**
@@ -42,6 +43,8 @@ export const LINK_DEFAULTS = {
  * @param {string}   [props.newTabHelp]            Help text shown while "Open in new tab" is on.
  * @param {boolean}  [props.showRel=false]         Whether to offer the link's rel, for blocks that save and render it.
  * @param {string}   [props.rel]                   Link rel, e.g. "nofollow sponsored".
+ * @param {boolean}  [props.showAriaLabel=false]   Whether to offer an accessible label, for blocks that save and render it.
+ * @param {string}   [props.ariaLabel]             Link name for screen readers.
  */
 export function LinkToolsPanelItems({
 	link = LINK_DEFAULTS.link,
@@ -58,6 +61,8 @@ export function LinkToolsPanelItems({
 	newTabHelp,
 	showRel = false,
 	rel = LINK_DEFAULTS.rel,
+	showAriaLabel = false,
+	ariaLabel = LINK_DEFAULTS.ariaLabel,
 }) {
 	return (
 		<>
@@ -153,6 +158,30 @@ export function LinkToolsPanelItems({
 					/>
 				</ToolsPanelItem>
 			)}
+
+			{showAriaLabel && (
+				<ToolsPanelItem
+					panelId={panelId}
+					hasValue={() => !!ariaLabel}
+					label={__("Accessible label", "wp-component-library")}
+					onDeselect={() =>
+						onChange({ ariaLabel: LINK_DEFAULTS.ariaLabel })
+					}
+					isShownByDefault={false}
+				>
+					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={__("Accessible label", "wp-component-library")}
+						help={__(
+							"The link's name for screen readers. Include any visible link text.",
+							"wp-component-library",
+						)}
+						value={ariaLabel}
+						onChange={(value) => onChange({ ariaLabel: value })}
+					/>
+				</ToolsPanelItem>
+			)}
 		</>
 	);
 }
@@ -180,9 +209,14 @@ export function LinkToolsPanel({
 			label={label}
 			panelId={panelId}
 			resetAll={() => {
-				// rel only for blocks that offer it (they have the attribute).
-				const { rel, ...defaults } = LINK_DEFAULTS;
-				onChange(itemProps.showRel ? { ...defaults, rel } : defaults);
+				// rel and ariaLabel only for blocks that offer them (they have
+				// the attribute).
+				const { rel, ariaLabel, ...defaults } = LINK_DEFAULTS;
+				onChange({
+					...defaults,
+					...(itemProps.showRel ? { rel } : {}),
+					...(itemProps.showAriaLabel ? { ariaLabel } : {}),
+				});
 			}}
 			className={className}
 		>

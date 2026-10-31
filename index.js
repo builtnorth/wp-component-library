@@ -44,6 +44,7 @@ export {
 // Weekly business hours editor (controlled).
 export { SpecialHoursControl, WeeklyHoursControl } from "./components/business-hours";
 export { SegmentedBar } from "./components/segmented-bar";
+export { StepNumber, Stepper } from "./components/stepper";
 export { StylePicker } from "./components/style-picker";
 export {
 	STATUS_COLOR_FALLBACKS,

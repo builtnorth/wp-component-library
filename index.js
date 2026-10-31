@@ -28,6 +28,7 @@ export { ImageControls } from "./components/media/image-controls";
 // `@siratik/wp-component-library/editor` (editor.js), so screens outside the
 // post editor never load @wordpress/editor through this entry.
 export { DragHandle, RemoveButton, Repeater } from "./components/repeater";
+export { SocialProfilesControl } from "./components/social-profiles";
 // Query Controls - Individual ToolsPanelItems that can be composed together
 export { Badge } from "./components/badge";
 // Address search (Nominatim, explicit submit only).

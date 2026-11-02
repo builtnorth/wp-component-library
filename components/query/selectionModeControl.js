@@ -5,21 +5,30 @@ import {
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
+const modeLabels = () => ({
+    auto: __("Auto", "wp-component-library"),
+    manual: __("Manual", "wp-component-library"),
+    related: __("Related", "wp-component-library"),
+});
+
 /**
- * Standalone selection mode control (auto vs manual)
+ * Standalone selection mode control (auto vs manual, optionally related)
  *
  * @param {Object} props Component props
  * @param {Object} props.attributes Block attributes
  * @param {Function} props.setAttributes Function to set attributes
  * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: true)
+ * @param {string[]} props.modes Modes offered, from "auto", "manual", "related" (default: auto and manual)
  * @returns {WPElement} Element to render
  */
 function SelectionModeControl({
     attributes: { selectionMode = "auto" },
     setAttributes,
     isShownByDefault = true,
+    modes = ["auto", "manual"],
 }) {
     const defaultSelectionMode = "auto";
+    const labels = modeLabels();
 
     const handleSelectionModeChange = (value) => {
         setAttributes({
@@ -45,14 +54,15 @@ function SelectionModeControl({
                 onChange={handleSelectionModeChange}
                 isBlock
             >
-                <ToggleGroupControlOption
-                    label={__("Auto", "wp-component-library")}
-                    value="auto"
-                />
-                <ToggleGroupControlOption
-                    label={__("Manual", "wp-component-library")}
-                    value="manual"
-                />
+                {modes
+                    .filter((mode) => labels[mode])
+                    .map((mode) => (
+                        <ToggleGroupControlOption
+                            key={mode}
+                            label={labels[mode]}
+                            value={mode}
+                        />
+                    ))}
             </ToggleGroupControl>
         </ToolsPanelItem>
     );

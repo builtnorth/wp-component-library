@@ -16,6 +16,7 @@ import { __ } from "@wordpress/i18n";
  * @param {boolean} props.showNoneOption Whether to show a "none" option (default: false)
  * @param {string} props.noneOptionLabel Label for the "none" option (default: "No Taxonomy Filter")
  * @param {boolean} props.isShownByDefault Whether to show by default in ToolsPanel (default: false)
+ * @param {string} props.help Help text under the control (default: none)
  * @returns {WPElement} Element to render
  */
 function TaxonomySelect({
@@ -25,6 +26,7 @@ function TaxonomySelect({
     showNoneOption = false,
     noneOptionLabel = "No Taxonomy Filter",
     isShownByDefault = false,
+    help,
 }) {
     const defaultSelectedTaxonomy = "";
 
@@ -129,7 +131,7 @@ function TaxonomySelect({
                                 "No taxonomies available for this post type",
                                 "built",
                             )
-                          : undefined
+                          : help
                 }
             />
         </ToolsPanelItem>

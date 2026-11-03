@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ComboboxControl, Icon, TextControl } from "@wordpress/components";
+import { Icon, TextControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import {
 	FaFacebook,
@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 import { FaThreads } from "react-icons/fa6";
 import { DragHandle, RemoveButton, Repeater } from "../repeater";
+import { SearchableSelectControl } from "../searchable-select";
 
 // An even split: sized by content, the open platform list would widen its column.
 const Fields = styled.div`
@@ -145,9 +146,7 @@ export function SocialProfilesControl({
 		<>
 			<DragHandle />
 			<div className="built-combobox-control-wrap">
-				<ComboboxControl
-					__nextHasNoMarginBottom={true}
-					__next40pxDefaultSize={true}
+				<SearchableSelectControl
 					className="social-media__platform"
 					allowReset={false}
 					expandOnFocus={false}

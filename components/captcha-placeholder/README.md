@@ -1,6 +1,6 @@
 # CaptchaPlaceholder Component
 
-A unified captcha component that provides a consistent interface for rendering different captcha providers. Supports Google reCAPTCHA (v2 & v3), hCaptcha, and Cloudflare Turnstile with customizable themes and sizes.
+A unified captcha component that provides a consistent interface for rendering different captcha providers. Supports ALTCHA, Google reCAPTCHA (v2 & v3), hCaptcha, and Cloudflare Turnstile with customizable themes and sizes.
 
 ## Features
 
@@ -13,6 +13,7 @@ A unified captcha component that provides a consistent interface for rendering d
 
 ## Supported Providers
 
+- **ALTCHA** - Self-hosted proof of work (standard checkbox or floating)
 - **Google reCAPTCHA v2** - Traditional checkbox captcha
 - **Google reCAPTCHA v3** - Invisible behavioral analysis
 - **hCaptcha** - Privacy-focused reCAPTCHA alternative
@@ -22,6 +23,12 @@ A unified captcha component that provides a consistent interface for rendering d
 
 ```jsx
 import { CaptchaPlaceholder } from '@siratik/wp-component-library/components/captcha-placeholder';
+
+// ALTCHA
+<CaptchaPlaceholder
+    provider="altcha"
+    display="standard"
+/>
 
 // Google reCAPTCHA v2
 <CaptchaPlaceholder
@@ -56,11 +63,12 @@ import { CaptchaPlaceholder } from '@siratik/wp-component-library/components/cap
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `provider` | `string` | Required | Captcha provider: "google-recaptcha", "hcaptcha", or "cloudflare-turnstile" |
+| `provider` | `string` | Required | Captcha provider: "altcha", "google-recaptcha", "hcaptcha", or "cloudflare-turnstile" |
 | `theme` | `string` | `"light"` | Visual theme: "light", "dark", or "auto" |
 | `size` | `string` | `"normal"` | Captcha size: "normal" or "compact" |
 | `version` | `string` | `"v2"` | Google reCAPTCHA version: "v2" or "v3" (Google only) |
 | `mode` | `string` | `"managed"` | Cloudflare Turnstile mode: "managed", "non-interactive", or "invisible" |
+| `display` | `string` | `"standard"` | ALTCHA display: "standard" or "floating" |
 
 ## Provider-Specific Configuration
 

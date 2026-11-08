@@ -16,6 +16,8 @@ export {
 	CustomInspectorAppender,
 } from "./components/block-appender";
 export { ButtonFrontend } from "./components/button";
+// The confirm step before a destructive action (delete, remove, clear).
+export { ConfirmDestructiveModal } from "./components/confirm-destructive-modal";
 export {
 	EditorMediaUpload,
 	InspectorMediaUpload,

@@ -23,6 +23,12 @@ import {
 	__experimentalVStack as VStack,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
+import styled from "@emotion/styled";
+
+/* Keeps the icon at full size when the message wraps. */
+const MessageIcon = styled(Icon)`
+	flex: none;
+`;
 
 /**
  * @param {Object}          props
@@ -64,7 +70,7 @@ export function ConfirmDestructiveModal({
 
 	const message = icon ? (
 		<HStack alignment="top" spacing={2} justify="flex-start">
-			<Icon icon={icon} style={{ flex: "none" }} />
+			<MessageIcon icon={icon} />
 			<VStack spacing={2}>{children}</VStack>
 		</HStack>
 	) : (

@@ -58,6 +58,46 @@ describe("geocodeAddress request spacing", () => {
 	});
 });
 
+describe("geocodeAddress spacing across copies of the module", () => {
+	beforeEach(() => {
+		jest.useFakeTimers();
+		window.sessionStorage.clear();
+		delete window.__siratikGeocoderNextRequestAt;
+		global.fetch = jest.fn(() =>
+			Promise.resolve({ ok: true, json: () => Promise.resolve([]) }),
+		);
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+		delete global.fetch;
+		delete window.__siratikGeocoderNextRequestAt;
+	});
+
+	it("waits for a request another bundle's copy just sent", async () => {
+		let first;
+		let second;
+		jest.isolateModules(() => {
+			first = require("../geocoder");
+		});
+		jest.isolateModules(() => {
+			second = require("../geocoder");
+		});
+		expect(first).not.toBe(second);
+
+		await first.geocodeAddress({ query: "Austin TX" });
+		expect(global.fetch).toHaveBeenCalledTimes(1);
+
+		const pending = second.geocodeAddress({ query: "Dallas TX" });
+		await jest.advanceTimersByTimeAsync(first.MIN_REQUEST_INTERVAL_MS - 1);
+		expect(global.fetch).toHaveBeenCalledTimes(1);
+
+		await jest.advanceTimersByTimeAsync(1);
+		await pending;
+		expect(global.fetch).toHaveBeenCalledTimes(2);
+	});
+});
+
 describe("toAddressQuery", () => {
 	it("joins street, city and state + ZIP, leaving line 2 out", () => {
 		expect(

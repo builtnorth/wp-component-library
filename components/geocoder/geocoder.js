@@ -34,7 +34,19 @@ const NOMINATIM_BASE = "https://nominatim.openstreetmap.org/search";
 // ---------------------------------------------------------------------------
 export const MIN_REQUEST_INTERVAL_MS = 2000;
 
-let nextRequestAt = 0;
+// The clock is kept on the page, not in this module: a bundle that imports
+// "@siratik/wp-component-library/geocoder" has its own copy of this file,
+// and every copy on the page must share one spacing.
+const CLOCK_KEY = "__siratikGeocoderNextRequestAt";
+
+const clock = {
+	get: () => (typeof window !== "undefined" ? Number(window[CLOCK_KEY]) || 0 : 0),
+	set: (at) => {
+		if (typeof window !== "undefined") {
+			window[CLOCK_KEY] = at;
+		}
+	},
+};
 
 /**
  * Reserve the next request slot and wait for it.
@@ -44,8 +56,8 @@ let nextRequestAt = 0;
  */
 function waitForRequestSlot(signal) {
 	const now = Date.now();
-	const startAt = Math.max(now, nextRequestAt);
-	nextRequestAt = startAt + MIN_REQUEST_INTERVAL_MS;
+	const startAt = Math.max(now, clock.get());
+	clock.set(startAt + MIN_REQUEST_INTERVAL_MS);
 
 	const delay = startAt - now;
 	if (delay <= 0) {
@@ -69,7 +81,7 @@ function waitForRequestSlot(signal) {
  * Test helper: forget the last request time.
  */
 export function resetGeocoderSpacing() {
-	nextRequestAt = 0;
+	clock.set(0);
 }
 
 // ---------------------------------------------------------------------------

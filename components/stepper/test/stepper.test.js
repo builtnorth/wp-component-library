@@ -6,15 +6,29 @@
 import { createRoot } from "@wordpress/element";
 import { StepNumber, Stepper } from "../index";
 
-// @wordpress/components pulls in an ES-only package that Jest can't load here.
-jest.mock("@wordpress/components", () => {
-	const { createElement } = require("@wordpress/element");
+// WordPress provides these at runtime, so a standalone install has none:
+// virtual mocks. @wordpress/element is a thin layer over React, so React stands
+// in; the real @wordpress/components pulls in an ES-only package Jest can't load.
+jest.mock(
+	"@wordpress/element",
+	() => ({
+		...jest.requireActual("react"),
+		createRoot: jest.requireActual("react-dom/client").createRoot,
+	}),
+	{ virtual: true },
+);
+jest.mock(
+	"@wordpress/components",
+	() => {
+		const { createElement } = require("@wordpress/element");
 
-	return {
-		VisuallyHidden: ({ children }) =>
-			createElement("span", { className: "visually-hidden" }, children),
-	};
-});
+		return {
+			VisuallyHidden: ({ children }) =>
+				createElement("span", { className: "visually-hidden" }, children),
+		};
+	},
+	{ virtual: true },
+);
 
 const ACCENT = "var(--wp-admin-theme-color, #3858e9)";
 const BORDER = "#e0e0e0";
